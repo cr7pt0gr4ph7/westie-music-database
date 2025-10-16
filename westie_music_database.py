@@ -903,6 +903,7 @@ if song_popularity_toggle:
     search_button = st.button("Show song popularity over time", type="primary", disabled=st.session_state["processing"])
 
     popularity_df: pl.DataFrame | None = None
+    is_search_result: bool = False
 
     if not song_input and not artist_name_input and not search_button:
         popularity_df = songs_by_year()
@@ -910,6 +911,7 @@ if song_popularity_toggle:
 
     if search_button:
         st.session_state["processing"] = True
+        is_search_result = True
 
         # We're not sure why, but our dataset contains quite a few
         # playlist entries with an added_at date that is a few years
@@ -934,6 +936,10 @@ if song_popularity_toggle:
             .collect(engine='streaming')
 
         st.markdown(f"#### Playlist track entries by {interval_input}")
+
+        if is_search_result:
+            st.bar_chart(popularity_df, x=interval_input, y=RELATIVE_POPULARITY)
+
         st.dataframe(popularity_df,
                      column_config={
                          DAY: st.column_config.DateColumn(),
