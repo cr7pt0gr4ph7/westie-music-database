@@ -1,3 +1,4 @@
+from typing import Final
 import streamlit as st
 # import wordcloud
 # import matplotlib.pyplot as plt
@@ -868,18 +869,40 @@ if songs_together_toggle:
     st.markdown(f"#### ")
 
 
+YEAR: Final = 'year'
+PLAYLIST_TRACK_COUNT: Final = 'playlist_track_count'
+
+
+@st.cache_data
+def songs_by_year():
+    return search_engine.data.all_playlist_tracks(Playlist.id).included_playlist_tracks\
+        .with_columns(pl.col(PlaylistTrack.added_at).dt.year().alias(YEAR))\
+        .filter(pl.col(YEAR).gt(2000), pl.col(YEAR).le(time.localtime().tm_year))\
+        .group_by(YEAR)\
+        .agg(pl.concat_list(Track.id, Playlist.id).n_unique().alias(PLAYLIST_TRACK_COUNT),
+             pl.col(Track.id).n_unique().alias(Stats.song_count))\
+        .sort(YEAR)\
+        .collect(engine='streaming')
+
+
 song_popularity_toggle = st.toggle("Song popularity over time 📊")
 if song_popularity_toggle:
-    songs_by_year = search_engine.data.all_playlist_tracks(Playlist.id).included_playlist_tracks\
-        .with_columns(pl.col(PlaylistTrack.added_at).dt.year().alias('year'))\
-        .filter(pl.col('year').gt(2000), pl.col('year').le(time.localtime().tm_year))\
-        .group_by('year')\
-        .agg(pl.concat_list('track.id', 'playlist.id').n_unique().alias('playlist_track_count'),
-             pl.col('track.id').n_unique().alias(Stats.song_count))\
-        .sort('year')
+    songs_by_year = songs_by_year()
+
+    songs_by_year_max = songs_by_year.lazy()\
+        .select(pl.col(PLAYLIST_TRACK_COUNT).max(),
+                pl.col(Stats.song_count).max())\
+        .collect(engine='streaming')
 
     st.markdown(f"#### Playlist track entries by year")
-    st.dataframe(songs_by_year)
+    st.dataframe(songs_by_year,
+                 column_config={
+                     PLAYLIST_TRACK_COUNT: st.column_config.ProgressColumn(
+                         min_value=0, format='localized',
+                         max_value=songs_by_year_max[PLAYLIST_TRACK_COUNT].first()),
+                     Stats.song_count: st.column_config.ProgressColumn(
+                         min_value=0, format='localized',
+                         max_value=songs_by_year_max[Stats.song_count].first())})
 
 lyrics_toggle = st.toggle("Search lyrics 📋")
 if lyrics_toggle:
