@@ -1423,17 +1423,63 @@ class SearchEngine:
         year_range: tuple[int, int] | None = None,
         date_range: tuple[str, str] | None = None,
     ) -> pl.LazyFrame:
+        """Returns the popularity of matching songs within the given timeframes."""
+        PLAYLIST_TRACK_COUNT = 'playlist_track_count'
+        AVERAGE_PLAYLIST_TRACK_COUNT = 'average_playlist_track_count'
+        RELATIVE_POPULARITY = 'relative_popularity'
+
+        track_filter = TrackFilter(
+            song_name=song_name,
+            artist_name=artist_name,
+        )
+
+        total_popularity = self._get_popularity_over_time(
+            track_filter=TrackFilter(),
+            interval=interval,
+            year_range=year_range,
+            date_range=date_range,
+        )
+
+        if not track_filter.has_filters:
+            return total_popularity.with_columns(pl.lit(1.0).alias(RELATIVE_POPULARITY))
+
+        # Our dataset contains a non-uniform number of playlist entries
+        # for different years, so we'll instead compute the relative popularity
+        # for a song vs. the average popularity of all songs in a given year.
+        total_popularity = total_popularity\
+            .with_columns((pl.col(PLAYLIST_TRACK_COUNT) / pl.col(Stats.song_count))
+                          .alias(AVERAGE_PLAYLIST_TRACK_COUNT))
+
+        song_popularity = self._get_popularity_over_time(
+            track_filter=track_filter,
+            interval=interval,
+            year_range=year_range,
+            date_range=date_range,
+        )
+
+        song_popularity = song_popularity\
+            .join(total_popularity.select(interval, AVERAGE_PLAYLIST_TRACK_COUNT), how='inner', on=interval)\
+            .with_columns((pl.col(PLAYLIST_TRACK_COUNT) / pl.col(AVERAGE_PLAYLIST_TRACK_COUNT) / 2).alias(RELATIVE_POPULARITY))\
+            .drop(AVERAGE_PLAYLIST_TRACK_COUNT)\
+            .sort(interval)
+
+        return song_popularity
+
+    def _get_popularity_over_time(
+        self,
+        *,
+        track_filter: TrackFilter,
+        interval: Literal['year', 'month', 'quarter', 'week', 'day'],
+        year_range: tuple[int, int] | None = None,
+        date_range: tuple[str, str] | None = None,
+    ) -> pl.LazyFrame:
+        """Returns the popularity of matching songs within the given timeframes."""
         YEAR = 'year'
         MONTH = 'month'
         QUARTER = 'quarter'
         WEEK = 'week'
         DAY = 'day'
         PLAYLIST_TRACK_COUNT = 'playlist_track_count'
-
-        track_filter = TrackFilter(
-            song_name=song_name,
-            artist_name=artist_name,
-        )
 
         playlist_tracks = self.data.all_playlist_tracks(Playlist.id)
 

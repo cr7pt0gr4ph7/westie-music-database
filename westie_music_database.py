@@ -869,10 +869,6 @@ if songs_together_toggle:
     st.markdown(f"#### ")
 
 
-YEAR: Final = 'year'
-PLAYLIST_TRACK_COUNT: Final = 'playlist_track_count'
-
-
 @st.cache_data
 def songs_by_year():
     current_year: Final = time.localtime().tm_year
@@ -882,22 +878,60 @@ def songs_by_year():
 
 song_popularity_toggle = st.toggle("Song popularity over time 📊")
 if song_popularity_toggle:
-    songs_by_year = songs_by_year()
+    DAY = 'day'
+    RELATIVE_POPULARITY: Final = 'relative_popularity'
+    PLAYLIST_TRACK_COUNT: Final = 'playlist_track_count'
 
-    songs_by_year_max = songs_by_year.lazy()\
-        .select(pl.col(PLAYLIST_TRACK_COUNT).max(),
-                pl.col(Stats.song_count).max())\
-        .collect(engine='streaming')
+    song_combo_col1, song_combo_col2 = st.columns(2)
+    with song_combo_col1:
+        song_input = st.text_input("Song Name/ID:")
+    with song_combo_col2:
+        artist_name_input = st.text_input("Song artist name:")
 
-    st.markdown(f"#### Playlist track entries by year")
-    st.dataframe(songs_by_year,
-                 column_config={
-                     PLAYLIST_TRACK_COUNT: st.column_config.ProgressColumn(
-                         min_value=0, format='localized',
-                         max_value=songs_by_year_max[PLAYLIST_TRACK_COUNT].first()),
-                     Stats.song_count: st.column_config.ProgressColumn(
-                         min_value=0, format='localized',
-                         max_value=songs_by_year_max[Stats.song_count].first())})
+    interval_input = 'year'
+    search_button = st.button("Show song popularity over time", type="primary", disabled=st.session_state["processing"])
+
+    popularity_df: pl.DataFrame | None = None
+
+    if not song_input and not artist_name_input:
+        popularity_df = songs_by_year()
+
+    if search_button:
+        st.session_state["processing"] = True
+
+        # We're not sure why, but our dataset contains quite a few
+        # playlist entries with an added_at date that is a few years
+        # in the future... just filter these out for now.
+        current_year: Final = time.localtime().tm_year
+        popularity_df = search_engine.get_popularity_over_time(
+            song_name=song_input,
+            artist_name=artist_name_input,
+            interval=interval_input,
+            year_range=(2000, current_year))\
+            .collect(engine='streaming')
+
+        st.session_state["processing"] = False
+
+    if popularity_df is not None:
+        popularity_max = popularity_df.lazy()\
+            .select(pl.col(PLAYLIST_TRACK_COUNT).max(),
+                    pl.col(RELATIVE_POPULARITY).max(),
+                    pl.col(Stats.song_count).max())\
+            .collect(engine='streaming')
+
+        st.markdown(f"#### Playlist track entries by year")
+        st.dataframe(popularity_df,
+                     column_config={
+                         DAY: st.column_config.DateColumn(),
+                         PLAYLIST_TRACK_COUNT: st.column_config.ProgressColumn(
+                             min_value=0, format='localized',
+                             max_value=popularity_max[PLAYLIST_TRACK_COUNT].first()),
+                         Stats.song_count: st.column_config.ProgressColumn(
+                             min_value=0, format='localized',
+                             max_value=popularity_max[Stats.song_count].first()),
+                         RELATIVE_POPULARITY: st.column_config.ProgressColumn(
+                             min_value=0, format='percent',
+                             max_value=popularity_max[RELATIVE_POPULARITY].first())})
 
 lyrics_toggle = st.toggle("Search lyrics 📋")
 if lyrics_toggle:
