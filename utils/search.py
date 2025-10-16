@@ -1442,7 +1442,7 @@ class SearchEngine:
     def get_popularity_over_time(
         self,
         *,
-        interval: Literal['year', 'month', 'week', 'day'],
+        interval: Literal['year', 'month', 'quarter', 'week', 'day'],
         song_name: TextFilter = '',
         artist_name: TextFilter = '',
         year_range: tuple[int, int] | None = None,
@@ -1450,6 +1450,7 @@ class SearchEngine:
     ) -> pl.LazyFrame:
         YEAR = 'year'
         MONTH = 'month'
+        QUARTER = 'quarter'
         WEEK = 'week'
         DAY = 'day'
         PLAYLIST_TRACK_COUNT = 'playlist_track_count'
@@ -1468,9 +1469,9 @@ class SearchEngine:
         playlist_tracks = PlaylistTrackSet(
             playlist_tracks.included_playlist_tracks
             .with_columns(pl.col(PlaylistTrack.added_at).dt.year().alias(YEAR),
-                          pl.col(PlaylistTrack.added_at).dt.month_start().alias(MONTH),
-                          (pl.col(PlaylistTrack.added_at).dt.iso_year().cast(pl.String)
-                           + "-W" + pl.col(PlaylistTrack.added_at).dt.week().cast(pl.String)).alias(WEEK),
+                          pl.col(PlaylistTrack.added_at).dt.strftime('%Y-%m').alias(MONTH),
+                          pl.col(PlaylistTrack.added_at).dt.strftime('%Y-Q%q').alias(QUARTER),
+                          pl.col(PlaylistTrack.added_at).dt.strftime('%G-W%V').alias(WEEK),
                           pl.col(PlaylistTrack.added_at).dt.date().alias(DAY)),
             is_filtered=playlist_tracks.is_filtered)
 
