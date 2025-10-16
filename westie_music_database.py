@@ -875,13 +875,8 @@ PLAYLIST_TRACK_COUNT: Final = 'playlist_track_count'
 
 @st.cache_data
 def songs_by_year():
-    return search_engine.data.all_playlist_tracks(Playlist.id).included_playlist_tracks\
-        .with_columns(pl.col(PlaylistTrack.added_at).dt.year().alias(YEAR))\
-        .filter(pl.col(YEAR).gt(2000), pl.col(YEAR).le(time.localtime().tm_year))\
-        .group_by(YEAR)\
-        .agg(pl.concat_list(Track.id, Playlist.id).n_unique().alias(PLAYLIST_TRACK_COUNT),
-             pl.col(Track.id).n_unique().alias(Stats.song_count))\
-        .sort(YEAR)\
+    current_year: Final = time.localtime().tm_year
+    return search_engine.get_popularity_over_time(interval='year', year_range=(2000, current_year))\
         .collect(engine='streaming')
 
 
