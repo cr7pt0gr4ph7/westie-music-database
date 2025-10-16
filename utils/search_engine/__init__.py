@@ -742,8 +742,8 @@ class SearchEngine:
         playlist_tracks = PlaylistTrackSet(
             playlist_tracks.included_playlist_tracks
             .with_columns(pl.col(PlaylistTrack.added_at).dt.year().alias(YEAR),
-                          pl.col(PlaylistTrack.added_at).dt.strftime('%y-%m').alias(MONTH),
-                          pl.col(PlaylistTrack.added_at).dt.strftime('%y-Q%q').alias(QUARTER),
+                          pl.col(PlaylistTrack.added_at).dt.strftime('%Y-%m').alias(MONTH),
+                          pl.col(PlaylistTrack.added_at).dt.strftime('%Y-Q%q').alias(QUARTER),
                           pl.col(PlaylistTrack.added_at).dt.strftime('%G-W%V').alias(WEEK),
                           pl.col(PlaylistTrack.added_at).dt.date().alias(DAY)),
             is_filtered=playlist_tracks.is_filtered)
