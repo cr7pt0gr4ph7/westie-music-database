@@ -222,6 +222,7 @@ class PlaylistFilter:
     dj_name_exclude: str = ''
     playlist_include: str = ''
     playlist_exclude: str = ''
+    playlist_is_social_set: bool = False
 
     # Parsed filters
     match_country: pl.Expr = field(init=False)
@@ -256,11 +257,16 @@ class PlaylistFilter:
             or self.match_dj_name_exclude is not None\
             or self.match_country is not None\
             or self.match_playlist is not None\
-            or self.match_excluded_playlist is not None
+            or self.match_excluded_playlist is not None\
+            or self.playlist_is_social_set
 
     def filter_playlists(self, playlists: PlaylistSet, *, include_matched_terms: bool) -> PlaylistSet:
         """Filter the specified playlists to only include playlists matching this filter."""
         matching_playlists = playlists.included_playlists
+
+        if self.playlist_is_social_set:
+            matching_playlists = matching_playlists.filter(
+                pl.col(Playlist.is_social_set))
 
         if self.match_playlist is not None:
             matching_playlists = matching_playlists.filter(
