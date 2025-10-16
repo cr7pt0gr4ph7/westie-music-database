@@ -1418,6 +1418,8 @@ class SearchEngine:
         self,
         *,
         interval: Literal['year', 'month', 'week', 'day'],
+        song_name: str = '',
+        artist_name: str = '',
         year_range: tuple[int, int] | None = None,
         date_range: tuple[str, str] | None = None,
     ) -> pl.LazyFrame:
@@ -1427,25 +1429,42 @@ class SearchEngine:
         DAY = 'day'
         PLAYLIST_TRACK_COUNT = 'playlist_track_count'
 
-        playlist_tracks = self.data.playlist_tracks\
+        track_filter = TrackFilter(
+            song_name=song_name,
+            artist_name=artist_name,
+        )
+
+        playlist_tracks = self.data.all_playlist_tracks(Playlist.id)
+
+        playlist_tracks = track_filter\
+            .filter_tracks(self.data.all_tracks)\
+            .filter_playlist_tracks(playlist_tracks, include_track_info=False)
+
+        playlist_tracks = PlaylistTrackSet(
+            playlist_tracks.included_playlist_tracks
             .with_columns(pl.col(PlaylistTrack.added_at).dt.year().alias(YEAR),
                           pl.col(PlaylistTrack.added_at).dt.month_start().alias(MONTH),
                           (pl.col(PlaylistTrack.added_at).dt.iso_year().cast(pl.String)
                            + "-W" + pl.col(PlaylistTrack.added_at).dt.week().cast(pl.String)).alias(WEEK),
-                          pl.col(PlaylistTrack.added_at).dt.date().alias(DAY))
+                          pl.col(PlaylistTrack.added_at).dt.date().alias(DAY)),
+            is_filtered=playlist_tracks.is_filtered)
 
         if year_range is not None:
-            playlist_tracks = playlist_tracks\
+            playlist_tracks = PlaylistTrackSet(
+                playlist_tracks.included_playlist_tracks
                 .filter(pl.col(YEAR).ge(year_range[0]),
-                        pl.col(YEAR).le(year_range[1]))
+                        pl.col(YEAR).le(year_range[1])),
+                is_filtered=True)
 
         if date_range is not None:
-            playlist_tracks = playlist_tracks\
+            playlist_tracks = PlaylistTrackSet(
+                playlist_tracks.included_playlist_tracks
                 .filter(pl.col(DAY).ge(pl.lit(date_range[0]).cast(pl.Date)),
-                        pl.col(DAY).le(pl.lit(date_range[1]).cast(pl.Date)))
+                                       pl.col(DAY).le(pl.lit(date_range[1]).cast(pl.Date))),
+                is_filtered=True)
 
-        return playlist_tracks\
+        return playlist_tracks.included_playlist_tracks\
             .group_by(interval)\
             .agg(pl.concat_list(Track.id, Playlist.id).n_unique().alias(PLAYLIST_TRACK_COUNT),
-                pl.col(Track.id).n_unique().alias(Stats.song_count))\
+                 pl.col(Track.id).n_unique().alias(Stats.song_count))\
             .sort(interval)
