@@ -895,8 +895,10 @@ if song_popularity_toggle:
         only_socials_input = st.checkbox("Only socials")
     with song_combo_col2:
         artist_name_input = st.text_input("Song artist name:")
-        interval_input = st.selectbox(label="Interval", options=INTERVALS.keys(),
+        interval_input = st.selectbox(label="Interval:", options=INTERVALS.keys(),
                                       format_func=lambda opt: INTERVALS.get(opt, opt))
+        min_plays_input = st.number_input("Only compare against tracks with at least __ plays in a given interval:",
+                                          value=0, min_value=0, max_value=100, step=1)
 
     search_button = st.button("Show song popularity over time", type="primary", disabled=st.session_state["processing"])
 
@@ -918,6 +920,7 @@ if song_popularity_toggle:
             artist_name=artist_name_input,
             playlist_is_social_set=only_socials_input,
             interval=interval_input,
+            min_plays=min_plays_input,
             year_range=(2000, current_year))\
             .collect(engine='streaming')
 
