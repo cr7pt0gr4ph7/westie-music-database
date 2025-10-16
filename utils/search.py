@@ -1413,3 +1413,39 @@ class SearchEngine:
                     adjacent_tracks.with_extra_columns()
                     .included_tracks.sort(TrackAdjacent.times_played_together, descending=True)
                     .slice(0, limit or None))
+
+    def get_popularity_over_time(
+        self,
+        *,
+        interval: Literal['year', 'month', 'week', 'day'],
+        year_range: tuple[int, int] | None = None,
+        date_range: tuple[str, str] | None = None,
+    ) -> pl.LazyFrame:
+        YEAR = 'year'
+        MONTH = 'month'
+        WEEK = 'week'
+        DAY = 'day'
+        PLAYLIST_TRACK_COUNT = 'playlist_track_count'
+
+        playlist_tracks = self.data.playlist_tracks\
+            .with_columns(pl.col(PlaylistTrack.added_at).dt.year().alias(YEAR),
+                          pl.col(PlaylistTrack.added_at).dt.month_start().alias(MONTH),
+                          (pl.col(PlaylistTrack.added_at).dt.iso_year().cast(pl.String)
+                           + "-W" + pl.col(PlaylistTrack.added_at).dt.week().cast(pl.String)).alias(WEEK),
+                          pl.col(PlaylistTrack.added_at).dt.date().alias(DAY))
+
+        if year_range is not None:
+            playlist_tracks = playlist_tracks\
+                .filter(pl.col(YEAR).ge(year_range[0]),
+                        pl.col(YEAR).le(year_range[1]))
+
+        if date_range is not None:
+            playlist_tracks = playlist_tracks\
+                .filter(pl.col(DAY).ge(pl.lit(date_range[0]).cast(pl.Date)),
+                        pl.col(DAY).le(pl.lit(date_range[1]).cast(pl.Date)))
+
+        return playlist_tracks\
+            .group_by(interval)\
+            .agg(pl.concat_list(Track.id, Playlist.id).n_unique().alias(PLAYLIST_TRACK_COUNT),
+                pl.col(Track.id).n_unique().alias(Stats.song_count))\
+            .sort(interval)
