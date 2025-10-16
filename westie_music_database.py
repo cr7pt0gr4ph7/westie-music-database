@@ -102,20 +102,18 @@ st.write(f"{djs_count:,}   Westies/DJs\n\n")
 st.link_button("Help fill in country info!",
                url='https://docs.google.com/spreadsheets/d/1YQaWwtIy9bqSNTXR9GrEy86Ix51cvon9zzHVh7sBi0A/edit?usp=sharing')
 
-# st.markdown(f"#### ")
+# Feature flag to enable the "Random Song" section
+enable_random_song = False
 
+if enable_random_song:
+    st.markdown(f"#### ")
+    st.markdown(f"#### Random Song")
 
-# st.markdown(f"#### Random Song")
-# st.dataframe((df
-#               .filter(pl.col(Stats.playlist_count).lt(800),
-#                       pl.col(Stats.playlist_count).gt(20),
-#                       pl.col(Stats.dj_count).lt(300),
-#                       pl.col(Stats.dj_count).gt(20))
-#               .collect(streaming=True).sample(1)
-#              ),
-#                  column_config={Track.url: st.column_config.LinkColumn()})
-# st.markdown(f"#### ")
-
+    st.dataframe(search_engine.find_random_songs(playlist_count_range=(20, 800),
+                                                 dj_count_range=(20, 300),
+                                                 limit=1)
+                 .select(Track.name, Track.artists, Track.url),
+                 column_config={Track.url: st.column_config.LinkColumn()})
 
 # @st.cache_data
 # def sample_of_raw_data():
@@ -915,7 +913,7 @@ if lyrics_toggle:
 
 st.markdown("# ")
 st.markdown("# ")
-st.markdown("#### WCS resources/apps by others:") # Thank you, Clara!
+st.markdown("#### WCS resources/apps by others:")  # Thank you, Clara!
 st.link_button('Routine Database 😯',
                url='https://wcs-routine-database.streamlit.app/')
 # st.link_button('Follow me so I can add you to the database!',

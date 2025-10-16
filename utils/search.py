@@ -1058,6 +1058,25 @@ class SearchEngine:
             .select(pl.col(group_by).alias(group_header), 'song_count', 'playlist_count', 'dj_count', 'djs')\
             .sort(group_header)
 
+    def find_random_songs(
+        self,
+        *,
+        playlist_count_range: tuple[int, int],
+        dj_count_range: tuple[int, int],
+        limit: int = 1
+    ) -> pl.LazyFrame:
+        track_ids = self.data.tracks\
+            .filter(pl.col(Stats.playlist_count).le(playlist_count_range[1]),
+                    pl.col(Stats.playlist_count).ge(playlist_count_range[0]),
+                    pl.col(Stats.dj_count).le(dj_count_range[1]),
+                    pl.col(Stats.dj_count).ge(dj_count_range[0]))\
+            .select(pl.col(Track.id).sample(limit))
+
+        matching_tracks = TrackSet(self.data.tracks.join(track_ids, how='semi', on=Track.id),
+                                   is_filtered=True)
+
+        return matching_tracks.with_extra_columns().included_tracks
+
     def find_songs(
         self,
         *,
