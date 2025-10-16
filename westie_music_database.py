@@ -4,6 +4,7 @@ import streamlit as st
 import polars as pl
 import polars.selectors as cs
 import psutil
+import time
 
 from utils.common.columns import pull_columns_to_front
 from utils.common.logging import log_query
@@ -866,6 +867,19 @@ if songs_together_toggle:
                    'https://loewclan.de/song-galaxy/')
     st.markdown(f"#### ")
 
+
+song_popularity_toggle = st.toggle("Song popularity over time 📊")
+if song_popularity_toggle:
+    songs_by_year = search_engine.data.all_playlist_tracks(Playlist.id).included_playlist_tracks\
+        .with_columns(pl.col(PlaylistTrack.added_at).dt.year().alias('year'))\
+        .filter(pl.col('year').gt(2000), pl.col('year').le(time.localtime().tm_year))\
+        .group_by('year')\
+        .agg(pl.concat_list('track.id', 'playlist.id').n_unique().alias('playlist_track_count'),
+             pl.col('track.id').n_unique().alias(Stats.song_count))\
+        .sort('year')
+
+    st.markdown(f"#### Playlist track entries by year")
+    st.dataframe(songs_by_year)
 
 lyrics_toggle = st.toggle("Search lyrics 📋")
 if lyrics_toggle:
