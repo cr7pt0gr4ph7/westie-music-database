@@ -879,22 +879,32 @@ def songs_by_year():
 song_popularity_toggle = st.toggle("Song popularity over time 📊")
 if song_popularity_toggle:
     DAY = 'day'
+    INTERVALS: Final = {
+        'year': 'Yearly',
+        'month': 'Monthly',
+        'quarter': 'Quarterly',
+        'week': 'Weekly',
+        'day': 'Daily',
+    }
     RELATIVE_POPULARITY: Final = 'relative_popularity'
     PLAYLIST_TRACK_COUNT: Final = 'playlist_track_count'
 
     song_combo_col1, song_combo_col2 = st.columns(2)
     with song_combo_col1:
         song_input = st.text_input("Song Name/ID:")
+        only_socials_input = st.checkbox("Only socials")
     with song_combo_col2:
         artist_name_input = st.text_input("Song artist name:")
+        interval_input = st.selectbox(label="Interval", options=INTERVALS.keys(),
+                                      format_func=lambda opt: INTERVALS.get(opt, opt))
 
-    interval_input = 'year'
     search_button = st.button("Show song popularity over time", type="primary", disabled=st.session_state["processing"])
 
     popularity_df: pl.DataFrame | None = None
 
-    if not song_input and not artist_name_input:
+    if not song_input and not artist_name_input and not search_button:
         popularity_df = songs_by_year()
+        interval_input = 'year'
 
     if search_button:
         st.session_state["processing"] = True
@@ -906,6 +916,7 @@ if song_popularity_toggle:
         popularity_df = search_engine.get_popularity_over_time(
             song_name=song_input,
             artist_name=artist_name_input,
+            playlist_is_social_set=only_socials_input,
             interval=interval_input,
             year_range=(2000, current_year))\
             .collect(engine='streaming')
@@ -919,7 +930,7 @@ if song_popularity_toggle:
                     pl.col(Stats.song_count).max())\
             .collect(engine='streaming')
 
-        st.markdown(f"#### Playlist track entries by year")
+        st.markdown(f"#### Playlist track entries by {interval_input}")
         st.dataframe(popularity_df,
                      column_config={
                          DAY: st.column_config.DateColumn(),
