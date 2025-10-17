@@ -116,6 +116,34 @@ st.write(f"{djs_count:,}   Westies/DJs\n\n")
 st.link_button("Help fill in country info!",
                url='https://docs.google.com/spreadsheets/d/1YQaWwtIy9bqSNTXR9GrEy86Ix51cvon9zzHVh7sBi0A/edit?usp=sharing')
 
+
+late_night_df = pl.scan_parquet('notebooks/acoustic_tags.parquet')\
+    .with_row_index(offset=1)
+
+st.dataframe(late_night_df.select('track.name',
+                                  'track.artists',
+                                  'tag',
+                                  'matching_playlist_count',
+                                  'tag.playlist_percent',
+                                  'tag.playlist_count',
+                                  'track.playlist_percent',
+                                  'track.playlist_count'),
+             column_config={'matching_playlist_count': st.column_config.NumberColumn('#'),
+                            'tag.playlist_count': st.column_config.NumberColumn('# tag'),
+                            'tag.playlist_percent': st.column_config.ProgressColumn('% tag'),
+                            'track.playlist_count': st.column_config.NumberColumn('# track'),
+                            'track.playlist_percent': st.column_config.ProgressColumn('% track')})
+
+late_night_df = late_night_df\
+    .limit(500)\
+    .select(pl.all().name.map(lambda x: x.replace('.', '_')))
+
+st.bar_chart(late_night_df, x='index', y='matching_playlist_count', sort=False)
+st.bar_chart(late_night_df, x='index', y='tag_playlist_percent', sort=False)
+st.bar_chart(late_night_df, x='index', y='track_playlist_count', sort=False)
+st.bar_chart(late_night_df, x='index', y='track_playlist_percent', sort=False)
+
+
 # Feature flag to enable the "Random Song" section
 enable_random_song = False
 
