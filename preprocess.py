@@ -2,20 +2,21 @@
 from typing import Callable, Final, Literal
 import math
 import os
-from typing import Literal
 
 import polars as pl
 
 from utils.additional_data import actual_wcs_djs, queer_artists, poc_artists
 from utils.common.temp_files import TempFileTracker, with_temp_files
-from utils.playlist_classifiers import extract_dates_from_name
+from utils.playlist_classifiers import extract_dates_from_name, extract_tags_from_name
 from utils.search import (
     COUNTRY_DATA_FILE,
+    DATA_DIR,
     PLAYLIST_DATA_FILE,
     PLAYLIST_ORIGINAL_DATA_FILE,
     PLAYLIST_TRACKS_DATA_FILE,
     PLAYLIST_TRACKS_ORIGINAL_DATA_FILE,
     REGION_DATA_FILE,
+    TAGS_DATA_FILE,
     TEMP_DATA_DIR,
     TRACK_ADJACENT_DATA_FILE,
     TRACK_CANONICAL_DATA_FILE,
@@ -24,11 +25,15 @@ from utils.search import (
     TRACK_LYRICS_DATA_FILE,
     TRACK_ORIGINAL_DATA_FILE,
     TRACK_PLAYLISTS_DATA_FILE,
+    TRACK_TAGS_DATA_FILE,
     UNPROCESSED_PLAYLISTS_DATA_FILE,
     UNPROCESSED_TRACK_BPM_DATA_FILE,
     UNPROCESSED_TRACK_LYRICS_DATA_FILE,
 )
 from utils.tables import Playlist, PlaylistOwner, PlaylistTrack, Stats, Track, TrackAdjacent, TrackLyrics
+
+# Temporary files are also stored in processed_data/
+TEMP_DATA_DIR: Final = DATA_DIR
 
 # NOTE: Setting TRACK_ID_DTYPE and PLAYLIST_ID_DTYPE to pl.Categorical
 #       instead of pl.String blows up the size of data_playlist_songs.parquet
@@ -42,6 +47,7 @@ TRACK_ARTIST_DTYPE = pl.String
 PLAYLIST_ID_DTYPE = pl.String
 OWNER_ID_DTYPE = pl.String
 OWNER_NAME_DTYPE = pl.String
+
 
 # Simplistic file tracker to verify that operations
 # are invoked in the correct order.
@@ -675,6 +681,92 @@ def process_song_pairings():
     write_to_parquet_file(songs_df, TRACK_ADJACENT_DATA_FILE)
 
 
+def process_playlist_and_song_tags():
+    """Process the playlist names into tag tables for songs and playlists."""
+    playlists = scan_parquet_file(PLAYLIST_DATA_FILE)
+    playlist_tracks = scan_parquet_file(PLAYLIST_TRACKS_DATA_FILE)
+    tracks = scan_parquet_file(TRACK_DATA_FILE)
+
+    playlists_tokenized = playlists.select(
+        pl.col('playlist.id'),
+        pl.col('playlist.name'),
+        pl.col('playlist.name').pipe(extract_tags_from_name).alias('tags'),
+    )
+
+    exploded_playlists_by_tag = playlists_tokenized\
+        .explode('tags')\
+        .rename({'tags': 'tag'})
+
+    tags = exploded_playlists_by_tag\
+        .group_by('tag')\
+        .agg(pl.col('tag').count().alias('playlist_count'),
+             pl.col('playlist.name').head(20))\
+        .select(pl.col('tag').str.split(':').list.get(0).alias('category'),
+                pl.col('tag').str.split(':').list.get(1, null_on_oob=True).alias('tag'),
+                pl.col('tag').alias('full_tag'),
+                'playlist_count',
+                'playlist.name')\
+        .sort('playlist_count', descending=True)
+
+    write_to_parquet_file(tags, TAGS_DATA_FILE)
+
+    track_tags = playlist_tracks\
+        .join(exploded_playlists_by_tag.filter(pl.col('tag').is_not_null()),
+              how='inner', on='playlist.id')\
+        .group_by('track.id', 'tag')\
+        .agg(pl.col('tag').count().alias('playlist_count'))
+
+    with TempFileTracker() as temp_files:
+        temp_file = temp_files.register_for_deletion(TEMP_DATA_DIR + 'temp_track_tags.parquet')
+        write_to_parquet_file(track_tags, temp_file)
+        track_tags = scan_parquet_file(temp_file)
+
+        temp_file = TEMP_DATA_DIR + 'temp_track_tags_by_track_id.parquet'
+        track_tags_by_track_id = track_tags.sort('track.id')
+        write_to_parquet_file(track_tags_by_track_id, temp_file)
+        track_tags_by_track_id = scan_parquet_file(temp_file)
+
+        def process_track_tags_batch(tracks_batch: pl.LazyFrame) -> pl.LazyFrame:
+            return track_tags_by_track_id\
+                .join(tracks_batch, how='semi', on='track.id')\
+                .group_by('track.id')\
+                .agg(pl.col('tag').sort_by('playlist_count', descending=True).head(20),
+                    pl.col('playlist_count').sort(descending=True).head(20).alias('playlist_counts'),
+                    pl.col('playlist_count').sort(descending=True).head(20).sum())\
+                .join(tracks_batch.select('track.id', 'track.name', 'track.artists'), how='inner', on='track.id')
+
+        def temp_file_for_index(index: int) -> str:
+            return TEMP_DATA_DIR + f'temp_tag_batch_{index}.parquet'
+
+        @with_temp_files
+        def process_track_tags_in_batches(batch_temp_files: TempFileTracker):
+            row_count = tracks.select(pl.len()).collect().item()
+            batch_size = 10000  # Higher batch sizes are faster but have a righer OOM risk
+            batch_count = int(math.ceil(row_count / batch_size))
+
+            print(f"Processing {row_count:,} tracks in {batch_count:,} batches of {batch_size:,} items...")
+
+            for batch_index in range(0, batch_count):
+                batch_start = batch_index * batch_size
+                print(f"Processing batch {batch_index:,}/{batch_count:,}")
+                batch_result = process_track_tags_batch(tracks.slice(batch_start, batch_size))\
+                    .sort('track.id')
+                temp_file = batch_temp_files.register_for_deletion(temp_file_for_index(batch_index))
+                write_to_parquet_file(batch_result, temp_file)
+
+            print("Merging batches...")
+
+            merged: pl.LazyFrame | None = None
+            for batch_index in range(0, batch_count):
+                batch_data = scan_parquet_file(temp_file_for_index(batch_index))
+                merged = (batch_data if merged is None else
+                          merged.merge_sorted(batch_data, 'track.id'))
+
+            write_to_parquet_file(merged, TRACK_TAGS_DATA_FILE)
+
+        process_track_tags_in_batches()
+
+
 def process_everything(merge_duplicates: bool = True):
     """Runs all pre-processing in sequence."""
     # Reset the internal file tracker (only used for debugging)
@@ -701,6 +793,11 @@ def process_everything(merge_duplicates: bool = True):
 
     # Song pairings reuses the playlist entries data generated above
     process_song_pairings()
+
+    # Extract tags from playlist titles and assign to songs
+    process_playlist_and_song_tags()
+
+    print("Done.")
 
 
 # Run full pre-processing when invoked via `python preprocess.py`

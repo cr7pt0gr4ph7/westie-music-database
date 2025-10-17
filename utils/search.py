@@ -113,11 +113,14 @@ TRACK_ORIGINAL_DATA_FILE: Final = TEMP_DATA_DIR + 'data_song_metadata.original.p
 
 # Processed files
 PLAYLIST_DATA_FILE: Final = DATA_DIR + 'data_playlist_metadata.parquet'
+PLAYLIST_TAGS_DATA_FILE: Final = DATA_DIR + 'data_playlist_tags.parquet'
 PLAYLIST_TRACKS_DATA_FILE: Final = DATA_DIR + 'data_playlist_songs.parquet'
+TAGS_DATA_FILE: Final = DATA_DIR + 'data_tags.parquet'
 TRACK_PLAYLISTS_DATA_FILE: Final = DATA_DIR + 'data_song_playlists.parquet'
 TRACK_DATA_FILE: Final = DATA_DIR + 'data_song_metadata.parquet'
 TRACK_ADJACENT_DATA_FILE: Final = DATA_DIR + 'data_song_adjacent.parquet'
 TRACK_LYRICS_DATA_FILE: Final = DATA_DIR + 'data_song_lyrics.parquet'
+TRACK_TAGS_DATA_FILE: Final = DATA_DIR + 'data_song_tags.parquet'
 COUNTRY_DATA_FILE: Final = DATA_DIR + 'data_countries.csv'
 REGION_DATA_FILE: Final = DATA_DIR + 'data_regions.csv'
 
