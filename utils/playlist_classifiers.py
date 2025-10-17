@@ -2,6 +2,31 @@
 
 import polars as pl
 
+from utils.keyword_data import load_keyword_aliases
+
+###################
+# Keywords / Tags #
+###################
+
+def extract_tags_from_name(expr: pl.Expr) -> pl.Expr:
+    """"Extract a list of tags from the given playlist name."""
+    alias_to_tags = load_keyword_aliases()
+    all_keywords_alts = '|'.join([f'\\b{pl.escape_regex(term)}\\b' for term in alias_to_tags])
+    all_keywords_regex = f'(?i)({all_keywords_alts})'
+
+    # Use regexes to extract the keywords, then match the
+    # extracted strings against our dictionary to check
+    # if the matched keyword should be aliased to something else
+    return expr\
+        .str.extract_all(all_keywords_regex)\
+        .list.eval(pl.element()
+                   .replace_strict(aliases,
+                                   default=pl.lit([], dtype=pl.List(pl.String)),
+                                   return_dtype=pl.List(pl.String))
+                   .explode())\
+        .list.unique()\
+        .list.sort()
+
 ###########################################################
 # Patterns for detecting calendar dates in playlist names #
 ###########################################################
