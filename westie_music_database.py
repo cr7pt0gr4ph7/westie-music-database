@@ -547,11 +547,15 @@ playlist_locator_toggle = st.toggle("Find a Playlist 💿")
 if playlist_locator_toggle:
     playlist_col1, playlist_col2 = st.columns(2)
     with playlist_col1:
-        song_input = st.text_input("Contains the song:")
+        song_and_artist_input = st.text_input("Contains the song (use `song|artist` to filter by artist):")
         playlist_input = st.text_input("Playlist name:")
     with playlist_col2:
         dj_input = st.text_input("DJ name:")
         anti_playlist_input2 = st.text_input("Not in playlist name: ")
+
+    song_and_artist_input = song_and_artist_input.split("|")
+    song_input = song_and_artist_input[0] if len(song_and_artist_input) > 0 else ''
+    artist_input = song_and_artist_input[1] if len(song_and_artist_input) > 1 else ''
 
     # if any(val for val in [playlist_input, song_input, dj_input]):
     if st.button("Search playlists", type="primary", disabled=st.session_state["processing"]):
@@ -565,7 +569,7 @@ if playlist_locator_toggle:
         # TODO: Expose additional query parameters in the UI
         playlist_search_df = search_engine.find_playlists(
             song_name=song_input,
-            # artist_name=...,
+            artist_name=artist_input,
             # country=...,
             dj_name=dj_input,
             playlist_include=playlist_input,
