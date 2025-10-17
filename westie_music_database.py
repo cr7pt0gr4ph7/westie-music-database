@@ -3,6 +3,7 @@ from typing import Final
 
 import streamlit as st
 import wordcloud
+import math
 import matplotlib.pyplot as plt
 import polars as pl
 import polars.selectors as cs
@@ -615,11 +616,13 @@ keyword_insights_toggle = st.toggle("Tag Insights 🏷️")
 
 if keyword_insights_toggle:
     st.markdown(f"\n\n\n#### Common Tags for Playlists:")
-    st.text(f"Disclaimer: Insights are based on a manually defined list of tags and aliases, and may not be accurate or representative of reality.")
+    st.text(f"Disclaimer: Insights are based on a manually defined list of tags and aliases that is then used to extract keywords from playlist titles, and may not be accurate or representative of reality.")
+
+    show_wordcloud = st.toggle("Show wordcloud")
 
     tags_df = tags_data()
 
-    if st.toggle("Show wordcloud"):
+    if show_wordcloud:
         w = wordcloud.WordCloud(
             width=1800, height=800,
             background_color="white",
@@ -627,7 +630,7 @@ if keyword_insights_toggle:
             min_font_size=10
         ).generate_from_frequencies({
             row[0]: float(row[1])
-            for row in tags_df.filter(pl.col('tag').is_not_null()).select('tag', 'playlist_count').iter_rows()
+            for row in tags_df.filter(pl.col('tag').is_not_null()).select('tag', Stats.playlist_count).iter_rows()
         })
 
         # As mentioned in the streamlit docs pyplot doesn't work well with threads,
@@ -639,7 +642,52 @@ if keyword_insights_toggle:
             ax.axis('off')
             st.pyplot(fig)
 
-    st.dataframe(tags_df)
+    categories = tags_df.lazy()\
+        .select('category')\
+        .unique()\
+        .sort('category')\
+        .collect()['category'].to_list()
+
+    dark_colors = [
+        "#ffd16a",  # (1) Light Orange [orange50]
+        "#faca2b",  # (1) Light Orange [lightTheme.yellowColor]
+        "#803df5",  # (2) Violet [lightTheme.violetColor]~
+        "#00c0f2",  # (3) Turqouise~
+        "#83c9ff",  # (4) Light Blue [blue40]
+        "#29b09d",  # (5) Blue-Green [blueGreen80]~
+        "#ffabab",  # (6) Light Red [red40]
+        "#7defa1",  # (7) Light Green [green40]
+        "#d5dae5",  # (8) Light Gray [gray40]
+    ]
+    light_colors = [
+        "#ffa421",  # (1) Orange [lightTheme.orangeColor]
+        "#803df5",  # (2) Violet [lightTheme.violetColor]
+        "#00c0f2",  # (3) Turqouise
+        "#0068c9",  # (4) Dark Blue [blue80]
+        "#29b09d",  # (5) Blue-Green [blueGreen80]
+        "#ff2b2b",  # (6a) Medium Red [red80]
+        # "#ff4b4b", # (6b) Red [lightTheme.redColor]
+        "#21c354",  # (7) Green [lightTheme.greenColor]
+        "#a3a8b8",  # (8) Gray [lightTheme.grayColor]
+    ]
+    base_colors = dark_colors
+    category_colors = (base_colors * int(math.ceil(len(categories) / len(base_colors))))[:len(categories)]
+    color_by_category = {categories[i]: category_colors[i] for i in range(0, len(categories))}
+
+    tags = []
+    full_tags = []
+    tag_colors = []
+
+    for row in tags_df.filter(pl.col('tag').is_not_null()).sort('full_tag').select('category', 'tag', 'full_tag').iter_rows():
+        tags.append(row[1])
+        full_tags.append(row[2])
+        tag_colors.append(color_by_category[row[0]])
+
+    st.dataframe(tags_df, column_config={
+                 'category': st.column_config.MultiselectColumn(None, options=categories, color=category_colors),
+                 'tag': st.column_config.MultiselectColumn(None, options=tags, color=tag_colors),
+                 'full_tag': st.column_config.MultiselectColumn(None, options=full_tags, color=tag_colors),
+                 })
 
 
 @st.cache_data
