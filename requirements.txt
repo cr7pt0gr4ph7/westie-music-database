@@ -3,3 +3,4 @@ streamlit
 polars==1.33.1
 psutil
 supabase
+wordcloud

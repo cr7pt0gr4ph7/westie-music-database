@@ -73,6 +73,7 @@ import polars.selectors as cs
 from utils.common.entities import PolarsLazyFrame
 from utils.common.filters import create_date_filter, create_text_filter, or_filter
 from utils.common.stats import count_n_unique
+from utils.playlist_classifiers import extract_tags_from_name
 from utils.tables import Playlist, PlaylistOwner, PlaylistTrack, Stats, Track, TrackAdjacent, TrackLyrics
 
 
@@ -1072,6 +1073,53 @@ class SearchEngine:
             .with_columns(pl.col(group_by).fill_null(pl.col(group_by + "_right")))\
             .select(pl.col(group_by).alias(group_header), 'song_count', 'playlist_count', 'dj_count', 'djs')\
             .sort(group_header)
+
+    def find_tags(
+        self,
+        *,
+        category_name: str = '',
+        tag_name: str = '',
+        min_playlist_count: int | None = None,
+        playlist_limit: int | None = None,
+        sort_by: Literal['playlist_count', 'tag', 'category', 'full_tag'] | None = None,
+        descending: bool | None = None,
+        limit: int | None = None,
+    ):
+        playlists_tokenized = self.data.playlists.select(
+            pl.col('playlist.id'),
+            pl.col('playlist.name'),
+            pl.col('playlist.name').pipe(extract_tags_from_name).alias('tags'),
+        )
+
+        exploded_playlists_by_tag = playlists_tokenized\
+            .explode('tags')\
+            .rename({'tags': 'tag'})
+
+        tags = exploded_playlists_by_tag\
+            .group_by('tag')\
+            .agg(pl.col('tag').count().alias('playlist_count'),
+                 pl.col('playlist.name').slice(0, playlist_limit))\
+            .select(pl.col('tag').str.split(':').list.get(0).alias('category'),
+                    pl.col('tag').str.split(':').list.get(1, null_on_oob=True).alias('tag'),
+                    pl.col('tag').alias('full_tag'),
+                    'playlist_count',
+                    'playlist.name')
+
+        if category_name:
+            tags = tags.filter(pl.col('category').contains_any(category_name.lower().strip().split(',')))
+
+        if tag_name:
+            tags = tags.filter(pl.col('full_tag').contains_any(tag_name.lower().strip().split(',')))
+
+        if min_playlist_count is not None:
+            tags = tags.filter(pl.col('playlist_count').ge(min_playlist_count))
+
+        if sort_by is not None:
+            descending = (descending if descending is not None else
+                          sort_by == 'playlist_count')
+            tags = tags.sort(sort_by, descending=descending)
+
+        return tags.slice(0, limit)
 
     def find_random_songs(
         self,

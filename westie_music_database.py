@@ -1,7 +1,7 @@
 from typing import Final
 import streamlit as st
-# import wordcloud
-# import matplotlib.pyplot as plt
+import wordcloud
+import matplotlib.pyplot as plt
 import polars as pl
 import polars.selectors as cs
 import psutil
@@ -596,6 +596,39 @@ if playlist_locator_toggle:
                      column_config={Playlist.url: st.column_config.LinkColumn()})
         st.session_state["processing"] = False
     st.markdown(f"#### ")
+
+
+@st.cache_data
+def tags_data():
+    return search_engine.find_tags(limit=1000, playlist_limit=20)\
+        .collect(engine='streaming')
+
+
+keyword_insights_toggle = st.toggle("Tag Insights 🏷️")
+
+if keyword_insights_toggle:
+    st.markdown(f"\n\n\n#### Common Tags for Playlists:")
+    st.text(f"Disclaimer: Insights are based on a manually defined list of tags and aliases, and may not be accurate or representative of reality.")
+
+    tags_df = tags_data()
+
+    if st.toggle("Show wordcloud"):
+        w = wordcloud.WordCloud(
+            width=1800, height=800,
+            background_color="white",
+            # stopwords=set(STOPWORDS),
+            min_font_size=10
+        ).generate_from_frequencies({
+            row[0]: float(row[1])
+            for row in tags_df.filter(pl.col('tag').is_not_null()).select('tag', 'playlist_count').iter_rows()
+        })
+
+        fig, ax = plt.subplots()
+        ax.imshow(w)
+        ax.axis('off')
+        st.pyplot(fig)
+
+    st.dataframe(tags_df)
 
 
 @st.cache_data
