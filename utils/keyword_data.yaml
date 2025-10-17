@@ -1,0 +1,304 @@
+keywords:
+  context:
+    # Competitions
+    - competition:
+        - comp
+        - competition
+        - comps
+        - contest # unrelated?
+        - final
+        - finals
+        - heat # "heat 1"
+        - invitational
+        - j&j
+        - jill
+        - jnj
+        - prelim
+        - prelims
+        - semis
+        - spotlight
+        - spotlights
+        - strictly
+    # Classes
+    - class:
+        - bootcamp:
+            - bootcamp
+        - class
+        - classes
+        - cours
+        - course
+        - group # "group class"
+        - group class
+        - kurs
+        - l1
+        - l2
+        - l3
+        - learn # imprecise
+        - lesson
+        - lessons
+        - private:
+            - private
+            - privates
+        - teach # imprecise
+        - teaching # imprecise
+        - unterricht
+        - workshop:
+            - intensive:
+                - intensive
+            - workshop
+            - workshops
+            - ws
+
+    # Routines
+    - routine:
+        - proam
+        - rising
+        - rising star
+        - routine
+        - routines
+        - showcase
+
+    # Shows
+    - show:
+        - demo
+        - show
+
+    # Warmup
+    - warm up:
+        - warmup
+        - warmups
+        - warm up
+        - warm-up
+
+    # Parties
+    - party:
+        - open air
+        - air # "open air"
+        - nights  # "social nights"
+        - outdoor
+        - party
+        - practica
+        - practice
+        - practise
+        - praktis
+        - pratique
+        - social
+        - socialdans
+        - socials
+        - soiree
+        - soirée
+        - sosialdans
+        - stuggi
+
+    # Training?
+    - training:
+        - training
+        - träning
+        - treino
+
+    # WCS Rally / Flashmob
+    - flashmob:
+        - flashmob
+        - rally
+
+    # Further investigation needed
+    - choreo: choreo
+    - weekly: weekly
+
+    # Party phases
+    - phase:
+        - background
+        - bumper
+        - ceremony
+        - dinner
+        - opening
+        - main
+        - closing:
+            - closing
+            - fin
+
+    # Various
+    - bal: bal
+    - camp: camp
+    - pre-class: pre-class
+    - session: session
+  level:
+    # These can mean competition or difficulity levels
+    - all-star:
+      - all-star
+      - all star
+    - advanced:
+        - adv
+        - advanced
+    - beginners:
+        - beg
+        - beginner
+        - beginners
+        - friendly
+        - débutant
+    - champions:
+        - champs
+        - champions
+    - intermediate:
+        - int
+        - inter
+        - intermediate
+    - master
+    - newbies
+    - newcomer
+    - novice:
+        ### "nov" # imprecise: can mean both "novice" and "november"
+        - novice
+
+    # Difficulty levels
+    - easy
+    - hard
+    - pro
+    - difficult
+  genre:
+      # The following genres seem to lead to precise matches
+    - blues
+    - bluesy
+    - country
+    - funk
+    - hip hop:
+        - hip
+        - hop
+        - hip hop
+        - hiphop
+        - hip-hop
+    - folk
+    - motown
+    - punk
+    - rap
+    - r&b:
+      - rnb
+      - r&b
+    - rock  # "soft rock", "alternative rock", "pop rock",
+    - soul
+
+      # The following genres may require more detailed examination,
+      # and may need further information to identify WCS playlists
+    - kpop:
+      - kpop
+      - k-pop
+    - musicals
+    - jazz
+    - pop
+    - trance
+    - old  # imprecise # old school
+    - old school
+
+    # Review these
+    - indie
+    - soundtrack
+    - soundtrack)
+    - lyrics
+
+    # These aren't exactly music genres, but have a very
+    # similar meaning in the context of West Coast Swing
+    - acoustic
+    - cover
+    - covers
+    - funky
+    - guitar
+    - instrumental
+    - late night:
+        - late
+        - night
+        - nite
+        - late night
+        - late nite
+        - latenight
+    - piano
+
+    # These are qualifiers
+    - fast
+    - faster
+    - slow
+    - slower
+    - medium  # "medium fast", # imprecise
+
+      # The following terms probably need further investigation.
+      # Some of them seem to define "musical feels".
+    - fusion  # imprecise
+    - groovy  # -"groovy tuesdays"?
+    - smooth
+    - triple
+    - step  # "step step"
+    - walk
+  epoch:
+    # These classifications are based on time frames instead of genres
+    - 70s:
+      - 70s
+      - 70's
+    - 80s:
+      - 80s
+      - 80's,
+    - 90s:
+      - 90s
+      - 90's
+    - 2000s: 2000s
+    # ----------------
+    - contemporary:
+      - contemp
+      - contemporary # slow contemorary
+    - modern: modern # imprecise
+    # "now",  # imprecise
+    # ----------------
+    - classics: classics
+    - nostalgia: nostalgia
+    - oldies: oldies
+    - retro: retro
+    - throwback:
+      - throwback
+      - throwbacks
+    # ----------------
+    - hit:
+      - hit
+      - hits
+      - bangers
+      - popular
+  mood:
+    # These aren't musical genres but moods
+    - calm
+    - chill
+    - happy
+    - high "energy", "high energy",
+    - rage
+    - relax "relaxing",
+    - sad
+    - sexy
+    # "warm", # -"warm up" # imprecise without further filtering
+
+    # Need further investigation
+    - good
+    - vibes
+    - good vibes
+    - good
+    - morning
+    - good morning
+    - gute
+    - nice
+    - power
+
+    # Also need more investigation
+    - beautiful
+    - chillout
+    - emotional
+    - feeling
+    - guilty
+    - hype
+    - lucky
+    - mellow
+    - moody
+    - romantic
+    - sensual
+
+    # More stuff
+    - soft
+    - dark # ?
+
+    # mood or rhythm
+    - downbeat
+    - upbeat
