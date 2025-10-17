@@ -12,6 +12,7 @@ import time
 
 from utils.common.columns import pull_columns_to_front
 from utils.common.logging import log_query
+from utils.keyword_data import load_keyword_colors
 from utils.pull_data import automatically_pull_data_if_needed
 from utils.search import SearchEngine
 from utils.tables import Playlist, PlaylistOwner, PlaylistTrack, Stats, Track, TrackAdjacent, TrackLyrics
@@ -671,9 +672,21 @@ if keyword_insights_toggle:
         "#a3a8b8",  # (8) Gray [lightTheme.grayColor]
     ]
     base_colors = dark_colors
+
+    # Cycle through the a predefined list of colors by default
     category_colors = (base_colors * int(math.ceil(len(categories) / len(base_colors))))[:len(categories)]
+
+    # Allow overriding the color for specific categories
+    customized_category_colors = load_keyword_colors()
+    for i in range(0, len(categories)):
+        category = categories[i]
+        if category in customized_category_colors:
+            category_colors[i] = customized_category_colors[category]
+
+    # Create a mapping from category name => color
     color_by_category = {categories[i]: category_colors[i] for i in range(0, len(categories))}
 
+    # Assign colors to tags based on their category
     tags = []
     full_tags = []
     tag_colors = []

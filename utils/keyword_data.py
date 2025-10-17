@@ -67,6 +67,7 @@ def _traverse_entry(entry: _KeywordEntry, category: str, tags: set[str], result:
 
 
 class _KeywordsFile(TypedDict):
+    colors: dict[str, str]
     keywords: dict[str, list[_KeywordEntry]]
 
 
@@ -81,3 +82,11 @@ def load_keyword_aliases(category_as_tag: bool = False):
             _traverse_entry(entry, category, [category] if category_as_tag else [], _aliases, True)
 
     return {k: list(_aliases[k]) for k in _aliases}
+
+
+def load_keyword_colors():
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    with open(f'{dir_path}/keyword_data.yaml') as stream:
+        raw_data: _KeywordsFile = yaml.safe_load(stream)
+
+    return raw_data['colors']

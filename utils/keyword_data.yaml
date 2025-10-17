@@ -1,3 +1,10 @@
+colors:
+  context: "#ffa421" # Orange [lightTheme.orangeColor]
+  level: "#0068c9" # Dark Blue [blue80]
+  genre: "#803df5" # Violet [lightTheme.violetColor]
+  epoch: "#00c0f2" # Turqouise
+  mood: "#29b09d" # Blue-Green [blueGreen80]
+  topic: "#ffabab" # Light Red [red40]
 keywords:
   dance:
     # West Coast Swing
