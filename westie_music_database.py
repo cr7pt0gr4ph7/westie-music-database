@@ -1,4 +1,6 @@
+from threading import RLock
 from typing import Final
+
 import streamlit as st
 import wordcloud
 import matplotlib.pyplot as plt
@@ -12,6 +14,11 @@ from utils.common.logging import log_query
 from utils.pull_data import automatically_pull_data_if_needed
 from utils.search import SearchEngine
 from utils.tables import Playlist, PlaylistOwner, PlaylistTrack, Stats, Track, TrackAdjacent, TrackLyrics
+
+# As mentioned in the streamlit docs pyplot doesn't work well with threads,
+# so use a lock to protect it (as recommeded by the streamlit documentation)
+# See: https://docs.streamlit.io/develop/api-reference/charts/st.pyplot
+_lock = RLock()
 
 # avail_threads = pl.threadpool_size()
 pl.Config.set_tbl_rows(100).set_fmt_str_lengths(100)
@@ -623,10 +630,14 @@ if keyword_insights_toggle:
             for row in tags_df.filter(pl.col('tag').is_not_null()).select('tag', 'playlist_count').iter_rows()
         })
 
-        fig, ax = plt.subplots()
-        ax.imshow(w)
-        ax.axis('off')
-        st.pyplot(fig)
+        # As mentioned in the streamlit docs pyplot doesn't work well with threads,
+        # so use a lock to protect it (as recommeded by the streamlit documentation)
+        # See: https://docs.streamlit.io/develop/api-reference/charts/st.pyplot
+        with _lock:
+            fig, ax = plt.subplots()
+            ax.imshow(w)
+            ax.axis('off')
+            st.pyplot(fig)
 
     st.dataframe(tags_df)
 
