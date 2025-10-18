@@ -1,5 +1,5 @@
 """Utility classes for creating table definitions that provide column names in a self-documenting manner."""
-from typing import LiteralString#
+from typing import LiteralString
 
 import polars as pl
 import polars.selectors as cs
@@ -44,6 +44,15 @@ class Field[FieldName: LiteralString, FieldType: pl.DataType](str):
 
     def cast[NewType: pl.DataType](self, new_type: NewType | type[NewType]) -> 'Field[FieldName, NewType]':
         return Field(self.field_name, new_type)
+
+    def list(self) -> 'Field[FieldName, pl.List]':
+        return Field(self.field_name, pl.List(self.field_type))
+
+    def __call__(self) -> pl.Expr:
+        return pl.col(self.field_name)
+
+    def as_expr(self) -> pl.Expr:
+        return pl.col(self.field_name)
 
 
 def field[FieldName: LiteralString, FieldType: pl.DataType](
