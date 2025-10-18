@@ -30,7 +30,7 @@ from utils.search import (
     UNPROCESSED_TRACK_BPM_DATA_FILE,
     UNPROCESSED_TRACK_LYRICS_DATA_FILE,
 )
-from utils.tables import Playlist, PlaylistOwner, PlaylistTrack, Stats, Track, TrackAdjacent, TrackLyrics
+from utils.tables import Playlist, PlaylistOwner, PlaylistTags, PlaylistTrack, Stats, Tag, Track, TrackAdjacent, TrackLyrics, TrackTag, TrackTags
 
 # Temporary files are also stored in processed_data/
 TEMP_DATA_DIR: Final = DATA_DIR
@@ -687,53 +687,58 @@ def process_playlist_and_song_tags():
     playlist_tracks = scan_parquet_file(PLAYLIST_TRACKS_DATA_FILE)
     tracks = scan_parquet_file(TRACK_DATA_FILE)
 
+    playlists_per_tag_limit: Final = 20
+    TAG: Final = 'tag'
+
     playlists_tokenized = playlists.select(
-        pl.col('playlist.id'),
-        pl.col('playlist.name'),
-        pl.col('playlist.name').pipe(extract_tags_from_name).alias('tags'),
+        pl.col(Playlist.id),
+        pl.col(Playlist.name),
+        pl.col(Playlist.name).pipe(extract_tags_from_name).alias(PlaylistTags.tags),
     )
 
     exploded_playlists_by_tag = playlists_tokenized\
-        .explode('tags')\
-        .rename({'tags': 'tag'})
+        .explode(PlaylistTags.tags)\
+        .rename({PlaylistTags.tags: TAG})
 
     tags = exploded_playlists_by_tag\
-        .group_by('tag')\
-        .agg(pl.col('tag').count().alias('playlist_count'),
-             pl.col('playlist.name').head(20))\
-        .select(pl.col('tag').str.split(':').list.get(0).alias('category'),
-                pl.col('tag').str.split(':').list.get(1, null_on_oob=True).alias('tag'),
-                pl.col('tag').alias('full_tag'),
-                'playlist_count',
-                'playlist.name')\
-        .sort('playlist_count', descending=True)
+        .group_by(TAG)\
+        .agg(pl.col(TAG).count().alias(Tag.playlist_count),
+             pl.col(Playlist.name).head(playlists_per_tag_limit).alias(Tag.playlist_names))\
+        .select(pl.col(TAG).str.split(':').list.get(0).alias(Tag.category),
+                pl.col(TAG).str.split(':').list.get(1, null_on_oob=True).alias(Tag.short_name),
+                pl.col(TAG).alias(Tag.name),
+                Tag.playlist_count,
+                Tag.playlist_names)\
+        .sort(Tag.playlist_count, descending=True)
 
     write_to_parquet_file(tags, TAGS_DATA_FILE)
 
     track_tags = playlist_tracks\
-        .join(exploded_playlists_by_tag.filter(pl.col('tag').is_not_null()),
-              how='inner', on='playlist.id')\
-        .group_by('track.id', 'tag')\
-        .agg(pl.col('tag').count().alias('playlist_count'))
+        .join(exploded_playlists_by_tag.rename({TAG: Tag.name})
+              .filter(pl.col(Tag.name).is_not_null()),
+              how='inner', on=Playlist.id)\
+        .group_by(Track.id, Tag.name)\
+        .agg(pl.col(Tag.name).count().alias(TrackTag.playlist_count))
 
     with TempFileTracker() as temp_files:
         temp_file = temp_files.register_for_deletion(TEMP_DATA_DIR + 'temp_track_tags.parquet')
         write_to_parquet_file(track_tags, temp_file)
         track_tags = scan_parquet_file(temp_file)
 
-        temp_file = TEMP_DATA_DIR + 'temp_track_tags_by_track_id.parquet'
-        track_tags_by_track_id = track_tags.sort('track.id')
+        temp_file = temp_files.register_for_deletion(TEMP_DATA_DIR + 'temp_track_tags_by_track_id.parquet')
+        track_tags_by_track_id = track_tags.sort(Track.id)
         write_to_parquet_file(track_tags_by_track_id, temp_file)
         track_tags_by_track_id = scan_parquet_file(temp_file)
 
         def process_track_tags_batch(tracks_batch: pl.LazyFrame) -> pl.LazyFrame:
             return track_tags_by_track_id\
-                .join(tracks_batch, how='semi', on='track.id')\
-                .group_by('track.id')\
-                .agg(pl.col('tag').sort_by('playlist_count', descending=True).head(20),
-                    pl.col('playlist_count').sort(descending=True).head(20).alias('playlist_counts'),
-                    pl.col('playlist_count').sort(descending=True).head(20).sum())\
-                .join(tracks_batch.select('track.id', 'track.name', 'track.artists'), how='inner', on='track.id')
+                .join(tracks_batch, how='semi', on=Track.id)\
+                .group_by(Track.id)\
+                .agg(pl.col(Tag.name).sort_by(Stats.playlist_count, descending=True).head(20),
+                     pl.col(Stats.playlist_count).sort(descending=True).head(
+                         20).alias(TrackTags.playlist_counts_per_tag),
+                     pl.col(Stats.playlist_count).sort(descending=True).head(20).sum().alias(TrackTags.tag_relations_count))\
+                .join(tracks_batch.select(Track.id, Track.name, Track.artists), how='inner', on=Track.id)
 
         def temp_file_for_index(index: int) -> str:
             return TEMP_DATA_DIR + f'temp_tag_batch_{index}.parquet'

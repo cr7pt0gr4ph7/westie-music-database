@@ -74,7 +74,7 @@ from utils.common.entities import PolarsLazyFrame
 from utils.common.filters import create_date_filter, create_text_filter, or_filter
 from utils.common.stats import count_n_unique
 from utils.playlist_classifiers import extract_tags_from_name
-from utils.tables import Playlist, PlaylistOwner, PlaylistTrack, Stats, Track, TrackAdjacent, TrackLyrics
+from utils.tables import Playlist, PlaylistOwner, PlaylistTags, PlaylistTrack, Stats, Tag, Track, TrackAdjacent, TrackLyrics
 
 
 ####################
@@ -1088,38 +1088,40 @@ class SearchEngine:
         descending: bool | None = None,
         limit: int | None = None,
     ):
+        TAG = 'tag'
+
         playlists_tokenized = self.data.playlists.select(
-            pl.col('playlist.id'),
-            pl.col('playlist.name'),
-            pl.col('playlist.name').pipe(extract_tags_from_name).alias('tags'),
+            pl.col(Playlist.id),
+            pl.col(Playlist.name),
+            pl.col(Playlist.name).pipe(extract_tags_from_name).alias(PlaylistTags.tags),
         )
 
         exploded_playlists_by_tag = playlists_tokenized\
-            .explode('tags')\
-            .rename({'tags': 'tag'})
+            .explode(PlaylistTags.tags)\
+            .rename({PlaylistTags.tags: TAG})
 
         tags = exploded_playlists_by_tag\
-            .group_by('tag')\
-            .agg(pl.col('tag').count().alias('playlist_count'),
-                 pl.col('playlist.name').slice(0, playlist_limit))\
-            .select(pl.col('tag').str.split(':').list.get(0).alias('category'),
-                    pl.col('tag').str.split(':').list.get(1, null_on_oob=True).alias('tag'),
-                    pl.col('tag').alias('full_tag'),
-                    'playlist_count',
-                    'playlist.name')
+            .group_by(TAG)\
+            .agg(pl.col(TAG).count().alias(Tag.playlist_count),
+                 pl.col(Playlist.name).slice(0, playlist_limit).alias(Tag.playlist_names))\
+            .select(pl.col(TAG).str.split(':').list.get(0).alias(Tag.category),
+                    pl.col(TAG).str.split(':').list.get(1, null_on_oob=True).alias(Tag.short_name),
+                    pl.col(TAG).alias(Tag.name),
+                    Tag.playlist_count,
+                    Tag.playlist_names)
 
         if category_name:
-            tags = tags.filter(pl.col('category').contains_any(category_name.lower().strip().split(',')))
+            tags = tags.filter(Tag.category().str.contains_any(category_name.lower().strip().split(',')))
 
         if tag_name:
-            tags = tags.filter(pl.col('full_tag').contains_any(tag_name.lower().strip().split(',')))
+            tags = tags.filter(Tag.name().str.contains_any(tag_name.lower().strip().split(',')))
 
         if min_playlist_count is not None:
-            tags = tags.filter(pl.col('playlist_count').ge(min_playlist_count))
+            tags = tags.filter(Tag.playlist_count().ge(min_playlist_count))
 
         if sort_by is not None:
             descending = (descending if descending is not None else
-                          sort_by == 'playlist_count')
+                          sort_by == Tag.playlist_count)
             tags = tags.sort(sort_by, descending=descending)
 
         return tags.slice(0, limit)

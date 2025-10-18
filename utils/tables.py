@@ -223,3 +223,69 @@ class TrackLyrics(Entity):
 
     matched_lyrics_count: Final = field("matched_lyrics_count", pl.UInt32)
     """The number of unique terms in the lyrics that match the search query."""
+
+
+class Tag(Entity):
+    """Represents an individual tag that can be applied to playlists and songs."""
+
+    short_name: Final = field("tag", pl.String)
+    """The name of the tag (without the category)."""
+
+    category: Final = field("category", pl.String)
+    """The category of the tag."""
+
+    name: Final = field("full_tag", pl.String)
+    """The full name of the tag (`i.e. `category:tag`)."""
+
+    playlist_count: Final = Stats.playlist_count.alias("tag.playlist_count")
+    """How many playlists have this tag."""
+
+    playlist_names: Final = Playlist.name.list()
+    """The names of some (but not all) playlists that have this tag."""
+
+    song_count = Stats.song_count
+    """How many songs have this tag."""
+
+class TrackTag(Entity):
+    """Represents the association between a single tag and a single track."""
+
+    matching_playlist_count: Final = Stats.playlist_count.alias("matching_playlist_count")
+    """How many playlists with the tag contain the track."""
+
+    tag: Final = Tag.name
+    """The name of the tag."""
+
+    class Tag(SubEntity[Tag]):
+        name: Final = Tag.name
+        playlist_count: Final = Stats.playlist_count.alias("tag.playlist_count")
+        playlist_percent: Final = field("tag.playlist_percent", pl.Float32)
+
+    class Track(SubEntity[Track]):
+        id: Final = Track.id
+        name: Final = Track.name
+        artists: Final = Track.artists
+        playlist_count: Final = Stats.playlist_count.alias("track.playlist_count")
+        playlist_percent: Final = field("track.playlist_percent", pl.Float32)
+
+
+class TrackTags(Entity):
+    """Represents the tags of a song."""
+
+    tags: Final = Tag.name.list().alias("tags")
+    """The list of tags of the song."""
+
+    playlist_counts_per_tag: Final = field("playlist_counts_per_tag", pl.List(pl.UInt32))
+    """How often each tag is associated with this song. Has same length and order as `tags`."""
+
+    tag_relations_count: Final = field("tag_relations_count", pl.UInt32)
+    """The total number of `(Track=this_track, Tag, Playlist)` tuples. Same as `sum(playlist_counts_per_tag)`."""
+
+
+class PlaylistTags(Entity):
+    """Represents the tags of a playlist."""
+
+    id: Final = Playlist.id
+    """The Spotify ID of the playlist."""
+
+    tags: Final = Tag.name.list().alias("tags")
+    """The list of tags of the playlist."""
