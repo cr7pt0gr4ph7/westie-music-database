@@ -1084,7 +1084,7 @@ class SearchEngine:
         tag_name: str = '',
         min_playlist_count: int | None = None,
         playlist_limit: int | None = None,
-        sort_by: Literal['playlist_count', 'tag', 'category', 'full_tag'] | None = None,
+        sort_by: Tag.SortFields | None = None,
         descending: bool | None = None,
         limit: int | None = None,
     ):
