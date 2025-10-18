@@ -691,16 +691,16 @@ if keyword_insights_toggle:
     full_tags = []
     tag_colors = []
 
-    for row in tags_df.filter(pl.col('tag').is_not_null()).sort('full_tag').select('category', 'tag', 'full_tag').iter_rows():
+    for row in (tags_df.filter(pl.col(Tag.short_name).is_not_null()).sort(Tag.name)
+                .select(Tag.category, Tag.short_name, Tag.name).iter_rows()):
         tags.append(row[1])
         full_tags.append(row[2])
         tag_colors.append(color_by_category[row[0]])
 
     st.dataframe(tags_df, column_config={
-                 'category': st.column_config.MultiselectColumn(None, options=categories, color=category_colors),
-                 'tag': st.column_config.MultiselectColumn(None, options=tags, color=tag_colors),
-                 'full_tag': st.column_config.MultiselectColumn(None, options=full_tags, color=tag_colors),
-                 })
+                 Tag.category: st.column_config.MultiselectColumn(None, options=categories, color=category_colors),
+                 Tag.short_name: st.column_config.MultiselectColumn(None, options=tags, color=tag_colors),
+                 Tag.name: st.column_config.MultiselectColumn(None, options=full_tags, color=tag_colors)})
 
 
 @st.cache_data
