@@ -8,16 +8,16 @@ from utils.keyword_data import load_keyword_aliases
 # Keywords / Tags #
 ###################
 
-def extract_tags_from_name(expr: pl.Expr) -> pl.Expr:
-    """"Extract a list of tags from the given playlist name."""
-    def create_regex_for_term(term: str) -> str:
-        escaped_term = pl.escape_regex(term)
-        # Ignore additional whitespaces (e.g. "a b" should also match "a  b")
-        escaped_term = escaped_term.replace(' ', ' +')
-        return f'\\b{escaped_term}\\b'
 
-    alias_to_tags = load_keyword_aliases()
-    all_keywords_alts = '|'.join([create_regex_for_term(term) for term in alias_to_tags])
+def _create_regex_for_term(term: str) -> str:
+    escaped_term = pl.escape_regex(term)
+    # Ignore additional whitespaces (e.g. "a b" should also match "a  b")
+    escaped_term = escaped_term.replace(' ', ' +')
+    return f'\\b{escaped_term}\\b'
+
+
+def _extract_tags(expr: pl.Expr, tags_to_extract: dict[str, list[str]]) -> pl.Expr:
+    all_keywords_alts = '|'.join([_create_regex_for_term(term) for term in tags_to_extract])
     all_keywords_regex = f'(?i)({all_keywords_alts})'
 
     # Use regexes to extract the keywords, then match the
@@ -27,12 +27,24 @@ def extract_tags_from_name(expr: pl.Expr) -> pl.Expr:
         .str.extract_all(all_keywords_regex)\
         .list.eval(pl.element()
                    .str.to_lowercase()
-                   .replace_strict(alias_to_tags,
+                   .replace_strict(tags_to_extract,
                                    default=pl.lit([], dtype=pl.List(pl.String)),
                                    return_dtype=pl.List(pl.String))
-                   .explode())\
+                   .explode())
+
+
+def extract_tags_from_name(expr: pl.Expr) -> pl.Expr:
+    """"Extract a list of tags from the given playlist name."""
+    alias_to_tags, negated_alias_to_tags = load_keyword_aliases()
+
+    tags_to_include: pl.Expr = _extract_tags(expr, alias_to_tags)
+    tags_to_exclude: pl.Expr = _extract_tags(expr, negated_alias_to_tags)
+
+    return tags_to_include\
+        .list.set_difference(tags_to_exclude)\
         .list.unique()\
         .list.sort()
+
 
 ###########################################################
 # Patterns for detecting calendar dates in playlist names #
@@ -64,6 +76,7 @@ pattern_yy_mm = r'\b\d{2}[-/. ](?:0[1-9]|1[0-2])\b'
 pattern_mm_dd = r'\b(?:0[1-9]|1[0-2])[-/. ](?:0[1-9]|[12]\d|3[01])\b'
 
 pattern_month_year_or_reversed = r"\b(?:(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]* \d{4}|\d{4} (?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*)\b"
+
 
 def extract_dates_from_name(playlist_name: pl.Expr, *, sort: bool = False):
     """"Extract a list of calendar dates from the given playlist name."""
@@ -100,11 +113,13 @@ def extract_dates_from_name(playlist_name: pl.Expr, *, sort: bool = False):
 # Patterns for detecting BPM ranges in playlist names #
 #######################################################
 
-pattern_bpm_range = r'(\d{2,3})\s*[-–]\s*(\d{2,3})\s*(?:bpm|BPM)?' # 70 – 79bpm
+
+pattern_bpm_range = r'(\d{2,3})\s*[-–]\s*(\d{2,3})\s*(?:bpm|BPM)?'  # 70 – 79bpm
 pattern_bpm_appx = r'[~≈]\s*(\d{2,3})\s*(?:bpm|BPM)?'  # ~100bpm
 pattern_bpm_relational = r'[<>]=?\s*(\d{2,3})\s*(?:bpm|BPM)?'  # >120 BPM
 pattern_bpm_mention = r'(?:bpm|BPM)[^\d]{0,5}(\d{2,3})'  # bpm 105
 pattern_bpm_loose_fallback = r'\b(\d{2,3})\s*(?:bpm|BPM)\b'  # 117 BPM”
+
 
 def extract_bpm_from_name(playlist_name: pl.Expr):
     """"Extract a list of possible BPM specifications from the given playlist name."""
