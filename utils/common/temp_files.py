@@ -34,7 +34,10 @@ class TempFileTracker(object):
 
         print(f"Deleting {len(self.temp_files)} temporary files...")
         for file_name in self.temp_files:
-            os.remove(file_name)
+            try:
+                os.remove(file_name)
+            except FileNotFoundError as e:
+                print(f"Ignoring {e}")
 
         self.temp_files.clear()
 
