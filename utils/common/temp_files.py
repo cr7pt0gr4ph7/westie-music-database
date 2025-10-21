@@ -1,5 +1,5 @@
 import os
-from typing import LiteralString, overload
+from typing import Callable, Concatenate, LiteralString, ParamSpec, overload
 
 
 class TempFileTracker(object):
@@ -49,3 +49,27 @@ class TempFileTracker(object):
             pass
 
         self.delete_now()
+
+@overload
+def with_temp_files[**P, R](f: Callable[Concatenate[TempFileTracker, P], R]):
+    pass
+
+@overload
+def with_temp_files[**P, R](f: None = None, /, *, delete_on_error: bool = True) -> Callable[[Callable[Concatenate[TempFileTracker, P], R]], Callable[P, R]]:
+    pass
+
+def with_temp_files[**P, R](f: None | Callable[Concatenate[TempFileTracker, P], R] = None, /, *, delete_on_error: bool = True):
+    def wrap(f: Callable[Concatenate[TempFileTracker, P], R]):
+        def inner(*args: P.args, **kwargs: P.kwargs) -> R:
+            with TempFileTracker(delete_on_error=delete_on_error) as temp_files:
+                return f(temp_files, *args, **kwargs)
+
+        return inner
+
+    # See if we're being called as @with_temp_files or @with_temp_files().
+    if f is None:
+        # We're called with parens.
+        return wrap
+
+    # We're called as @dataclass without parens.
+    return wrap(f)
