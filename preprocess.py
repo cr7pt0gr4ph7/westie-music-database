@@ -150,7 +150,7 @@ def process_playlist_and_song_data(*, prepare_deduplication: bool = False):
     bpm_data = scan_parquet_file('processed_data/data_song_bpm.parquet')
 
     def null_if_empty(expr: pl.Expr) -> pl.Expr:
-        return pl.when(expr.eq('')).then(pl.lit(None)).otherwise(expr)
+        return pl.when(expr.ne('')).then(expr).otherwise(pl.lit(None))
 
     playlists = source_data.select(
         pl.col('playlist_id').cast(PLAYLIST_ID_DTYPE).alias(Playlist.id),
