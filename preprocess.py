@@ -13,6 +13,7 @@ from utils.search import (
     DATA_DIR,
     PLAYLIST_DATA_FILE,
     PLAYLIST_ORIGINAL_DATA_FILE,
+    PLAYLIST_TAGS_DATA_FILE,
     PLAYLIST_TRACKS_DATA_FILE,
     PLAYLIST_TRACKS_ORIGINAL_DATA_FILE,
     REGION_DATA_FILE,
@@ -53,16 +54,21 @@ OWNER_NAME_DTYPE = pl.String
 # are invoked in the correct order.
 opened_files: set[str] = set()
 written_files: set[str] = set()
+renamed_files: set[str] = set()
 
 
 def reset_file_tracker():
     opened_files.clear()
     written_files.clear()
+    renamed_files.clear()
 
 
-def write_to_file(data: pl.LazyFrame | pl.DataFrame, file_name: str, format: Literal['parquet', 'csv']):
-    print(f'Writing {file_name}...')
+def check_pre_read(file_name: str, *, track_file: bool):
+    if track_file:
+        opened_files.add(file_name)
 
+
+def check_pre_write(file_name: str, *, track_file: bool):
     if file_name in opened_files:
         print(f'WARNING: {file_name} has already been read during this session.'
               + ' This should not have happened, and likely indicates an implementation error.')
@@ -71,7 +77,29 @@ def write_to_file(data: pl.LazyFrame | pl.DataFrame, file_name: str, format: Lit
         print(f'WARNING: {file_name} has already been written to during this session.'
               + ' This should not have happened, and likely indicates an implementation error.')
 
-    written_files.add(file_name)
+    if track_file:
+        renamed_files.remove(file_name) if file_name in renamed_files else None
+        written_files.add(file_name)
+
+
+def check_pre_rename(src: str, dst: str, *, track_file: bool):
+    check_pre_read(src, track_file=track_file)
+    check_pre_write(dst, track_file=track_file)
+
+    if track_file:
+        renamed_files.add(src)
+        written_files.remove(src) if src in written_files else None
+
+
+def rename_file(src: str, dst: str):
+    print("Renaming {src} to {dst}...")
+    check_pre_rename(src, dst, track_file=True)
+    os.rename(src, dst)
+
+
+def write_to_file(data: pl.LazyFrame | pl.DataFrame, file_name: str, format: Literal['parquet', 'csv']):
+    print(f'Writing {file_name}...')
+    check_pre_write(file_name, track_file=True)
 
     print(f'- SCHEMA: {data.collect_schema()}')
 
@@ -99,6 +127,7 @@ def scan_file(file_name: str, format: Literal['parquet', 'csv']) -> pl.LazyFrame
     else:
         print(f'<< Reading {file_name}...')
 
+    check_pre_read(file_name, track_file=True)
     return pl.scan_parquet(file_name)
 
 
@@ -696,6 +725,8 @@ def process_playlist_and_song_tags():
         pl.col(Playlist.name).pipe(extract_tags_from_name).alias(PlaylistTags.tags),
     )
 
+    write_to_parquet_file(playlists_tokenized, PLAYLIST_TAGS_DATA_FILE)
+
     exploded_playlists_by_tag = playlists_tokenized\
         .explode(PlaylistTags.tags)\
         .rename({PlaylistTags.tags: TAG})
@@ -772,6 +803,36 @@ def process_playlist_and_song_tags():
         process_track_tags_in_batches()
 
 
+def merge_playlist_tags_into_metadata():
+    UNTAGGED_PLAYLISTS_DATA_FILE = TEMP_DATA_DIR + 'data_playlist_metadata.untagged.parquet'
+    rename_file(PLAYLIST_DATA_FILE, UNTAGGED_PLAYLISTS_DATA_FILE)
+
+    playlists = scan_parquet_file(UNTAGGED_PLAYLISTS_DATA_FILE)
+    playlist_tags = scan_parquet_file(PLAYLIST_TAGS_DATA_FILE)
+    playlists_with_tags = playlists\
+        .join(playlist_tags.select(Playlist.id, PlaylistTags.tags), how='left', on=Playlist.id)\
+        .sort(Playlist.id)
+
+    write_to_parquet_file(playlists_with_tags, PLAYLIST_DATA_FILE)
+
+
+def merge_song_tags_into_metadata():
+    UNTAGGED_TRACKS_DATA_FILE = TEMP_DATA_DIR + 'data_song_metadata.untagged.parquet'
+    rename_file(TRACK_DATA_FILE, UNTAGGED_TRACKS_DATA_FILE)
+
+    tracks = scan_parquet_file(UNTAGGED_TRACKS_DATA_FILE)
+    track_tags = scan_parquet_file(TRACK_TAGS_DATA_FILE)
+    tracks_with_tags = tracks\
+        .join(track_tags.select(Track.id,
+                                TrackTags.tags,
+                                TrackTags.playlist_counts_per_tag,
+                                TrackTags.tag_relations_count),
+              how='left', on=Track.id)\
+        .sort(Track.id)
+
+    write_to_parquet_file(tracks_with_tags, TRACK_DATA_FILE)
+
+
 def process_everything(merge_duplicates: bool = True):
     """Runs all pre-processing in sequence."""
     # Reset the internal file tracker (only used for debugging)
@@ -801,6 +862,8 @@ def process_everything(merge_duplicates: bool = True):
 
     # Extract tags from playlist titles and assign to songs
     process_playlist_and_song_tags()
+    merge_playlist_tags_into_metadata()
+    merge_song_tags_into_metadata()
 
     print("Done.")
 
