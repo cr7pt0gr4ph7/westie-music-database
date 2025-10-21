@@ -149,18 +149,66 @@ def process_playlist_and_song_data(*, prepare_deduplication: bool = False):
     source_data = scan_parquet_file('processed_data/data_playlists.parquet')
     bpm_data = scan_parquet_file('processed_data/data_song_bpm.parquet')
 
+    LOCATION: Final = 'location'
+    REGION: Final = 'region'
+    COUNTRY: Final = 'country'
+
     def null_if_empty(expr: pl.Expr) -> pl.Expr:
         return pl.when(expr.ne('')).then(expr).otherwise(pl.lit(None))
 
-    playlists = source_data.select(
-        pl.col('playlist_id').cast(PLAYLIST_ID_DTYPE).alias(Playlist.id),
-        pl.col('name').alias(Playlist.name),
-        pl.col(PlaylistOwner.id).cast(OWNER_ID_DTYPE),
-        pl.col('owner.display_name').cast(OWNER_NAME_DTYPE).alias(PlaylistOwner.name),
-        # Only required for extended data below
-        pl.col('location').pipe(null_if_empty).alias('playlist.location'),
-    ).unique(Playlist.id).sort(Playlist.id)
+    print(source_data.schema)
+    # Rename columns for consistency
+    typed_source_data = source_data.rename({
+        'playlist_id': Playlist.id,
+        'name': Playlist.name,
+        'owner.display_name': PlaylistOwner.name,
+        'song_number': PlaylistTrack.number,
+        'added_at': PlaylistTrack.added_at,
 
+    }).select(
+        # Playlist columns
+        pl.col('playlist.id').pipe(null_if_empty).cast(PLAYLIST_ID_DTYPE),
+        pl.col(Playlist.name),
+        pl.col(PlaylistOwner.id).pipe(null_if_empty).cast(OWNER_ID_DTYPE),
+        pl.col(PlaylistOwner.name).pipe(null_if_empty).cast(OWNER_NAME_DTYPE),
+
+        # Track columns
+        pl.col(Track.id).cast(TRACK_ID_DTYPE),
+        pl.col(Track.name).cast(TRACK_NAME_DTYPE),
+        pl.col(Track.artist_names).cast(TRACK_ARTIST_DTYPE),
+        pl.col(Track.release_date).cast(pl.Date),
+
+        # PlaylistTrack columns
+        pl.col(PlaylistTrack.number).cast(pl.UInt16),
+        pl.col(PlaylistTrack.added_at).cast(pl.Date),
+
+        # Location columns
+        pl.col(LOCATION).pipe(null_if_empty),
+        pl.col(LOCATION).str.split(' - ')
+          .list.get(0, null_on_oob=True)
+          .pipe(null_if_empty).cast(get_region_enum())
+          .alias(REGION),
+        pl.col(LOCATION).str.split(' - ')
+          .list.get(1, null_on_oob=True)
+          .pipe(null_if_empty).cast(get_country_enum())
+          .alias(COUNTRY),
+    )
+
+    #############
+    # PLAYLISTS #
+    #############
+
+    # Extract unique playlists
+    playlists = typed_source_data\
+        .select(Playlist.id,
+                Playlist.name,
+                PlaylistOwner.id,
+                PlaylistOwner.name,
+                pl.col(COUNTRY).alias(Playlist.country),
+                pl.col(REGION).alias(Playlist.region))\
+        .unique(Playlist.id)
+
+    # Detect social playlists
     _is_social_set = (
         pl.col(Playlist.extracted_dates).list.len().gt(0)
         | pl.col(Playlist.name).str.contains_any(['social', 'party', 'soir'], ascii_case_insensitive=True)
@@ -173,39 +221,39 @@ def process_playlist_and_song_data(*, prepare_deduplication: bool = False):
         | pl.col(PlaylistOwner.name).cast(pl.String).eq('Koichi Tsunoda')
     )
 
-    playlists_extended = playlists.with_columns(
+    playlists = playlists.with_columns(
         extract_dates_from_name(pl.col(Playlist.name), sort=True).cast(
             pl.List(pl.String)).alias(Playlist.extracted_dates),
-        pl.col('playlist.location').str.split(' - ')
-          .list.get(0, null_on_oob=True)
-          .pipe(null_if_empty).cast(get_region_enum())
-          .alias(Playlist.region),
-        pl.col('playlist.location').str.split(' - ')
-          .list.get(1, null_on_oob=True)
-          .pipe(null_if_empty).cast(get_country_enum())
-          .alias(Playlist.country),
+    )
+
+    # Add stub columns for track deduplication
+    playlists = playlists.with_columns(
         pl.lit(None).cast(pl.UInt32).alias(Stats.song_count),  # Stub, will be be calculated after deduplication
         pl.lit(None).cast(pl.UInt32).alias(Stats.artist_count),  # Stub, will be calculated after deduplication
-    ).with_columns(
+    )
+
+    playlists = playlists.with_columns(
         _is_social_set.alias(Playlist.is_social_set),
         _is_wcs_dj.alias(PlaylistOwner.is_wcs_dj),
-    ).drop('playlist.location').sort(Playlist.id)
+    )
 
-    tracks = source_data.select(
-        pl.col(Track.id).cast(TRACK_ID_DTYPE),
-        pl.col(Track.name).cast(TRACK_NAME_DTYPE),
-        pl.col(Track.artist_names).cast(TRACK_ARTIST_DTYPE),
-        pl.col(Track.release_date).cast(pl.Date),
-        pl.col('location').str.split(' - ')
-          .list.get(0, null_on_oob=True)
-          .pipe(null_if_empty).cast(get_region_enum())
-          .alias(Track.region),
-        pl.col('location').str.split(' - ')
-          .list.get(1, null_on_oob=True)
-          .pipe(null_if_empty).cast(get_country_enum())
-          .alias(Track.country),
-        pl.col('playlist_id').alias(Playlist.id),
-        pl.col('owner.display_name').alias(PlaylistOwner.name),
+    # Final step: Sort by ID to speed up lookup from the Parquet file
+    playlists = playlists\
+        .sort(Playlist.id)
+
+    ##########
+    # TRACKS #
+    ##########
+
+    tracks = typed_source_data.select(
+        Track.id,
+        Track.name,
+        Track.artist_names,
+        Track.release_date,
+        pl.col(REGION).alias(Track.region),
+        pl.col(COUNTRY).alias(Track.country),
+        Playlist.id,
+        PlaylistOwner.name,
     ).group_by(Track.id).agg(
         pl.col(Track.name).drop_nulls().first(),
         pl.col(Track.artist_names).drop_nulls()
@@ -216,12 +264,9 @@ def process_playlist_and_song_data(*, prepare_deduplication: bool = False):
         pl.col(Playlist.id).n_unique().alias(Stats.playlist_count),
         pl.col(PlaylistOwner.name).n_unique().alias(Stats.dj_count),
     ).with_columns(
-        pl.col(Track.release_date).cast(pl.Date),
         pl.col(Track.region).list.filter(pl.element().ne('')).cast(pl.List(get_region_enum())),
         pl.col(Track.country).list.filter(pl.element().ne('')).cast(pl.List(get_country_enum())),
-    ).unique().sort(Track.id)
-
-    tracks_extended = tracks.with_columns(
+    ).unique().with_columns(
         pl.col(Track.artists).list.join(', ').alias(Track.artist_names),
         pl.col(Track.artists).list.eval(pl.element().str.to_lowercase().is_in(
             queer_artists)).list.any().alias(Track.has_queer_artist),
@@ -236,12 +281,13 @@ def process_playlist_and_song_data(*, prepare_deduplication: bool = False):
         how='left', on=[Track.name, Track.artist_names]
     ).sort(Track.id)
 
-    playlist_tracks = source_data.select(
-        pl.col('playlist_id').cast(PLAYLIST_ID_DTYPE).alias(Playlist.id),
-        pl.col(Track.id).cast(TRACK_ID_DTYPE).alias(Track.id),
+    playlist_tracks = typed_source_data.select(
+        Playlist.id,
+        Track.id,
+
         # The following metadata is not strictly required
-        pl.col('song_number').cast(pl.UInt16).alias(PlaylistTrack.number),
-        pl.col('added_at').cast(pl.Date).alias(PlaylistTrack.added_at),
+        PlaylistTrack.number,
+        PlaylistTrack.added_at,
     ).filter(
         pl.col(Playlist.id).is_not_null(),
         pl.col(Track.id).is_not_null(),
@@ -253,10 +299,10 @@ def process_playlist_and_song_data(*, prepare_deduplication: bool = False):
 
     # Write pre-processed data to parquet files
     write_to_parquet_file(
-        playlists_extended,
+        playlists,
         PLAYLIST_ORIGINAL_DATA_FILE if prepare_deduplication else PLAYLIST_DATA_FILE)
     write_to_parquet_file(
-        tracks_extended,
+        tracks,
         TRACK_ORIGINAL_DATA_FILE if prepare_deduplication else TRACK_DATA_FILE)
     write_to_parquet_file(
         playlist_tracks,
