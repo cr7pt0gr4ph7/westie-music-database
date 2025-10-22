@@ -1,10 +1,13 @@
 """Methods for pre-processing the data into more efficient formats at build time."""
+from typing import Callable, Final, Literal
+import math
 import os
 from typing import Literal
 
 import polars as pl
 
 from utils.additional_data import actual_wcs_djs, queer_artists, poc_artists
+from utils.common.temp_files import TempFileTracker, with_temp_files
 from utils.playlist_classifiers import extract_dates_from_name
 from utils.search import (
     COUNTRY_DATA_FILE,
@@ -13,6 +16,7 @@ from utils.search import (
     PLAYLIST_TRACKS_DATA_FILE,
     PLAYLIST_TRACKS_ORIGINAL_DATA_FILE,
     REGION_DATA_FILE,
+    TEMP_DATA_DIR,
     TRACK_ADJACENT_DATA_FILE,
     TRACK_CANONICAL_DATA_FILE,
     TRACK_DATA_FILE,
@@ -96,6 +100,72 @@ def scan_parquet_file(file_name: str) -> pl.LazyFrame:
 def scan_csv_file(file_name: str) -> pl.LazyFrame:
     return scan_file(file_name, 'csv')
 
+############################
+# Batch processing helpers #
+############################
+
+
+@with_temp_files()
+def process_in_batches(
+    batch_temp_files: TempFileTracker,
+    data: pl.LazyFrame,
+    map: Callable[[pl.LazyFrame], pl.LazyFrame],
+    *,
+    batch_by: str,
+    batch_values: pl.LazyFrame,
+    batch_name: str,
+    batch_size: int,
+    output_name: str,
+    sort_by: str = '',
+):
+    if not sort_by:
+        sort_by = batch_by
+
+    if batch_by or batch_values is not None:
+        row_count = batch_values.select(pl.len()).collect().item()
+    else:
+        row_count = data.select(pl.len()).collect().item()
+
+    batch_count = int(math.ceil(row_count / batch_size))
+    merged: pl.LazyFrame | None = None
+
+    print(f"Processing {row_count:,} {batch_name} in {batch_count:,} batches of {batch_size:,} items...")
+
+    for batch_index in range(0, batch_count):
+        batch_start = batch_index * batch_size
+
+        print(f"Processing batch {batch_index:,}/{batch_count:,}")
+
+        if batch_by or batch_values is not None:
+            batch_input = data\
+                .join(batch_values.slice(batch_start, batch_size),
+                      how='semi', on=batch_by)
+        else:
+            batch_input = data\
+                .slice(batch_start, batch_size)
+
+        batch_output = batch_input\
+            .pipe(map)\
+            .sort(sort_by)
+
+        # Write batch result to temp file
+        temp_file = batch_temp_files.register_for_deletion(
+            TEMP_DATA_DIR + f'temp_{batch_name}_batch_{batch_index}.parquet')
+        write_to_parquet_file(batch_output, temp_file)
+
+        # Add temp file to final merge
+        batch_output = scan_parquet_file(temp_file)
+        merged = (batch_output if merged is None else
+                  merged.merge_sorted(batch_output, sort_by))
+
+    print("Merging batches...")
+
+    write_to_parquet_file(merged, output_name)
+
+
+##############################
+# Actual pre-processing code #
+##############################
 
 def process_country_data():
     source_data = scan_parquet_file('processed_data/data_playlists.parquet')
