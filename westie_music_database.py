@@ -620,9 +620,29 @@ if keyword_insights_toggle:
     st.markdown(f"\n\n\n#### Common Tags for Playlists:")
     st.text(f"Disclaimer: Insights are based on a manually defined list of tags and aliases that is then used to extract keywords from playlist titles, and may not be accurate or representative of reality.")
 
+    tags_df = tags_data()
+
+    categories = tags_df.lazy()\
+        .select(Tag.category)\
+        .filter(Tag.category().is_not_null())\
+        .unique()\
+        .sort(Tag.category)\
+        .collect()[Tag.category].to_list()
+
+    ALL_CATEGORIES: Final = "(All categories)"
+    tag_category_input = st.selectbox("Only show tags in category:", options=[ALL_CATEGORIES, *categories],
+                                      format_func=lambda category: category.title() if category != ALL_CATEGORIES else category)
+
     show_wordcloud = st.toggle("Show wordcloud")
 
-    tags_df = tags_data()
+    if tag_category_input == ALL_CATEGORIES:
+        tag_category_input = ""
+
+    filtered_tags_df = tags_df
+
+    if tag_category_input:
+        filtered_tags_df = filtered_tags_df\
+            .filter(pl.col(Tag.category).eq(tag_category_input))
 
     if show_wordcloud:
         w = wordcloud.WordCloud(
@@ -632,7 +652,7 @@ if keyword_insights_toggle:
             min_font_size=10
         ).generate_from_frequencies({
             row[0]: float(row[1])
-            for row in (tags_df
+            for row in (filtered_tags_df
                         .filter(pl.col(Tag.short_name).is_not_null())
                         .select(Tag.short_name, Tag.playlist_count).iter_rows())
         })
@@ -645,12 +665,6 @@ if keyword_insights_toggle:
             ax.imshow(w)
             ax.axis('off')
             st.pyplot(fig)
-
-    categories = tags_df.lazy()\
-        .select('category')\
-        .unique()\
-        .sort('category')\
-        .collect()['category'].to_list()
 
     dark_colors = [
         "#ffd16a",  # (1) Light Orange [orange50]
@@ -699,7 +713,7 @@ if keyword_insights_toggle:
         full_tags.append(row[2])
         tag_colors.append(color_by_category[row[0]])
 
-    st.dataframe(tags_df, column_config={
+    st.dataframe(filtered_tags_df, column_config={
                  'category': st.column_config.MultiselectColumn(None, options=categories, color=category_colors),
                  'tag': st.column_config.MultiselectColumn(None, options=tags, color=tag_colors),
                  'full_tag': st.column_config.MultiselectColumn(None, options=full_tags, color=tag_colors),
