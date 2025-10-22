@@ -311,45 +311,74 @@ def process_playlist_and_song_data(*, prepare_deduplication: bool = False):
     playlists = playlists\
         .sort(Playlist.id)
 
+    # Write pre-processed data to parquet file
+    write_to_parquet_file(
+        playlists,
+        PLAYLIST_ORIGINAL_DATA_FILE if prepare_deduplication else PLAYLIST_DATA_FILE)
+
     ##########
     # TRACKS #
     ##########
 
-    tracks = typed_source_data.select(
-        Track.id,
-        Track.name,
-        Track.artist_names,
-        Track.release_date,
-        pl.col(REGION).alias(Track.region),
-        pl.col(COUNTRY).alias(Track.country),
-        Playlist.id,
-        PlaylistOwner.name,
-    ).group_by(Track.id).agg(
-        pl.col(Track.name).drop_nulls().first(),
-        pl.col(Track.artist_names).drop_nulls()
-        .unique(maintain_order=True).alias(Track.artists),
-        pl.col(Track.release_date).drop_nulls().first(),
-        pl.col(Track.region).drop_nulls().unique().sort(),
-        pl.col(Track.country).drop_nulls().unique().sort(),
-        pl.col(Playlist.id).n_unique().alias(Stats.playlist_count),
-        pl.col(PlaylistOwner.name).n_unique().alias(Stats.dj_count),
-    ).with_columns(
-        pl.col(Track.region).list.filter(pl.element().ne('')).cast(pl.List(get_region_enum())),
-        pl.col(Track.country).list.filter(pl.element().ne('')).cast(pl.List(get_country_enum())),
-    ).unique().with_columns(
-        pl.col(Track.artists).list.join(', ').alias(Track.artist_names),
-        pl.col(Track.artists).list.eval(pl.element().str.to_lowercase().is_in(
-            queer_artists)).list.any().alias(Track.has_queer_artist),
-        pl.col(Track.artists).list.eval(pl.element().str.to_lowercase().is_in(
-            poc_artists)).list.any().alias(Track.has_poc_artist),
-    ).join(
-        bpm_data.select(
-            pl.col(Track.name).cast(TRACK_NAME_DTYPE),
-            pl.col(Track.artist_names).cast(TRACK_ARTIST_DTYPE),
-            pl.col('bpm').cast(TRACK_BPM_DTYPE).alias(Track.beats_per_minute)
-        ).unique([Track.name, Track.artist_names]),
-        how='left', on=[Track.name, Track.artist_names]
-    ).sort(Track.id)
+    temp_file = TEMP_DATA_DIR + "temp_track_ids.parquet"
+    track_ids = typed_source_data\
+        .select(Track.id)\
+        .unique(Track.id)\
+        .sort(Track.id)
+    write_to_parquet_file(track_ids, temp_file)
+    track_ids = scan_parquet_file(temp_file)
+
+    def process_track_batch(source_data_batch: pl.LazyFrame) -> pl.LazyFrame:
+        return source_data_batch.select(
+            Track.id,
+            Track.name,
+            Track.artist_names,
+            Track.release_date,
+            pl.col(REGION).alias(Track.region),
+            pl.col(COUNTRY).alias(Track.country),
+            Playlist.id,
+            PlaylistOwner.name,
+        ).group_by(Track.id).agg(
+            pl.col(Track.name).drop_nulls().first(),
+            pl.col(Track.artist_names).drop_nulls()
+            .unique(maintain_order=True).alias(Track.artists),
+            pl.col(Track.release_date).drop_nulls().first(),
+            pl.col(Track.region).drop_nulls().unique().sort(),
+            pl.col(Track.country).drop_nulls().unique().sort(),
+            pl.col(Playlist.id).n_unique().alias(Stats.playlist_count),
+            pl.col(PlaylistOwner.name).n_unique().alias(Stats.dj_count),
+        ).with_columns(
+            pl.col(Track.region).list.filter(pl.element().ne('')).cast(pl.List(get_region_enum())),
+            pl.col(Track.country).list.filter(pl.element().ne('')).cast(pl.List(get_country_enum())),
+        ).unique().with_columns(
+            pl.col(Track.artists).list.join(', ').alias(Track.artist_names),
+            pl.col(Track.artists).list.eval(pl.element().str.to_lowercase().is_in(
+                queer_artists)).list.any().alias(Track.has_queer_artist),
+            pl.col(Track.artists).list.eval(pl.element().str.to_lowercase().is_in(
+                poc_artists)).list.any().alias(Track.has_poc_artist),
+        ).join(
+            bpm_data.select(
+                pl.col(Track.name).cast(TRACK_NAME_DTYPE),
+                pl.col(Track.artist_names).cast(TRACK_ARTIST_DTYPE),
+                pl.col('bpm').cast(TRACK_BPM_DTYPE).alias(Track.beats_per_minute)
+            ).unique([Track.name, Track.artist_names]),
+            how='left', on=[Track.name, Track.artist_names]
+        )
+
+    # Write pre-processed data to parquet file
+    process_in_batches(
+        typed_source_data,
+        process_track_batch,
+        batch_by=Track.id,
+        batch_values=track_ids,
+        batch_name="tracks",
+        batch_size=10000,  # Higher batch sizes are faster but have a righer OOM risk
+        output_name=TRACK_ORIGINAL_DATA_FILE if prepare_deduplication else TRACK_DATA_FILE,
+    )
+
+    ###################
+    # PLAYLIST TRACKS #
+    ###################
 
     playlist_tracks = typed_source_data.select(
         Playlist.id,
@@ -367,13 +396,7 @@ def process_playlist_and_song_data(*, prepare_deduplication: bool = False):
         pl.col(PlaylistTrack.added_at).min()
     ).sort(Playlist.id, Track.id, PlaylistTrack.number)
 
-    # Write pre-processed data to parquet files
-    write_to_parquet_file(
-        playlists,
-        PLAYLIST_ORIGINAL_DATA_FILE if prepare_deduplication else PLAYLIST_DATA_FILE)
-    write_to_parquet_file(
-        tracks,
-        TRACK_ORIGINAL_DATA_FILE if prepare_deduplication else TRACK_DATA_FILE)
+    # Write pre-processed data to parquet file
     write_to_parquet_file(
         playlist_tracks,
         PLAYLIST_TRACKS_ORIGINAL_DATA_FILE if prepare_deduplication else PLAYLIST_TRACKS_DATA_FILE)
