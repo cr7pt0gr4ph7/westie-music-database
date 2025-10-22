@@ -265,8 +265,6 @@ class TrackTag(Entity):
 
     class Track(SubEntity[Track]):
         id: Final = Track.id
-        name: Final = Track.name
-        artists: Final = Track.artists
         playlist_count: Final = Stats.playlist_count.alias("track.playlist_count")
         playlist_percent: Final = field("track.playlist_percent", pl.Float32)
 
