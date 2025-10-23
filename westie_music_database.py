@@ -16,13 +16,15 @@ pl.Config.set_tbl_rows(100).set_fmt_str_lengths(100)
 pl.enable_string_cache()  # for Categoricals
 # st.text(f"{avail_threads}")
 
-
-# Automatically pull the data from HuggingFace if we're running on
-# Streamlit Community Cloud, as it doesn't seem to provide a separate
-# customizable setup step.
-#
-# This step does nothing when run in a local environment.
-automatically_pull_data_if_needed()
+# Only check once per session
+if "pull_data" not in st.session_state or st.session_state["pull_data"]:
+    # Automatically pull the data from HuggingFace if we're running on
+    # Streamlit Community Cloud, as it doesn't seem to provide a separate
+    # customizable setup step.
+    #
+    # This step does nothing when run in a local environment.
+    automatically_pull_data_if_needed()
+    st.session_state["pull_data"] = False
 
 
 def just_a_peek(df_):
