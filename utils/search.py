@@ -228,6 +228,8 @@ class PlaylistFilter:
     dj_name_exclude: TextFilter = ''
     playlist_include: TextFilter = ''
     playlist_exclude: TextFilter = ''
+    playlist_tag_include: TextFilter = ''
+    playlist_tag_exclude: TextFilter = ''
     playlist_is_social_set: bool = False
 
     # Parsed filters
@@ -236,6 +238,8 @@ class PlaylistFilter:
     match_dj_name_exclude: pl.Expr = field(init=False)
     match_playlist: pl.Expr = field(init=False)
     match_excluded_playlist: pl.Expr = field(init=False)
+    match_tag: pl.Expr = field(init=False)
+    match_excluded_tag: pl.Expr = field(init=False)
 
     def __post_init__(self):
         """Parses the user-provided filter specifications."""
@@ -256,6 +260,14 @@ class PlaylistFilter:
         self.match_excluded_playlist =\
             create_text_filter(self.playlist_exclude, Playlist.name)
 
+        self.match_tag =\
+            create_text_filter(self.playlist_tag_include, PlaylistTags.tags,
+                               is_list_column=True, match_mode='exact')
+
+        self.match_excluded_tag =\
+            create_text_filter(self.playlist_tag_exclude, PlaylistTags.tags,
+                               is_list_column=True, match_mode='exact')
+
     @property
     def has_filters(self) -> bool:
         """Returns whether any playlist filters are defined."""
@@ -264,6 +276,8 @@ class PlaylistFilter:
             or self.match_country is not None\
             or self.match_playlist is not None\
             or self.match_excluded_playlist is not None\
+            or self.match_tag is not None\
+            or self.match_excluded_tag is not None\
             or self.playlist_is_social_set
 
     def filter_playlists(self, playlists: PlaylistSet, *, include_matched_terms: bool) -> PlaylistSet:
@@ -290,6 +304,14 @@ class PlaylistFilter:
         if self.match_dj_name_exclude is not None:
             matching_playlists = matching_playlists.filter(
                 ~self.match_dj_name_exclude)
+
+        if self.match_tag is not None:
+            matching_playlists = matching_playlists.filter(
+                self.match_tag)
+
+        if self.match_excluded_tag is not None:
+            matching_playlists = matching_playlists.filter(
+                ~self.match_excluded_tag)
 
         # Courtesy of Tobias N. (for the suggestion of the playlist_exclude filter)
         excluded_playlists: pl.LazyFrame | None
@@ -568,6 +590,8 @@ class TrackFilter:
     artist_name: TextFilter = ''
     artist_is_queer: bool = False
     artist_is_poc: bool = False
+    tag_include: TextFilter = ''
+    tag_exclude: TextFilter = ''
 
     # Internal optimizations
     pre_filter: PreFilterOptions | None = None
@@ -576,6 +600,8 @@ class TrackFilter:
     match_song_name: pl.Expr = field(init=False)
     match_song_release_date: pl.Expr = field(init=False)
     match_artist_name: pl.Expr = field(init=False)
+    match_tag: pl.Expr = field(init=False)
+    match_excluded_tag: pl.Expr = field(init=False)
 
     def __post_init__(self):
         """Parses the user-provided filter specifications."""
@@ -585,6 +611,12 @@ class TrackFilter:
             create_date_filter(self.song_release_date, Track.release_date)
         self.match_artist_name =\
             create_text_filter(self.artist_name, Track.artist_names)
+        self.match_tag =\
+            create_text_filter(self.tag_include, TrackTags.tags,
+                               is_list_column=True, match_mode='exact')
+        self.match_excluded_tag =\
+            create_text_filter(self.tag_exclude, TrackTags.tags,
+                               is_list_column=True, match_mode='exact')
 
     @property
     def has_filters(self) -> bool:
@@ -593,6 +625,8 @@ class TrackFilter:
             or self.song_bpm_range is not None\
             or self.match_song_release_date is not None\
             or self.match_artist_name is not None\
+            or self.match_tag\
+            or self.match_excluded_tag\
             or self.artist_is_queer\
             or self.artist_is_poc\
             or self.pre_filter is not None
@@ -608,6 +642,14 @@ class TrackFilter:
         if self.match_artist_name is not None:
             matching_tracks = matching_tracks.filter(
                 self.match_artist_name)
+
+        if self.match_tag is not None:
+            matching_tracks = matching_tracks.filter(
+                self.match_tag)
+
+        if self.match_excluded_tag is not None:
+            matching_tracks = matching_tracks.filter(
+                ~self.match_excluded_tag)
 
         if self.artist_is_queer:
             matching_tracks = matching_tracks.filter(
@@ -1088,8 +1130,8 @@ class SearchEngine:
     def find_tags(
         self,
         *,
-        category_name: str = '',
-        tag_name: str = '',
+        category_name: TextFilter = '',
+        tag_name: TextFilter = '',
         min_playlist_count: int | None = None,
         playlist_limit: int | None = None,
         sort_by: Tag.SortFields | None = None,
@@ -1103,16 +1145,18 @@ class SearchEngine:
         if playlist_limit is not None and playlist_limit > max_playlist_limit:
             print(f"Warning: playlist_limit={playlist_limit} will be treated as playlist_limit={max_playlist_limit}")
 
+        match_category_name = create_text_filter(category_name, Tag.category)
+        match_tag_name = create_text_filter(tag_name, Tag.name)
         tags = self.data.tags
 
         if playlist_limit is not None:
             tags = tags.with_columns(Tag.playlist_names().list.head(playlist_limit))
 
-        if category_name:
-            tags = tags.filter(Tag.category().str.contains_any(category_name.lower().strip().split(',')))
+        if match_category_name is not None:
+            tags = tags.filter(match_category_name)
 
-        if tag_name:
-            tags = tags.filter(Tag.name().str.contains_any(tag_name.lower().strip().split(',')))
+        if match_tag_name is not None:
+            tags = tags.filter(match_tag_name)
 
         if min_playlist_count is not None:
             tags = tags.filter(Tag.playlist_count().ge(min_playlist_count))
@@ -1202,6 +1246,8 @@ class SearchEngine:
         lyrics_exclude: TextFilter = '',
         lyrics_limit: int | None = None,
         lyrics_in_result: bool = False,
+        tag_include: TextFilter = '',
+        tag_exclude: TextFilter = '',
         #
         # Playlist-specific filters
         #
@@ -1264,6 +1310,8 @@ class SearchEngine:
             artist_name=artist_name,
             artist_is_queer=artist_is_queer,
             artist_is_poc=artist_is_poc,
+            tag_include=tag_include,
+            tag_exclude=tag_exclude,
             pre_filter=PreFilterOptions(sort_by, limit, descending)
             if is_sorted_by_any_of('playlist_count', 'dj_count')
             and limit is not None else None,
@@ -1313,6 +1361,8 @@ class SearchEngine:
         dj_name: TextFilter = '',
         playlist_include: TextFilter = '',
         playlist_exclude: TextFilter = '',
+        tag_include: TextFilter = '',
+        tag_exclude: TextFilter = '',
         #
         # Result options
         #
@@ -1338,6 +1388,8 @@ class SearchEngine:
             dj_name=dj_name,
             playlist_include=playlist_include,
             playlist_exclude=playlist_exclude,
+            playlist_tag_include=tag_include,
+            playlist_tag_exclude=tag_exclude,
         )
 
         #####################
