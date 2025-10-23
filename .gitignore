@@ -3,4 +3,5 @@ __pycache__
 processed_data/temp_*.parquet
 processed_data/*.original.parquet
 processed_data_huggingface/
+unprocessed_data_huggingface/
 temp_data/

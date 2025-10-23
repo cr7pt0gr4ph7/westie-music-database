@@ -24,6 +24,9 @@ from utils.search import (
     TRACK_LYRICS_DATA_FILE,
     TRACK_ORIGINAL_DATA_FILE,
     TRACK_PLAYLISTS_DATA_FILE,
+    UNPROCESSED_PLAYLISTS_DATA_FILE,
+    UNPROCESSED_TRACK_BPM_DATA_FILE,
+    UNPROCESSED_TRACK_LYRICS_DATA_FILE,
 )
 from utils.tables import Playlist, PlaylistOwner, PlaylistTrack, Stats, Track, TrackAdjacent, TrackLyrics
 
@@ -175,7 +178,7 @@ def process_in_batches(
 ##############################
 
 def process_country_data():
-    source_data = scan_parquet_file('processed_data/data_playlists.parquet')
+    source_data = scan_parquet_file(UNPROCESSED_PLAYLISTS_DATA_FILE)
 
     locations = (
         source_data.select('location')
@@ -223,8 +226,8 @@ def get_country_enum() -> pl.Enum:
 
 
 def process_playlist_and_song_data(*, prepare_deduplication: bool = False):
-    source_data = scan_parquet_file('processed_data/data_playlists.parquet')
-    bpm_data = scan_parquet_file('processed_data/data_song_bpm.parquet')
+    source_data = scan_parquet_file(UNPROCESSED_PLAYLISTS_DATA_FILE)
+    bpm_data = scan_parquet_file(UNPROCESSED_TRACK_BPM_DATA_FILE)
 
     LOCATION: Final = 'location'
     REGION: Final = 'region'
@@ -319,6 +322,7 @@ def process_playlist_and_song_data(*, prepare_deduplication: bool = False):
         .sort(Playlist.id)
 
     # Write pre-processed data to parquet file
+    create_temp_dir()
     write_to_parquet_file(
         playlists,
         PLAYLIST_ORIGINAL_DATA_FILE if prepare_deduplication else PLAYLIST_DATA_FILE)
@@ -373,6 +377,7 @@ def process_playlist_and_song_data(*, prepare_deduplication: bool = False):
         )
 
     # Write pre-processed data to parquet file
+    create_temp_dir()
     process_in_batches(
         typed_source_data,
         process_track_batch,
@@ -404,6 +409,7 @@ def process_playlist_and_song_data(*, prepare_deduplication: bool = False):
     ).sort(Playlist.id, Track.id, PlaylistTrack.number)
 
     # Write pre-processed data to parquet file
+    create_temp_dir()
     write_to_parquet_file(
         playlist_tracks,
         PLAYLIST_TRACKS_ORIGINAL_DATA_FILE if prepare_deduplication else PLAYLIST_TRACKS_DATA_FILE)
@@ -621,7 +627,7 @@ def process_playlist_tracks_inverse():
 
 def process_song_lyrics():
     """Process the song lyrics into a table sorted by track.id"""
-    temp_file = 'processed_data/temp_song_metadata_by_track_and_artist.parquet'
+    temp_file = create_temp_dir() + 'temp_song_metadata_by_track_and_artist.parquet'
 
     print(f'Writing {temp_file}...')
     tracks = scan_parquet_file(TRACK_DATA_FILE)\
@@ -631,7 +637,7 @@ def process_song_lyrics():
 
     tracks = scan_parquet_file(temp_file)
 
-    lyrics = scan_parquet_file('processed_data/song_lyrics.parquet')\
+    lyrics = scan_parquet_file(UNPROCESSED_TRACK_LYRICS_DATA_FILE)\
         .join(tracks,
               how='inner',
               left_on=['song', 'artist'],

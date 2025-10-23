@@ -97,15 +97,24 @@ class PreFilterOptions(NamedTuple):
 ##########################
 
 DATA_DIR: Final = 'processed_data_huggingface/'
+UNPROCESSED_DATA_DIR: Final = 'unprocessed_data_huggingface/'
 TEMP_DATA_DIR: Final = 'temp_data/'
 
+# Source files
+UNPROCESSED_PLAYLISTS_DATA_FILE: Final = UNPROCESSED_DATA_DIR + 'data_playlists.parquet'
+UNPROCESSED_TRACK_BPM_DATA_FILE: Final = UNPROCESSED_DATA_DIR + 'data_song_bpm.parquet'
+UNPROCESSED_TRACK_LYRICS_DATA_FILE: Final = UNPROCESSED_DATA_DIR + 'song_lyrics.parquet'
+
+# Temporary files
+PLAYLIST_ORIGINAL_DATA_FILE: Final = TEMP_DATA_DIR + 'data_playlist_metadata.original.parquet'
+PLAYLIST_TRACKS_ORIGINAL_DATA_FILE: Final = TEMP_DATA_DIR + 'data_playlist_songs.original.parquet'
+TRACK_ORIGINAL_DATA_FILE: Final = TEMP_DATA_DIR + 'data_song_metadata.original.parquet'
+
+# Processed files
 PLAYLIST_DATA_FILE: Final = DATA_DIR + 'data_playlist_metadata.parquet'
-PLAYLIST_ORIGINAL_DATA_FILE: Final = DATA_DIR + 'data_playlist_metadata.original.parquet'
 PLAYLIST_TRACKS_DATA_FILE: Final = DATA_DIR + 'data_playlist_songs.parquet'
-PLAYLIST_TRACKS_ORIGINAL_DATA_FILE: Final = DATA_DIR + 'data_playlist_songs.original.parquet'
 TRACK_PLAYLISTS_DATA_FILE: Final = DATA_DIR + 'data_song_playlists.parquet'
 TRACK_DATA_FILE: Final = DATA_DIR + 'data_song_metadata.parquet'
-TRACK_ORIGINAL_DATA_FILE: Final = DATA_DIR + 'data_song_metadata.original.parquet'
 TRACK_ADJACENT_DATA_FILE: Final = DATA_DIR + 'data_song_adjacent.parquet'
 TRACK_LYRICS_DATA_FILE: Final = DATA_DIR + 'data_song_lyrics.parquet'
 COUNTRY_DATA_FILE: Final = DATA_DIR + 'data_countries.csv'
@@ -113,7 +122,6 @@ REGION_DATA_FILE: Final = DATA_DIR + 'data_regions.csv'
 
 TRACK_DUPLICATES_DATA_FILE: Final = DATA_DIR + 'data_song_duplicates.parquet'
 TRACK_CANONICAL_DATA_FILE: Final = DATA_DIR + 'data_song_canonical.parquet'
-
 
 #############################
 # INDIVIDUAL FILTER & JOINS #
