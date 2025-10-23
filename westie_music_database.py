@@ -336,16 +336,6 @@ if song_locator_toggle:
         bpm_high = st.number_input(
             "Playlist high: ", value=100, min_value=0, step=2)
 
-    # if (song_input + artist_name + dj_input + ''.join(playlist_input) + ''.join(anti_playlist_input) +
-    #     ''.join(countries_selectbox) + ''.join(added_2_playlist_date) + ''.join(track_release_date)
-    #     ).strip() == 'this_is_a_bogus_value_to_hopefully_not_break_things' and num_results == 0 and not queer_toggle and bpm_slider[0]==0 and bpm_slider[1]==150:
-    #         # st.text('preloaded')
-    #         st.dataframe(top_songs,
-    #                          column_config={Track.url: st.column_config.LinkColumn()}
-    #                     )
-
-    # else:
-    # and (st.session_state["processing"] = False):
     if st.button("Search songs", type="primary", disabled=st.session_state["processing"]):
         st.session_state["processing"] = True
         log_query("Search songs", {'song_input': song_input,
@@ -885,10 +875,6 @@ if lyrics_toggle:
     with lyrics_col2:
         artist_input = st.text_input("Artist:")
         anti_lyrics_input = st.text_input("Not in lyrics:")
-
-    if anti_lyrics_input == ['']:
-        anti_lyrics_input = [
-            'this_is_a_bogus_value_to_hopefully_not_break_things']
 
     if st.button("Search lyrics", type="primary", disabled=st.session_state["processing"]):
         st.session_state["processing"] = True
