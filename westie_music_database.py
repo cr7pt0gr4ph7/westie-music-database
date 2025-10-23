@@ -720,12 +720,22 @@ if keyword_insights_toggle:
                  })
 
     st.markdown(f"#### ")
-    st.markdown(f"#### Tagged songs")
+    st.markdown(f"#### Tagged songs & playlists")
 
-    tag_input = st.selectbox("Show songs with tag:", options=full_tags,
+    tag_input = st.selectbox("Show playlists & songs with tag:", options=full_tags,
                              format_func=lambda tag: ': '.join(tag.split(':')).title())
 
     if tag_input:
+        st.markdown(f"Playlists tagged with _{tag_input}_:")
+
+        tagged_playlists_df = search_engine\
+            .find_playlists(tag_include=[tag_input])\
+            .with_row_index(offset=1)
+
+        st.dataframe(tagged_playlists_df)
+
+        st.markdown(f"Songs tagged with _{tag_input}_:")
+
         tagged_songs_df = search_engine\
             .find_songs_by_tag(tag_name_exact=tag_input)\
             .with_row_index(offset=1)\
