@@ -96,7 +96,7 @@ class PreFilterOptions(NamedTuple):
 # SOURCE DATA FILE NAMES #
 ##########################
 
-DATA_DIR: Final = 'processed_data/'
+DATA_DIR: Final = 'processed_data_huggingface/'
 TEMP_DATA_DIR: Final = 'temp_data/'
 
 PLAYLIST_DATA_FILE: Final = DATA_DIR + 'data_playlist_metadata.parquet'
