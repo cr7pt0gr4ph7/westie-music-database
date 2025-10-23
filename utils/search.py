@@ -97,7 +97,7 @@ class PreFilterOptions(NamedTuple):
 ##########################
 
 DATA_DIR: Final = 'processed_data/'
-TEMP_DATA_DIR: Final = DATA_DIR
+TEMP_DATA_DIR: Final = 'temp_data/'
 
 PLAYLIST_DATA_FILE: Final = DATA_DIR + 'data_playlist_metadata.parquet'
 PLAYLIST_ORIGINAL_DATA_FILE: Final = DATA_DIR + 'data_playlist_metadata.original.parquet'

@@ -105,6 +105,13 @@ def scan_csv_file(file_name: str) -> pl.LazyFrame:
 ############################
 
 
+def create_temp_dir() -> str:
+    temp_dir: Final = TEMP_DATA_DIR
+    if not os.path.exists(temp_dir):
+        os.mkdir(temp_dir)
+    return temp_dir
+
+
 @with_temp_files()
 def process_in_batches(
     batch_temp_files: TempFileTracker,
@@ -150,7 +157,7 @@ def process_in_batches(
 
         # Write batch result to temp file
         temp_file = batch_temp_files.register_for_deletion(
-            TEMP_DATA_DIR + f'temp_{batch_name}_batch_{batch_index}.parquet')
+            create_temp_dir() + f'temp_{batch_name}_batch_{batch_index}.parquet')
         write_to_parquet_file(batch_output, temp_file)
 
         # Add temp file to final merge
@@ -320,7 +327,7 @@ def process_playlist_and_song_data(*, prepare_deduplication: bool = False):
     # TRACKS #
     ##########
 
-    temp_file = TEMP_DATA_DIR + "temp_track_ids.parquet"
+    temp_file = create_temp_dir() + "temp_track_ids.parquet"
     track_ids = typed_source_data\
         .select(Track.id)\
         .unique(Track.id)\
