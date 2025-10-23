@@ -80,6 +80,8 @@ from utils.tables import Playlist, PlaylistOwner, PlaylistTrack, Stats, Track, T
 # COMMON UTILITIES #
 ####################
 
+type TextFilter = str | list[str]
+
 
 class PreFilterOptions(NamedTuple):
     sort_by: str
@@ -217,11 +219,11 @@ class PlaylistFilter:
     """Playlist-specific filters."""
 
     # User-provided parameters
-    country: str | list[str] = ''
-    dj_name: str = ''
-    dj_name_exclude: str = ''
-    playlist_include: str = ''
-    playlist_exclude: str = ''
+    country: TextFilter = ''
+    dj_name: TextFilter = ''
+    dj_name_exclude: TextFilter = ''
+    playlist_include: TextFilter = ''
+    playlist_exclude: TextFilter = ''
     playlist_is_social_set: bool = False
 
     # Parsed filters
@@ -556,10 +558,10 @@ class TrackFilter:
     """"Track-specific filters."""
 
     # User-provided parameters
-    song_name: str = ''
+    song_name: TextFilter = ''
     song_bpm_range: tuple[int, int] | None = None
     song_release_date: str = ''
-    artist_name: str = ''
+    artist_name: TextFilter = ''
     artist_is_queer: bool = False
     artist_is_poc: bool = False
 
@@ -662,8 +664,8 @@ class TrackLyricsFilter:
     """Lyrics-specific filters."""
 
     # User-provided parameters
-    lyrics_include: str = ''
-    lyrics_exclude: str = ''
+    lyrics_include: TextFilter = ''
+    lyrics_exclude: TextFilter = ''
     lyrics_limit: int | None = None
 
     # Parsed filters
@@ -1101,11 +1103,11 @@ class SearchEngine:
         song_name: str = '',
         song_bpm_range: tuple[int, int] | None = None,
         song_release_date: str = '',
-        artist_name: str = '',
+        artist_name: TextFilter = '',
         artist_is_queer: bool = False,
         artist_is_poc: bool = False,
-        lyrics_include: str = '',
-        lyrics_exclude: str = '',
+        lyrics_include: TextFilter = '',
+        lyrics_exclude: TextFilter = '',
         lyrics_limit: int | None = None,
         lyrics_in_result: bool = False,
         #
@@ -1215,10 +1217,10 @@ class SearchEngine:
         #
         # Playlist-specific filters
         #
-        country: str = '',
-        dj_name: str = '',
-        playlist_include: str = '',
-        playlist_exclude: str = '',
+        country: TextFilter = '',
+        dj_name: TextFilter = '',
+        playlist_include: TextFilter = '',
+        playlist_exclude: TextFilter = '',
         #
         # Result options
         #
@@ -1275,8 +1277,8 @@ class SearchEngine:
     def find_djs(
         self,
         *,
-        dj_name: str = '',
-        playlist_name: str = '',
+        dj_name: TextFilter = '',
+        playlist_name: TextFilter = '',
         playlist_limit: int | None = 30,
         dj_limit: int | None = 100,
     ) -> pl.LazyFrame:
@@ -1325,8 +1327,8 @@ class SearchEngine:
         direction: Literal['any', 'prev', 'next'],
         *,
         return_pairs: bool = False,
-        song_name: str = '',
-        artist_name: str = '',
+        song_name: TextFilter = '',
+        artist_name: TextFilter = '',
         limit: int | None = 100,
     ) -> tuple[pl.LazyFrame, pl.LazyFrame]:
         """Returns the songs most often played before resp. after the specified song."""
