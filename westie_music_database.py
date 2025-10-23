@@ -7,6 +7,7 @@ import psutil
 
 from utils.common.columns import pull_columns_to_front
 from utils.common.logging import log_query
+from utils.pull_data import automatically_pull_data_if_needed
 from utils.search import SearchEngine
 from utils.tables import Playlist, PlaylistOwner, PlaylistTrack, Stats, Track, TrackAdjacent, TrackLyrics
 
@@ -14,6 +15,14 @@ from utils.tables import Playlist, PlaylistOwner, PlaylistTrack, Stats, Track, T
 pl.Config.set_tbl_rows(100).set_fmt_str_lengths(100)
 pl.enable_string_cache()  # for Categoricals
 # st.text(f"{avail_threads}")
+
+
+# Automatically pull the data from HuggingFace if we're running on
+# Streamlit Community Cloud, as it doesn't seem to provide a separate
+# customizable setup step.
+#
+# This step does nothing when run in a local environment.
+automatically_pull_data_if_needed()
 
 
 def just_a_peek(df_):

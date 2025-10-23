@@ -1,3 +1,4 @@
+huggingface_hub
 streamlit
 polars==1.33.1
 psutil
