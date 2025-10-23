@@ -938,6 +938,13 @@ if song_popularity_toggle:
         st.markdown(f"#### Playlist track entries by {interval_input}")
 
         if is_search_result:
+            if interval_input != "year":
+                st.markdown("Be aware that song popularity statistics on intervals shorter than"
+                            "a year are heavily skewed by which events are contained in our dataset, "
+                            "and should therefore be taken with a grain of salt.")
+
+            st.markdown("Relative popularity is calculated based on the number of plays "
+                        "the average song has received in the given interval.")
             st.bar_chart(popularity_df, x=interval_input, y=RELATIVE_POPULARITY)
 
         st.dataframe(popularity_df,
