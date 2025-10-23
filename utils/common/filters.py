@@ -26,6 +26,7 @@ def create_text_filter(
     filter_expression: str | list[str] | None,
     column: IntoExpr,
     *,
+    no_value: str = '',
     is_list_column: bool = False,
     ascii_case_insensitive: bool = True,
     match_mode: Literal['exact', 'contains'] = 'contains',
@@ -60,7 +61,12 @@ def create_text_filter(
         else:
             raise ValueError(f'Invalid match mode: {match_mode}')
 
-    if is_list_column:
+    if no_value and not is_list_column:
+        raise ValueError("no_value may only be specified when is_list_column is True")
+
+    if no_value and is_list_column and no_value.lower() in values:
+        return into_expr(column).pipe(lambda x: pl.any_horizontal(x.is_null(), x.list.len().eq(0)))
+    elif is_list_column:
         return into_expr(column).list.eval(is_match(pl.element())).list.any()
     else:
         return is_match(into_expr(column))

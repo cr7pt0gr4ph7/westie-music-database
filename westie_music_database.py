@@ -722,8 +722,9 @@ if keyword_insights_toggle:
     st.markdown(f"#### ")
     st.markdown(f"#### Tagged songs & playlists")
 
-    tag_input = st.selectbox("Show playlists & songs with tag:", options=full_tags,
-                             format_func=lambda tag: ': '.join(tag.split(':')).title())
+    UNTAGGED = "untagged"
+    tag_input = st.selectbox("Show playlists & songs with tag:", options=[UNTAGGED, *full_tags],
+                             format_func=lambda tag: ': '.join(tag.split(':')).title() if tag != UNTAGGED else "(Untagged)")
 
     if tag_input:
         st.markdown(f"Playlists tagged with _{tag_input}_:")
