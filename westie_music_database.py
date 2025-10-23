@@ -95,7 +95,8 @@ songs_count, artists_count, playlists_count, djs_count, lyrics_count = load_stat
 
 # st.write(f"Memory Usage: {psutil.virtual_memory().percent}%")
 st.markdown("## Westie Music Database:")
-st.text("An aggregated collection of West Coast Swing (WCS) music and playlists from DJs, Spotify users, etc. ") #byebye memory problems courtesy of Lukas W
+# byebye memory problems courtesy of Lukas W
+st.text("An aggregated collection of West Coast Swing (WCS) music and playlists from DJs, Spotify users, etc. ")
 
 # st.markdown('''468,348 **Songs** (160,661 wcs specific)
 # 124,957 **Artists** (53,789 wcs specific)
