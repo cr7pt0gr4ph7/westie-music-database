@@ -37,6 +37,7 @@ def pull_processed_data():
     """Pulls the processed dataset from HuggingFace."""
     snapshot_download(repo_id="westie-data-collective/wcs-music-database-v1",
                       repo_type="dataset",
+                      revision="tags",
                       allow_patterns=["*.parquet", "*.csv"],
                       local_dir=dataset_dir)
 
