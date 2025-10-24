@@ -53,7 +53,9 @@ def extract_tags_from_name(expr: pl.Expr) -> pl.Expr:
 
 
 def date_part(name: str, pattern: str):
-    return f'(?<{name}>{pattern})'
+    # TODO: The query crashes with an OOM when named groups are used...
+    # return f'(?<{name}>{pattern})'
+    return pattern
 
 
 yy = date_part('year', r'\d{2}')
