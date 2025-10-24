@@ -6,7 +6,7 @@ import psutil
 
 from utils.additional_data import actual_wcs_djs, poc_artists, queer_artists
 from utils.common.logging import log_query
-from utils.playlist_classifiers import extract_dates_from_name
+from utils.playlist_classifiers import extract_date_strings_from_name
 
 
 # avail_threads = pl.threadpool_size()
@@ -41,7 +41,7 @@ def load_playlist_data():
     return (pl.scan_parquet('processed_data/data_playlists.parquet', low_memory=True)
             .rename({'name': 'playlist_name'})
             # makes a new column filled with a date - this is good indicator if there was a set played
-            .with_columns(extracted_date=extract_dates_from_name(pl.col('playlist_name')).cast(pl.List(pl.Categorical)),
+            .with_columns(extracted_date=extract_date_strings_from_name(pl.col('playlist_name')).cast(pl.List(pl.Categorical)),
                           song_url=pl.when(pl.col('track.id').is_not_null())
                           .then(pl.concat_str(pl.lit('https://open.spotify.com/track/'), 'track.id')),
                           playlist_url=pl.when(

@@ -43,6 +43,20 @@ class Stats(Entity):
     3. The number of songs played in a certain region/country.
     """
 
+    date_formats: Final = field('date_formats', pl.List(pl.String))
+    """
+    The list of types of possible date strings. Depending on the context, this can mean:
+
+    1. The list of types of possible date strings extracted from a playlist's name.
+    2. The list of date format types used by a playlist owner.
+    """
+
+    date_format_counts: Final = field('date_format_counts', pl.List(pl.UInt32))
+    """
+    How often the different date format types occur in a user's playlists.
+    """
+
+
 
 class PlaylistOwner(Entity):
     """Represents a DJ who owns one or more playlists."""
@@ -82,7 +96,6 @@ class PlaylistOwner(Entity):
     This is currently based on a manually curated dataset.
     """
 
-
 class Playlist(Entity):
     """Represents a playlist (as retrieved from Spotify or from other sources)."""
 
@@ -98,7 +111,7 @@ class Playlist(Entity):
     name: Final = field("playlist.name", pl.String)
     """The name of the playlist."""
 
-    extracted_dates: Final = field('playlist.extracted_date', pl.List(pl.List(pl.String)))
+    extracted_dates: Final = field('playlist.extracted_date', pl.List(pl.String))
     """The list of possible date strings extracted from a playlist's name."""
 
     is_social_set: Final = field("playlist.is_social_set", pl.Boolean)
