@@ -73,7 +73,7 @@ import polars.selectors as cs
 from utils.common.entities import PolarsLazyFrame
 from utils.common.filters import create_date_filter, create_text_filter, or_filter
 from utils.common.stats import count_n_unique
-from utils.playlist_classifiers import extract_tags_from_name
+from utils.playlist_classifiers import extract_date_strings_from_name, extract_date_types_from_name
 from utils.tables import Playlist, PlaylistOwner, PlaylistTags, PlaylistTrack, Stats, Tag, Track, TrackAdjacent, TrackLyrics, TrackTag, TrackTags
 
 
@@ -170,6 +170,15 @@ class PlaylistSet:
         return self\
             .with_playlist_url()\
             .with_owner_url()
+
+    def with_extracted_data(self):
+        return PlaylistSet(
+            included_playlists=self.included_playlists.with_columns(
+                Playlist.name().pipe(extract_date_strings_from_name).alias(Playlist.extracted_dates),
+                Playlist.name().pipe(extract_date_types_from_name).alias(Stats.date_formats)),
+            excluded_playlists=self.excluded_playlists,
+            all_playlists=self.all_playlists,
+            is_filtered=self.is_filtered)
 
     def sort_by(self, by, *more_by, descending: bool):
         return (self if by is None or (isinstance(by, list) and len(by) == 0) else
@@ -1374,6 +1383,7 @@ class SearchEngine:
         #
         tracks_in_result: bool = False,
         tracks_limit: int | None = None,
+        extracted_playlist_data_in_result: bool = False,
         sort_by: PlaylistSortKey | list[PlaylistSortKey] | None = None,
         descending: bool = True,
         limit: int | None = None,
@@ -1420,9 +1430,75 @@ class SearchEngine:
                     self.data.all_playlists,
                     include_matched_terms=True)
 
+        if extracted_playlist_data_in_result:
+            matching_playlists =\
+                matching_playlists.with_extracted_data()
+
         return matching_playlists.with_extra_columns()\
             .sort_by(sort_by, descending=descending)\
             .included_playlists.slice(0, limit or None)
+
+    def find_date_formats_by_dj(
+        self,
+        *,
+        #
+        # Playlist-specific filters
+        #
+        country: TextFilter = '',
+        dj_name: TextFilter = '',
+        dj_exclude_by_ids: pl.LazyFrame | pl.DataFrame | None = None,
+        playlist_include: TextFilter = '',
+        playlist_exclude: TextFilter = '',
+        only_unique_date_formats: bool = False,
+        #
+        # Result options
+        #
+        sort_by: Literal['date_format_counts', 'owner.name', 'date_formats'] | None = 'date_format_counts',
+        descending: bool = True,
+        limit: int | None = None,
+    ) -> pl.LazyFrame:
+        playlists = self\
+            .find_playlists(country=country,
+                            dj_name=dj_name,
+                            playlist_include=playlist_include,
+                            playlist_exclude=playlist_exclude,
+                            tracks_in_result=False,
+                            extracted_playlist_data_in_result=True,
+                            limit=None)\
+            .filter(pl.col(Playlist.extracted_dates).is_not_null(),
+                    pl.col(Playlist.extracted_dates).list.len().gt(0))
+
+        if dj_exclude_by_ids is not None:
+            dj_exclude_by_ids = (dj_exclude_by_ids.lazy() if isinstance(dj_exclude_by_ids, pl.DataFrame)
+                                 else dj_exclude_by_ids)
+            playlists = playlists\
+                .join(dj_exclude_by_ids, how='anti', on=PlaylistOwner.id)
+
+        if only_unique_date_formats:
+            # Only consider dates for which we can uniquely identify the format
+            # - so we can use the most frequent formats for a playlist owner
+            # to parse their other more ambiguous playlist names.
+            playlists = playlists\
+                .filter(pl.col(Stats.date_formats).list.len().eq(1))
+
+        playlist_owners = playlists\
+            .explode(Stats.date_formats)\
+            .group_by(PlaylistOwner.id, Stats.date_formats().alias(Stats.date_formats))\
+            .agg(PlaylistOwner.name().first(),
+                 Stats.date_formats().count())\
+            .group_by(PlaylistOwner.id)\
+            .agg(PlaylistOwner.name().first(),
+                 Stats.date_formats().sort_by(Stats.date_format_counts, descending=True),
+                 Stats.date_format_counts().sort(descending=True))
+
+        if sort_by == 'date_format_counts':
+            playlist_owners = playlist_owners\
+                .sort(Stats.date_format_counts().list.sum(), descending=descending)
+        elif sort_by is not None:
+            playlist_owners = playlist_owners\
+                .sort(sort_by, descending=descending)
+
+        return playlist_owners.slice(0, limit or None)
 
     def find_djs(
         self,

@@ -66,7 +66,7 @@ dd = date_part('day', r'(?:0[1-9]|[12]\d|3[01])')
 
 
 def date_pattern(name: str, pattern: str):
-    return f'\\b{pattern}\\b'
+    return (name, f'\\b{pattern}\\b')
 
 
 pattern_yyyy_mm_dd = date_pattern('yyyy_mm_dd', f'{yyyy}[-/.]{mm}[-/.]{dd}')
@@ -124,13 +124,30 @@ patterns_date = [
 ]
 
 
-def extract_dates_from_name(playlist_name: pl.Expr, *, sort: bool = False):
+def extract_date_strings_from_name(playlist_name: pl.Expr, *, sort: bool = False):
     """"Extract a list of calendar dates from the given playlist name."""
     result = pl.concat_list([
-        playlist_name.str.extract_all(date_pattern) for date_pattern in patterns_date
-    ]).list.unique()
+        playlist_name.str.extract_all(pattern)
+        for (name, pattern) in patterns_date
+    ]).list.drop_nulls().list.unique()
 
     return result.list.sort() if sort else result
+
+
+def extract_date_types_from_name(playlist_name: pl.Expr, *, sort: bool = False):
+    """"Extract a list of calendar date typess from the given playlist name."""
+    result = pl.concat_list([
+        pl.when(playlist_name.str.find(pattern).is_not_null())
+          .then(pl.lit(name))
+        for (name, pattern) in patterns_date
+    ]).list.drop_nulls().list.unique()
+
+    return result.list.sort() if sort else result
+
+
+def contains_date_in_name(playlist_name: pl.Expr):
+    """Returns whether `playlist_name` likely contains a date."""
+    return extract_date_strings_from_name(playlist_name).list.len().gt(0)
 
 
 #######################################################

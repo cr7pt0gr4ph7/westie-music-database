@@ -7,7 +7,7 @@ import polars as pl
 
 from utils.additional_data import actual_wcs_djs, queer_artists, poc_artists
 from utils.common.temp_files import TempFileTracker, with_temp_files
-from utils.playlist_classifiers import extract_dates_from_name, extract_tags_from_name
+from utils.playlist_classifiers import extract_date_strings_from_name, extract_tags_from_name
 from utils.search import (
     COUNTRY_DATA_FILE,
     DATA_DIR,
@@ -339,8 +339,7 @@ def process_playlist_and_song_data(*, prepare_deduplication: bool = False):
     )
 
     playlists = playlists.with_columns(
-        extract_dates_from_name(pl.col(Playlist.name), sort=True).cast(
-            pl.List(pl.String)).alias(Playlist.extracted_dates),
+        pl.col(Playlist.name).pipe(extract_date_strings_from_name, sort=True).alias(Playlist.extracted_dates),
     )
 
     # Add stub columns for track deduplication
