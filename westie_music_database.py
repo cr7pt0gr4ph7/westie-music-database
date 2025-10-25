@@ -423,7 +423,7 @@ if song_locator_toggle:
         #                         .with_columns(pl.col(Playlist.name).str.to_lowercase().str.split(' '))
         #                         .explode(Playlist.name)
         #                         .unique()
-        #                         .collect(streaming=True)
+        #                         .collect(engine='streaming')
         #                         [Playlist.name]
         #                         .to_list()
         #                         )
@@ -596,7 +596,7 @@ if playlist_locator_toggle:
                      .select(Playlist.name, Playlist.url, PlaylistOwner.name,
                              Playlist.matching_song_count, Stats.song_count,
                              Stats.artist_count, Track.name)
-                     .collect(streaming=True),
+                     .collect(engine='streaming'),
                      column_config={Playlist.url: st.column_config.LinkColumn()})
         st.session_state["processing"] = False
     st.markdown(f"#### ")
@@ -666,7 +666,7 @@ if search_dj_toggle:
             #         .with_columns(pl.col(PlaylistOwner.name).list.head(30))
             #         .sort(Stats.dj_count, Stats.playlist_count, descending=True)
             #         .head(200)
-            #         .collect(streaming=True),
+            #         .collect(engine='streaming'),
             #         column_config={Track.url: st.column_config.LinkColumn()})
         st.session_state["processing"] = False
 
@@ -676,7 +676,7 @@ if search_dj_toggle:
     #                  .cast(pl.String)
     #                  .unique()
     #                  .drop_nulls()
-    #                  .collect(streaming=True)
+    #                  .collect(engine='streaming')
     #                  [PlaylistOwner.name]
     #                  .to_list()
     #                  )
@@ -688,7 +688,7 @@ if search_dj_toggle:
     #                         dj_count = pl.n_unique(PlaylistOwner.name),
     #                         )
     #                 .sort(PlaylistOwner.name)
-    #                 .collect(streaming=True)
+    #                 .collect(engine='streaming')
     #         )
 
     # djs_selectbox = st.multiselect("Compare these DJ's music:", dj_list)
@@ -768,7 +768,7 @@ if geo_region_toggle:
                      .rename({'song_url': Track.url, 'owner.display_name': PlaylistOwner.name})
                      .sort(Stats.playlist_count, Stats.dj_count, descending=True))
 
-        st.dataframe(region_df.head(1000).collect(streaming=True),
+        st.dataframe(region_df.head(1000).collect(engine='streaming'),
                      column_config={Track.url: st.column_config.LinkColumn()})
 
     st.markdown(f"#### Comparing Countries' music:")
