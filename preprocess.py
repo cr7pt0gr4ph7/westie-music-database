@@ -762,45 +762,24 @@ def process_playlist_and_song_tags():
         track_tags_by_track_id = scan_parquet_file(temp_file)
 
         def process_track_tags_batch(tracks_batch: pl.LazyFrame) -> pl.LazyFrame:
-            return track_tags_by_track_id\
-                .join(tracks_batch, how='semi', on=Track.id)\
+            return tracks_batch\
                 .group_by(Track.id)\
-                .agg(pl.col(Tag.name).sort_by(Stats.playlist_count, descending=True).head(20),
-                     pl.col(Stats.playlist_count).sort(descending=True).head(
-                         20).alias(TrackTags.playlist_counts_per_tag),
-                     pl.col(Stats.playlist_count).sort(descending=True).head(20).sum().alias(TrackTags.tag_relations_count))\
-                .join(tracks_batch.select(Track.id, Track.name, Track.artists), how='inner', on=Track.id)
+                .agg(pl.col(Tag.name).sort_by(TrackTag.matching_playlist_count, descending=True)
+                     .alias(TrackTags.tags),
+                     pl.col(TrackTag.matching_playlist_count).sort(descending=True)
+                     .alias(TrackTags.playlist_counts_per_tag),
+                     pl.col(TrackTag.matching_playlist_count).sort(descending=True)
+                     .sum().alias(TrackTags.tag_relations_count))
 
-        def temp_file_for_index(index: int) -> str:
-            return TEMP_DATA_DIR + f'temp_tag_batch_{index}.parquet'
-
-        @with_temp_files
-        def process_track_tags_in_batches(batch_temp_files: TempFileTracker):
-            row_count = tracks.select(pl.len()).collect().item()
-            batch_size = 10000  # Higher batch sizes are faster but have a righer OOM risk
-            batch_count = int(math.ceil(row_count / batch_size))
-
-            print(f"Processing {row_count:,} tracks in {batch_count:,} batches of {batch_size:,} items...")
-
-            for batch_index in range(0, batch_count):
-                batch_start = batch_index * batch_size
-                print(f"Processing batch {batch_index:,}/{batch_count:,}")
-                batch_result = process_track_tags_batch(tracks.slice(batch_start, batch_size))\
-                    .sort('track.id')
-                temp_file = batch_temp_files.register_for_deletion(temp_file_for_index(batch_index))
-                write_to_parquet_file(batch_result, temp_file)
-
-            print("Merging batches...")
-
-            merged: pl.LazyFrame | None = None
-            for batch_index in range(0, batch_count):
-                batch_data = scan_parquet_file(temp_file_for_index(batch_index))
-                merged = (batch_data if merged is None else
-                          merged.merge_sorted(batch_data, 'track.id'))
-
-            write_to_parquet_file(merged, TRACK_TAGS_DATA_FILE)
-
-        process_track_tags_in_batches()
+        process_in_batches(
+            track_tags_by_track_id,
+            process_track_tags_batch,
+            batch_by=Track.id,
+            batch_values=tracks,
+            batch_name="tags",
+            batch_size=10000,  # Higher batch sizes are faster but have a righer OOM risk
+            output_name=TRACK_TAGS_DATA_FILE,
+        )
 
 
 def merge_playlist_tags_into_metadata():
