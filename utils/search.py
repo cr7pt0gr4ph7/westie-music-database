@@ -118,6 +118,7 @@ PLAYLIST_DATA_FILE: Final = DATA_DIR + 'data_playlist_metadata.parquet'
 PLAYLIST_TAGS_DATA_FILE: Final = DATA_DIR + 'data_playlist_tags.parquet'
 PLAYLIST_TRACKS_DATA_FILE: Final = DATA_DIR + 'data_playlist_songs.parquet'
 TAGS_DATA_FILE: Final = DATA_DIR + 'data_tags.parquet'
+TAG_STATS_DATA_FILE: Final = DATA_DIR + 'data_tag_stats.parquet'
 TRACK_PLAYLISTS_DATA_FILE: Final = DATA_DIR + 'data_song_playlists.parquet'
 TRACK_DATA_FILE: Final = DATA_DIR + 'data_song_metadata.parquet'
 TRACK_ADJACENT_DATA_FILE: Final = DATA_DIR + 'data_song_adjacent.parquet'
@@ -782,6 +783,7 @@ class CombinedData:
     track_lyrics: PolarsLazyFrame[TrackLyrics]
     track_tags: PolarsLazyFrame[TrackTags]
     tags: PolarsLazyFrame[Tag]
+    tag_stats: PolarsLazyFrame[Tag]
     countries: list[str]
 
     @property
@@ -817,6 +819,7 @@ class CombinedData:
             track_lyrics=pl.scan_parquet(TRACK_LYRICS_DATA_FILE),
             track_tags=pl.scan_parquet(TRACK_TAGS_DATA_FILE),
             tags=pl.scan_parquet(TAGS_DATA_FILE),
+            tag_stats=pl.scan_parquet(TAG_STATS_DATA_FILE),
             countries=pl.read_csv(COUNTRY_DATA_FILE)['country'].to_list(),
         )
 
@@ -1165,6 +1168,9 @@ class SearchEngine:
             descending = (descending if descending is not None else
                           sort_by == Tag.playlist_count)
             tags = tags.sort(sort_by, descending=descending)
+
+        tags = tags\
+            .join(self.data.tag_stats, how='left', on=Tag.name)
 
         return tags.slice(0, limit)
 

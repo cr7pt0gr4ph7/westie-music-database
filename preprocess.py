@@ -17,6 +17,7 @@ from utils.search import (
     PLAYLIST_TRACKS_DATA_FILE,
     PLAYLIST_TRACKS_ORIGINAL_DATA_FILE,
     REGION_DATA_FILE,
+    TAG_STATS_DATA_FILE,
     TAGS_DATA_FILE,
     TEMP_DATA_DIR,
     TRACK_ADJACENT_DATA_FILE,
@@ -89,6 +90,7 @@ def check_pre_rename(src: str, dst: str, *, track_file: bool):
     if track_file:
         renamed_files.add(src)
         written_files.remove(src) if src in written_files else None
+        opened_files.remove(src) if src in opened_files else None
 
 
 def rename_file(src: str, dst: str):
@@ -749,7 +751,7 @@ def process_playlist_and_song_tags():
               .filter(pl.col(Tag.name).is_not_null()),
               how='inner', on=Playlist.id)\
         .group_by(Track.id, Tag.name)\
-        .agg(pl.col(Tag.name).count().alias(TrackTag.matching_playlist_count))
+        .agg(pl.col(Playlist.id).n_unique().alias(TrackTag.matching_playlist_count))
 
     with TempFileTracker() as temp_files:
         temp_file = temp_files.register_for_deletion(TEMP_DATA_DIR + 'temp_track_tags.parquet')
@@ -782,13 +784,54 @@ def process_playlist_and_song_tags():
         )
 
 
+def process_tag_stats():
+    """Compute confidence statistics for each tag."""
+    tags = scan_parquet_file(TAGS_DATA_FILE)
+    track_tags = scan_parquet_file(TRACK_TAGS_DATA_FILE)\
+        .explode(TrackTags.tags, TrackTags.playlist_counts_per_tag)\
+        .rename({TrackTags.tags: TrackTag.tag,
+                 TrackTags.playlist_counts_per_tag: TrackTag.matching_playlist_count,
+                 TrackTags.tag_relations_count: 'track.tag_relations_count'})
+
+    playlist_count_buckets = [
+        0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+        10, 20, 30, 40, 50, 60, 70, 80, 90,
+        100, 200, 300, 400, 500, 600, 700, 800, 900,
+        1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000
+    ]
+
+    def process_track_tags_batch(track_tags_batch: pl.LazyFrame) -> pl.LazyFrame:
+        return track_tags_batch\
+            .group_by(TrackTag.tag, TrackTag.matching_playlist_count)\
+            .agg(TrackTag.matching_playlist_count().count().alias('num_tracks'))\
+            .group_by(TrackTag.tag)\
+            .agg(TrackTag.matching_playlist_count().max().alias(Tag.max_playlist_count),
+                 TrackTag.matching_playlist_count().sort(descending=True),
+                 pl.col('num_tracks').sort_by(Track.matching_playlist_count, descending=True))
+
+    def process_track_tags_batch(track_tags_batch: pl.LazyFrame) -> pl.LazyFrame:
+        return track_tags_batch\
+            .group_by(TrackTag.tag)\
+            .agg(TrackTag.matching_playlist_count().max().alias(Tag.max_playlist_count))
+
+    process_in_batches(
+        track_tags,
+        process_track_tags_batch,
+        batch_by=TrackTag.tag,
+        batch_values=tags,
+        batch_size=10,
+        batch_name="tag_stats",
+        output_name=TAG_STATS_DATA_FILE,
+    )
+
+
 def merge_playlist_tags_into_metadata():
     UNTAGGED_PLAYLISTS_DATA_FILE = TEMP_DATA_DIR + 'data_playlist_metadata.untagged.parquet'
     rename_file(PLAYLIST_DATA_FILE, UNTAGGED_PLAYLISTS_DATA_FILE)
 
     playlists = scan_parquet_file(UNTAGGED_PLAYLISTS_DATA_FILE)
     playlist_tags = scan_parquet_file(PLAYLIST_TAGS_DATA_FILE)
-    playlists_with_tags = playlists\
+    playlists_with_tags = playlists.drop(PlaylistTags.tags)\
         .join(playlist_tags.select(Playlist.id, PlaylistTags.tags), how='left', on=Playlist.id)\
         .sort(Playlist.id)
 
@@ -801,7 +844,9 @@ def merge_song_tags_into_metadata():
 
     tracks = scan_parquet_file(UNTAGGED_TRACKS_DATA_FILE)
     track_tags = scan_parquet_file(TRACK_TAGS_DATA_FILE)
-    tracks_with_tags = tracks\
+    tracks_with_tags = tracks.drop(TrackTags.tags,
+                                   TrackTags.playlist_counts_per_tag,
+                                   TrackTags.tag_relations_count)\
         .join(track_tags.select(Track.id,
                                 TrackTags.tags,
                                 TrackTags.playlist_counts_per_tag,
@@ -841,6 +886,7 @@ def process_everything(merge_duplicates: bool = True):
 
     # Extract tags from playlist titles and assign to songs
     process_playlist_and_song_tags()
+    process_tag_stats()
     merge_playlist_tags_into_metadata()
     merge_song_tags_into_metadata()
 
@@ -849,4 +895,7 @@ def process_everything(merge_duplicates: bool = True):
 
 # Run full pre-processing when invoked via `python preprocess.py`
 if __name__ == '__main__':
-    process_everything()
+    process_playlist_and_song_tags()
+    process_tag_stats()
+    merge_playlist_tags_into_metadata()
+    merge_song_tags_into_metadata()

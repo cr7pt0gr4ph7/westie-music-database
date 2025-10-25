@@ -240,6 +240,9 @@ class Tag(Entity):
     playlist_count: Final = Stats.playlist_count.alias("tag.playlist_count")
     """How many playlists have this tag."""
 
+    max_playlist_count: Final = Stats.playlist_count.alias("max_playlist_count")
+    """The maximum number of times a song has been tagged with this tag."""
+
     playlist_names: Final = Playlist.name.list()
     """The names of some (but not all) playlists that have this tag."""
 
