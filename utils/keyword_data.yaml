@@ -1,7 +1,94 @@
 keywords:
+  dance:
+    # West Coast Swing
+    - wcs:
+        - wc
+        - wcs
+        - wsc
+        - west coast swing
+        - west cost swing
+        - westcoast
+        - westcoastswing
+        - westie
+        - westies
+        - swouk
+
+    - not west coast swing:
+        - east coast swing:
+            - ecs
+            - east coast swing
+            - eastcoastswing
+
+        - ballroom / latin:
+            # Ballroom & Latin
+            - ccc
+            - cha cha
+            - cha cha cha
+            - df
+            - discofox
+            - ft
+            - foxtrot
+            - foxtrott
+            - lw
+            - qs
+            - quik step
+            - quikstep
+            - quick step
+            - quickstep
+            - rb
+            - ru
+            - rumba
+            - sf
+            - slowfox
+            - tango
+            - argentino
+            - milonga
+            - ww
+            - waltz
+
+            # More ballroom-related keywords
+            - ball
+            - chartbreaker
+            - hochzeit
+            - tanz
+            - tanzmusik
+            - tanzorchester
+            - tanz orchester
+            - klaus hallen
+            - tanzparty
+            - tanzrunde
+
+        # Unrelated solo dancing
+        - kita
+        - kids
+        - "#Tanz-Minis"
+        - 7-9 jahre
+        - hh
+        - fitness
+        - hardstyle
+        - jumpstyle
+        - pole dance
+        - pole dancing
+        - line dance
+
+          # Other dance styles
+        - crossover
+        - kizomba:
+            - kiz
+            - kizomba
+            - urban kiz
+        - soltinho: # Google says: "Brasilian couple dance, that developed from East Coast Swing and is danced to Rock, Disco and Swing."
+            - soltinho
+        - swouk: # Term used for combined West Coast Swing + Zouk socials
+            - swouk
+        - zouk:
+            - zouk
+            - swouk
   context:
     # Competitions
     - competition:
+        - all skate
+        - all-skate
         - comp
         - competition
         - comps
@@ -44,14 +131,20 @@ keywords:
         - unterricht
         - workshop:
             - intensive:
+                - intensif
+                - intensivdag
                 - intensive
+                - intensivos
             - workshop
             - workshops
             - ws
 
     # Routines
     - routine:
-        - proam
+        - proam:
+            - proam
+            - pro-am
+            - pro am
         - rising
         - rising star
         - routine
@@ -70,11 +163,16 @@ keywords:
         - warm up
         - warm-up
 
+    # Cool down
+    - cool down:
+        - cooldown
+        - cool down
+        - cool-down
+        - cool off
+
     # Parties
     - party:
         - open air
-        - air # "open air"
-        - nights  # "social nights"
         - outdoor
         - party
         - practica
@@ -83,6 +181,7 @@ keywords:
         - praktis
         - pratique
         - social
+        - social nights
         - socialdans
         - socials
         - soiree
@@ -95,9 +194,11 @@ keywords:
         - training
         - träning
         - treino
+        - trening
+        - torsdagstrening # translation: thursday training
 
     # WCS Rally / Flashmob
-    - flashmob:
+    - rally:
         - flashmob
         - rally
 
@@ -125,8 +226,8 @@ keywords:
   level:
     # These can mean competition or difficulity levels
     - all-star:
-      - all-star
-      - all star
+        - all-star
+        - all star
     - advanced:
         - adv
         - advanced
@@ -155,8 +256,16 @@ keywords:
     - hard
     - pro
     - difficult
+    - complex
+    - simple
   genre:
-      # The following genres seem to lead to precise matches
+    # The following genres seem to lead to precise matches
+    - not blues:
+        - no blues
+        - not blues
+    - blues-:
+        - no blues
+        - not blues
     - blues
     - bluesy
     - country
@@ -172,77 +281,118 @@ keywords:
     - punk
     - rap
     - r&b:
-      - rnb
-      - r&b
-    - rock  # "soft rock", "alternative rock", "pop rock",
+        - rnb
+        - r&b
+    - rock # "soft rock", "alternative rock", "pop rock",
     - soul
 
       # The following genres may require more detailed examination,
       # and may need further information to identify WCS playlists
     - kpop:
-      - kpop
-      - k-pop
+        - kpop
+        - k-pop
+    - broadway
     - musicals
     - jazz
     - pop
     - trance
-    - old  # imprecise # old school
-    - old school
 
     # Review these
     - indie
-    - soundtrack
-    - soundtrack)
-    - lyrics
+    - soundtrack:
+        - soundtrack
+        - motion picture
 
     # These aren't exactly music genres, but have a very
     # similar meaning in the context of West Coast Swing
     - acoustic
-    - cover
-    - covers
-    - funky
+    - covers:
+        - cover
+        - covers
     - guitar
-    - instrumental
+    - instrumental:
+        - instrumental
+        - without lyrics
     - late night:
-        - late
-        - night
-        - nite
         - late night
         - late nite
         - latenight
+        - latenite
+        - graveyard shift
+        # The terms below are for matching all the late night
+        # DJ sets from events that have the time in their name
+        - "02:00"
+        - "03:00"
+        - "04:00"
+        - "05:00"
+        - "06:00"
+        # - 1am
+        - 2am
+        - "2:30am"
+        - 2-4am
+        - 3am
+        - 4am
+        - "4:30am"
+        - 5am
+        - 6am
+        - 7am
     - piano
-
-    # These are qualifiers
-    - fast
-    - faster
-    - slow
-    - slower
-    - medium  # "medium fast", # imprecise
 
       # The following terms probably need further investigation.
       # Some of them seem to define "musical feels".
-    - fusion  # imprecise
-    - groovy  # -"groovy tuesdays"?
-    - smooth
-    - triple
-    - step  # "step step"
-    - walk
+    - fusion # imprecise
   epoch:
     # These classifications are based on time frames instead of genres
-    - 70s:
-      - 70s
-      - 70's
-    - 80s:
-      - 80s
-      - 80's,
-    - 90s:
-      - 90s
-      - 90's
-    - 2000s: 2000s
+    - 1920s:
+        - 20s
+        - 20's
+        - 1920s
+        - 1920's
+    - 1940s:
+        - 40s
+        - 40's
+        - 1940s
+        - 1940's
+    - 1950s:
+        - 50s
+        - 50's
+        - 1950s
+        - 1950's
+    - 1960s:
+        - 60s
+        - 60's
+        - 1960s
+        - 1960's
+    - 1970s:
+        - 70s
+        - 70's
+        - 1970s
+        - 1970's
+    - 1980s:
+        - 80s
+        - 80's,
+        - 1980s
+        - 1980's,
+    - 1990s:
+        - 90s
+        - 90's
+        - 1990s
+        - 1990's
+    - 2000s:
+        - 2000s
+        - 2000's
+        - 00s
+        - 00's
+    - 2010s:
+        - 2010s
+        - 2010's
+    - 2020s:
+        - 2020s
+        - 2020's
     # ----------------
     - contemporary:
-      - contemp
-      - contemporary # slow contemorary
+        - contemp
+        - contemporary # slow contemorary
     - modern: modern # imprecise
     # "now",  # imprecise
     # ----------------
@@ -251,54 +401,887 @@ keywords:
     - oldies: oldies
     - retro: retro
     - throwback:
-      - throwback
-      - throwbacks
-    # ----------------
-    - hit:
-      - hit
-      - hits
-      - bangers
-      - popular
+        - throwback
+        - throwbacks
+    - old school:
+        - old school
+        - old times
   mood:
     # These aren't musical genres but moods
     - calm
     - chill
     - happy
-    - high "energy", "high energy",
+    - happy-:
+        - happy birthday
+    - energy
+    - high energy:
+        - high energy
+        - high energy
+    - medium energy:
+        - medium energy
+        - medium - low energy
+    - low energy:
+        - low energy
+        - medium - low energy
+    - mellow:
+        - mellow
+        - mellowmellowmellow
     - rage
-    - relax "relaxing",
+    - relaxed:
+        - relax
+        - relaxed
+        - relaxing
+        - laid back
     - sad
     - sexy
     # "warm", # -"warm up" # imprecise without further filtering
 
     # Need further investigation
-    - good
+    - funky
+    - groovy
+    - groovy-:
+        - groovy tuesday
+        - groovy tuesdays
+        - groovy tuesday's
+    - nice
+    - good:
+        - good
+        - gut
+        - gute
     - vibes
-    - good vibes
-    - good
+    - good vibes:
+        - good vibe
+        - good vibes
+        - gute vibes
+        - nice vibes
     - morning
     - good morning
-    - gute
-    - nice
     - power
 
     # Also need more investigation
+    - lovely
     - beautiful
     - chillout
     - emotional
     - feeling
     - guilty
-    - hype
+    - hype:
+        - hype
+        - motivation
     - lucky
     - mellow
     - moody
-    - romantic
+    - romantic:
+        - romance
+        - romantic
+        - romantik
+        - romantisch
+        - romantische
     - sensual
+    - tropical
 
     # More stuff
     - soft
     - dark # ?
+    - deep
 
     # mood or rhythm
     - downbeat
     - upbeat
+  tempo:
+    # These are qualifiers
+    - fast-:
+        - not fast
+        - not too fast
+    - fast:
+        - fast
+        - faster
+    - slow:
+        - slow
+        - slower
+    - medium:
+        - medium speed
+        - medium tempo
+    - slow?: # imprecise
+        - slow/medium
+        - medium/slow
+    - fast?: # imprecise
+        - medium fast
+        - medium-fast
+        - medium/fast
+        - fast/medium
+    - medium?: # imprecise
+        - slow/medium
+        - medium fast
+        - medium/fast
+        - fast/medium
+  timing:
+    - 6/8 time:
+        - 6/8
+        - six-eigth time
+        - six-eight time
+    - clear beat # TODO: Avoid matching e.g. "no clear beat"
+    - clear beat-:
+        - no clear beat
+    - no clear beat
+    - shuffle?: # imprecise
+        - shuffle
+    - smooth
+    - straight:
+        - straight
+    - swung:
+        - swung
+        - shuffle timing
+        - shuffle rhythm
+        - shuffled swing
+        - clear swing beat
+    - ternary
+    - staccato
+    - legato
+    - upbeat and downbeat:
+        - clear down up beat
+        - up beat down beat
+        - up and down beat
+    - wrong time signature # investigate
+  topic:
+    - 12 bar:
+        - 12 bar
+        - 6x8 blues
+    - 32 counts:
+        - 32 bar
+        - 32 counts
+        - 32 ct
+        - 32 beat
+        - 32 beats
+        - 2x32 phrase
+        - 32 phrase
+        - 32er
+    - accents:
+        - accent
+        - accents
+    - barre
+    - basic
+    - basics
+    - body movement: # see if we can split this up further
+        - intrabody
+        - sharp movement
+        - body movement
+        - body moves
+        - body isolation
+        - isolation
+        - what body part is this
+        - upper body
+        - upper body workshop
+        - body awareness
+        - earth my body
+        - body barre
+        - body talk
+    - body waves:
+        - body roll
+        - body rolls
+        - body wave
+        - body waves
+    - breaks:
+        - breaks
+        - hits & breaks
+        - stopsnbreaks
+        - stops
+    - call and response:
+        - call
+        - response
+        - call & response
+        - call and response
+    - intensity:
+        - intensité
+        - intensity
+    - micromusciality:
+        - micro musciality
+        - micromusciality
+        - musicality - micro
+    - musicality:
+        - muscality
+        - musicality
+        - musicalité
+        - musikalität
+    - phrasing:
+        - phrase
+        - phrases
+        - phrased
+        - phrasing
+        - phrase change
+        - phrase changes
+    - structure # imprecise - discard?
+    - styling:
+        - follower style
+        - leader style
+        - styling
+    - footwork
+    - lyrical:
+        - lyrical
+    - lyrics
+    - lyrics-:
+        - without lyrics
+    - rhythm related:
+        - rhythm
+        - rhythn
+        - rhythmn
+        - rhythms
+    - stretching:
+        - stretch
+        - streching
+    - timing # further investigation needed
+    # - intro # imprecise
+    # - intros # imprecise
+    - long intro:
+        - long intro
+        - long intros
+    - moves # further investication needed
+    # - musique # unrelated
+    - performance # imprecise
+    # misc
+    - double
+    - double time
+    - single
+    - single time
+    - triple
+    - triplestep-:
+        - "triple j's"
+    - triplestep:
+        - double triple
+        - doubletripletiming
+        - triples
+        - triple pas
+        - triple rhythmn
+        - triple step
+        - triple steps
+        - triple swing
+        - triple time
+        - triplestep
+        - triplesteps
+        - triplet
+        - triplette
+        - walk walk triple
+    - triplestep-:
+        - not triples
+        - triple step tuesday
+        - "triple j's"
+        - wine and triples
+    - walks:
+        - double triple
+        - doubletripletiming
+        - walks
+        - walk walk
+        - step step
+    - walks-:
+        - hot girl walks
+        - walks away
+  seasonal:
+    - birthday:
+        - b-day
+        - bday
+        - birthday
+        - geburtstag
+    - christmas:
+        - "🌲"
+        - "🎅"
+        - "🎅🏼"
+        - "🤶🏻"
+        - "🧑🏻‍🎄"
+        - christmas
+        - christmastime
+        - god jul
+        - holidays
+        - navidad
+        - noël
+        - x-mas
+        - xmas
+    - autumn: # todo: remove event titles from matches
+        - "🍂"
+        - autumn
+        - fall
+    - halloween: # todo: remove event titles from matches
+        - halloween
+        - spooky
+    - spring: # todo: remove event titles from matches
+        - spring
+    - summer: # todo: remove event titles from matches
+        - beach
+        - pool
+        - summer
+    - winter: # todo: remove event titles from matches#
+        - "☃️"
+        - "❄️"
+        - winter
+  playlist:
+    - ordered:
+        - decreasing
+        - increasing
+        - ordered
+        - sorted by
+        - grouped by
+        - sorted.by
+        - grouped.by
+
+    - favorites:
+        - fav
+        - fave
+        - faves
+        - favorite
+        - favoriter
+        - favorites
+        - favourite
+        - favourites
+        - favs
+        - liked
+        - mit star bewertet
+        - starred
+        - i like
+
+    - hits:
+        - all time
+        - all-time
+        - alltime
+        - anthems
+        - bangers
+        - hit
+        - hits
+        - picks
+        - popular
+        - ready
+        - top
+        - ultimate
+    - hits-:
+        - top gear
+        - to hit
+
+    # Playlists with the following keywords in a name have a
+    # higher probability of being a partially unsorted pile
+    # of songs, and as such the tags they assign to songs
+    # should likely get a lower weight.
+    - probably rough tagging:
+        - "& stuff" # "Acoustics & Stuff"
+        - and stuff
+        - dump
+        - misc
+        - maybe
+        - mixed
+        - mostly
+        - no clear
+        - random
+        - sort
+        - test
+        - to try
+        - unsorted
+
+        # Our keyword parsing scheme doesn't deal with negations yet
+        - "but"
+        - "no"
+        - "not"
+
+        # Not all playlists matching the following keywords have
+        # rough tagging, but it's hard to tell them apart based
+        # on their name alone...
+        - experimental
+        - ideas
+        - interesting
+        - listen
+        - listening
+        - memories
+        - possible
+        - potential
+        - trial
+        - some
+        - something
+        - sometime
+        - sometimes
+
+    # Audience requests
+    - suggestions:
+        # - new # but not "new years", "new playlist", "new day"
+        - new wcs
+        - requests
+        - suggestions
+
+    # e.g. "2024 Finds", "Newer finds"
+    - discoveries:
+        # - explore # Most matching playlists are called "Explore 5/15/23" and are party playlists...
+        - find
+        - findings
+        - finds
+        - incoming
+        - inspiration
+
+    # Playlists with the following in their name are collections
+    # created by users that indicate a very subjective sorting.
+    - random lists:
+        - stuff # "stuff i like"
+        - i like
+
+    # Playlists that should maybe be stripped from the data
+    - unrelated:
+        - kids
+        - dog walk
+        - hip hop kids
+        - hip hop choreos
+
+    - shazam:
+        - shazam
+        - shazams
+        - shazam-titel
+        - shazamed
+  events:
+    - buma
+    - calonocna: # Całonocna
+        - całonocna
+        - calonocna
+    - century
+    - cukr push # Cukr Push
+    - cwf
+    - dance lab
+    - werk36 # ORG/LOCATION: Werk36
+    - dyos # DYOS
+    - elevation dance
+    - elk
+    - elks
+    - esdc
+    - evolve
+    - explore
+    - fnpl
+    # - getreadywith<name>
+    - gm
+    - hb
+    - hcs
+    - idance # ORG: iDance
+    - impreza
+    - infinity
+    - intensiv' experience # EVENT?: Intensiv' Experience
+    - ivra
+    - lbb
+    - lundi plain air
+    - lyon à la maison # Lyon à la Maison
+    - majowy poronin # Majowy Poronin
+    - mambita
+    - mcs # EVENT?: MCS, MCS FH, MCS Later
+    - mdj
+    - melanie
+    - madison west coast swing club: # ORG: Madison West Coast Swing Club
+        - madison west coast swing club
+        - mwcsc
+    - nadmorska integracja # Nadmorska Integracja
+    - nyc # NYC
+    - omj # OMJ
+    - papillon
+    - poronin
+    - rideau swing collective
+    - rowell
+    - roxie's
+    - sds
+    - afterwork tds # EVENT: Afterwork TDS
+    - silbando
+    - skåneswing # EVENT: SkåneSwing
+    - sofiensäle # LOCATION: Sofiensäle
+    - ski west
+    - spacecoastdc # EVENT: SpaceCoastDC
+    - steve ryan dance
+    - swing amore: # EVENT: Swing Amore
+        - swing amore
+        - swingamore
+    - swingting: # EVENT: SwingTing
+        - swingting
+        - swing ting
+    - swingout # EVENT: SwingOut
+    - swing of music # EVENT: Swing of Music
+    - swingsoul # EVENT: SwingSoul
+    - tatarska
+    - the kårner # PARTY?/ORG?: The Kårner
+    - tri-town swing # EVENT: Tri-Town Swing
+    - trivia # PARTY?
+    - ucswing # UCSwing
+    - ulm
+    - walentynki
+    - west coast wednesdays: # PARTY: West Coast Wednesdays in Chicago
+        - west coast wednesday
+        - west coast wednesdays
+        - wcw
+    - westlv # EVENT?: WesTLV
+    - westy welsh # EVENT: Westy Welsh
+    - wieczorek
+    - wny dance: # ORG: WnY Dance in Marin
+        - wny # WnY
+    - wprawki
+    - wsca
+    - żaczek
+    - zf
+    - zonawcs # ZonaWCS
+    #
+    - amigo's # PARTY?: AMIGO'S
+    - aix on west: # EVENT: Aix on West
+        - aiw
+        - aix on west
+    - arnic: # EVENT?: [ArNic]
+        - arnic
+        - "[arnic]"
+    - asia open: # EVENT: Asia Open
+         - asia open
+         - asian open
+         - asia west coast swing open
+         - awcso
+    - atlanta swing classic: # EVENT: Atlanta Swing Classic
+        - atlanta swing classic
+        - asc
+    - augsburg westie station # EVENT: Augsburg Westie Station
+    - austin westie academy: # ORG: Austin Westie Academy
+        - austin westie academy
+        - awa
+    - baltic swing # EVENT: Baltic Swing [year]
+    - bavarian open
+    - bcsdc
+    - berlin swing revolution # EVENT: Berlin Swing Revolution [year]
+    - blackout friday
+    - bonn tanzt: # ORG: Bonn Tanzt
+        - bonn-tanzt
+        - bonn tanzt
+    - boogie on the bay: # EVENT: BotB
+        - botb
+        - boogie on the bay
+    - breizh coast swing # EVENT: Breizh Coast Swing
+    - bretzel swing # EVENT: Bretzel Swing
+    - bridgetown
+    - bristol swing fiesta # EVENT: Bristol Swing Fiesta
+    - brivi swing: # EVENT?/PARTY?/ORG?: BriVi Buli (Hungarian: "BriVi Party")
+        - brivi
+        - brivi buli
+        - brivi swing
+    - boston swing labs: # ORG: Boston Swing Labs
+        - boston swing labs
+        - bsl
+        - bsl2025
+    - budafest # EVENT: Budafest
+    - candy swing # EVENT?
+    - cds
+    - cincy westie bash # ?: Cincy Westie Bash
+    - code03: # PARTY?/ORG?: Code 03
+        - code03
+        - code 03
+    - countdown swing boston: # EVENT: Countdown Boston
+        - countdown boston
+        - countdown swing
+        - countdown swing boston
+    - danceboston:
+        - danceboston
+        - dance boston
+    - dancing for dessert: # ORG/LOCATION: Dacing for Desert Ballroom in Vancouver
+        - dancing for desert
+        - dancing for dessert
+        - dfd
+    - boston westie
+    - dance for hope # EVENT?: Dance for Hope
+    - dance out loud
+    - dance with joy: # ORG: Dance with Joy
+        - dance with joy
+        - dwj
+    - dancing fools # EVENT: Dancing Fools
+    - dc bachata experience: # EVENT: DCBXperience
+        - dcbx
+        - dc bachata experience
+    - dc swing experience: # EVENT: DC Swing eXperience
+        - dcsx
+        - dcsx2023
+        - dc swing experience
+    - dunedin
+    - d-town swing:
+        - d-town
+        - dtown
+        - d town swing
+        - d townswing
+        - d-town swing
+    - easter swing # ?: Probably matches multiple events
+    - fall into swing # EVENT: Fall into Swing
+    - farnham friday # PARTY: Farnham Friday
+    - feel good fridays # PARTY: Feel Good Fridays
+    - finnfest # EVENT: Finnfest
+    - fin4swing
+    - first friday: # PARTY: First Friday
+        - first friday
+        - ff
+    - flow friday: # PARTY: Flow Friday
+        - flow friday
+        - flow fridays
+    - frankfurt tanzt # ORG: Frankfurt Tanzt
+    - freedom swing # EVENT: Freedom Swing
+    - frenchco # ?: FrenchCo
+    - french open:
+        - french open # EVENT: French Open [year]
+        - fowcs
+    - friday jams # PARTY: Friday Jams
+    - groovetopia
+    - groovy tuesdays # PARTY: Groovy Tuesdays
+    - king swing: # EVENT: King Swing
+        - king swing
+        - ks
+    - kiwi fest: # EVENT: Kiwi Fest
+        - kiwi fest
+        - kiwi
+    - klc # EVENT, but seems to be discontinued (could only find references to KLC 2013 online)
+    - konobueno # ZF Konobueno # I have no idea what this is, but it appears consistently in multiple playlist names
+    - korean open:
+        - korea open # EVENT: Korea Open [year]
+        - korean open
+    - korea westival
+    - kv # Probably an event, but not sure which one
+    - lakeside swing: # EVENT: Lakeside Swing
+        - lakeside swing
+    - liberty swing:
+        - liberty # EVENT: Liberty [year]
+        - liberty swing
+    - lollapalooza: # ?: LOLLA
+        - lolla
+        - lollapalooza
+    - madjam # EVENT: MADJam [year]
+    - med in swing: # EVENT: Med In Swing
+        - med in swing
+        - med vendredi
+        - med dimanche
+        - med venedi
+    - midwest westie fest: # EVENT: Midwest Westie Fest
+        - midwest westie fest
+        - midwest friday
+        - midwest saturday
+        - midwest sunday
+        - mwf # MWF [year]
+    - milan modern swing:
+        - milanms2024
+        - milanms
+        - mms
+        - milan modern swing
+    - mountain magic # EVENT: Mountain Magic [year]
+    - midland swing open: # EVENT: Midland Swing Open
+        - midland
+        - mso
+    - msm # EVENT? Could only find references to MSM Dance Showcase
+    - myswing # EVENT?: MySwing
+    - new england dance festival: # EVENT: New England Dance Festival
+        - nedf
+        - new england dance festival
+    - new zealand open: # EVENT: New Zealand Open
+        - new zealand open
+        - nz open
+        - NZO
+        - NZO2010
+        - NZO2011
+        - NZO2012
+        - NZO2013
+        - NZO2014
+        - NZO2015
+        - NZO2016
+        - NZO2017
+        - NZO2018
+        - NZO2019
+        - NZO2020
+        - NZO2021
+        - NZO2023
+        - NZO2024
+        - NZO2025
+        - NZO2026
+        - NZO2027
+    - neverland swing: # EVENT: NeverlandSwing
+        - nls
+        - nls2024
+        - nls2025
+        - neverland
+        - neverlandswing
+        - neverlandswing2020
+    - nordic swing:
+        - nordic friday
+        - nordic saturday
+        - nordic sunday
+    - odyssey # EVENT?: Odyssey ?
+    - openair böblingen # PARTY: OpenAir Böblingen
+    - paris swing classic: # EVENT: Paris Swing Classic
+        - paris swing
+        - paris swing classic
+        - psc
+        - psc4
+    - phillyswing:
+        - phillyswing
+        - phillyswing22
+    - portland swing dance club:
+        - portland swing dance club
+        - psdc
+    - riga summer swing # EVENT: Riga Summer Swing
+    - rolling swing # EVENT: Rolling Swing
+    - rose city swing: # EVENT: Rose City Swing
+        - rose city
+        - rose city swing
+        - rcs
+        - rose.city.swing
+    - rsb:
+        - rsb
+        - rsb2024
+    - rtb
+    - the roundhouse experiment vancouver: # PARTY: The Roundhouse Experiment
+        - rx
+        - roundhouse experiment
+    - sauna swing: # EVENT: Sauna Swing
+        - saunaswing
+        - sauna swing
+    - sea sun swing: # EVENT: Sea Sun Swing
+        - sea sun swing
+        - ssw # check if this is right
+        - sss
+    - seattle swing dance club: # ORG: Seattle Swing Dance Club
+        - seattle swing dance club
+        - ssdc
+    - shakedown # EVENT: Shakedown
+    - shoreline: # EVENT: ShoreLINE
+        - shoreline
+        - shoreline friday
+        - shoreline saturday
+        - shoreline sunday
+    - simply adelaide
+    - scandinavian open:
+        - scandinavian open
+        - snow friday
+        - snow saturday
+        - snow sunday
+        - snow 2010
+        - snow 2011
+        - snow 2012
+        - snow 2013
+        - snow 2014
+        - snow 2015
+        - snow 2016
+        - snow 2017
+        - snow 2018
+        - snow 2019
+        - snow 2020
+        - snow 2021
+        - snow 2023
+        - snow 2024
+        - snow 2025
+        - snow 2026
+        - snow 2027
+    - showme # ?: ShowMe
+    - slingshot swing # EVENT: Slingshot Swing
+    - slovenian open # EVENT: Slovenian Open
+    - spring time swing: # EVENT: Spring Time Swing
+        - spring time swing
+        - springtimeswing
+        - springtimeswing2025
+    - swingside invitational: # EVENT: Swingside Invitational
+        - ssi
+        - swingside invitational
+    - sunday & swing # PARTY: Sunday & Swing
+    - sunday swing # PARTY: Sunday Swing
+    - swing city chicago # EVENT: Swing City Chicago [year]
+    - swing crush
+    - swing fiction: # EVENT: Swing Fiction
+        - swingfiction
+        - swing fiction
+    - swing fling:
+        - swing fling
+        - swingfling2023
+    - swing over
+    - swing together
+    - swingapalooza # EVENT: Swingapalooza
+    - swingconnect: # EVENT: SwingConnect in Houston, Texas
+        - swingconnect
+        - swing connect
+        - swingconnecthtx
+    - swingcouver # EVENT: Swingcouver
+    - swingesota # EVENT: Swingesota
+    - swinghearts # EVENT: Swinghearts
+    - swingin festival: # EVENT: SwingIn Festival
+        - swingin festival
+        - swing in festival
+        - swingin # potential problem: matches too much?
+    - swingsation # EVENT: Swingsation
+    - swingtacular # EVENT: Swingtacular [year]
+    - swingtime # EVENT: Swingtime [year]
+    - swingtzerland # EVENT Swingtzerland
+    - swingvasion # EVENT: Swingvasion
+    - switchxperience: # EVENT: SwitchX
+        - switchx
+        - switchx2025
+        - switch experience
+        - switch xperience
+        - switch x
+        - switch x perience
+        - switchxperience
+    - symphony swing # EVENT: Symphony Swing
+    - tanzbogen # ORG: Tanzbogen Wien
+    - tanzes # ORG: TanzEs
+    - tb swing # ORG: TB Swing
+    - tc rebels: # ?: TC Rebels
+        - tc rebels
+        - rebels anniversary
+    - temple du swing: # EVENT: Temple du Swing
+        - temple du swing
+        - tds
+    - the after party: # EVENT: The After Party [year] / TAP [year]
+        - tap
+        - the after party
+    - the open # EVENT: The Open [year]
+    - tlv swingfest # EVENT: TLV SwingFest
+    - toulon westie camp: # EVENT: Toulon Westie Camp
+        - toulon westie camp
+        - twc
+    - txfx:
+        - txfx2019
+    - umea westie weekend: # EVENT: Umeå Westie Weekend
+        - umeå westie weekend
+        - umea westie weekend
+        - uww
+    - utah dance fest:
+        - udf # EVENT: UDF [year]
+        - utah dance fest
+    - uptown # EVENT: UpTown
+    - ukrainian open: # EVENT: Ukrainian Open [year]
+        - ukrainian open
+        - ua open
+    - us open # EVENT: US Open [year]
+    - valentine swing
+    - warsaw halloween swing: # EVENT: Warsaw Halloween Swing
+        - warsaw halloween swing
+        - whs
+    - warsaw summer nights westival: # EVENT: Warsaw Summer Nights Westival
+        - summer nights westival
+        - warsaw summer nights
+        - wsnw
+    - wcsa # ?: WCSA | West Coast Swing Amsterdam?
+    - wcstuesday # PARTY: WCSTuesday
+    - west duck swing # EVENT: West Duck Swing
+    - westie spring thing # EVENT: Westie Spring Thing
+    - westie wednesdays: # PARTY: Westie Wednesday's
+        - westie wednesday
+        - westie wednesdays
+        - westie wednesday's
+    - westie wisdom:
+        - westie wisdom
+        - westie wisdom2024
+    - westie's angels # EVENT: Westie's Angels
+    - westieval: # EVENT: Westieval
+        - westieval
+        - 9westieval
+    - west cone swing # EVENT?: West Cone Swing
+    - westy nantes # EVENT: Westy Nantes
+    - westiebos # ?: WestieBOS
+    - westiewaves # ?: WestieWaves
+    - wicked westie # EVENT: Wicked Westie
+    - winnipeg workshop weekend
+    - west in lyon: # EVENT: West in Lyon
+        - west in lyon
+        - wil
+    - windy city westies # ?: Windy City Westies
+    - winter crazy swing # EVENT: Winter Crazy Swing
+    - winter white # EVENT: Winter White
+    - westie on the promenade: # EVENT: Westie on the Promenade
+        - westie on the promenade
+        - wotp
+    - westies on the water: # EVENT: Westies on the Water
+        - westies on the water
+        - wotw # EVENT: WotW
+    # - win # probably an event, not sure which one
+    - wwwcs # ?: WWWCS
+    - xpress # XPRESS seems to be an organization
+    - zouksea # EVENT: Zouksea
