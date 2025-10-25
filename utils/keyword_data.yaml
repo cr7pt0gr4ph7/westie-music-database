@@ -1,10 +1,25 @@
 colors:
+  # context: "#ffd16a" # Light Orange [orange50]
+  # level: "#83c9ff" # Light Blue [blue40]
+  # genre: "#803df5" # Violet [lightTheme.violetColor]
+  # epoch: "#00c0f2" # Turqouise
+  # mood: "#29b09d" # Blue-Green [blueGreen80]
+  # topic: "#ffabab" # Light Red [red40]
   context: "#ffa421" # Orange [lightTheme.orangeColor]
   level: "#0068c9" # Dark Blue [blue80]
   genre: "#803df5" # Violet [lightTheme.violetColor]
   epoch: "#00c0f2" # Turqouise
   mood: "#29b09d" # Blue-Green [blueGreen80]
   topic: "#ffabab" # Light Red [red40]
+  # "#ffa421" # Orange [lightTheme.orangeColor]
+  # "#803df5" # Violet [lightTheme.violetColor]
+  # "#00c0f2" # Turqouise
+  # "#0068c9" # Dark Blue [blue80]
+  # "#29b09d" # Blue-Green [blueGreen80]
+  # "#ff2b2b" # Medium Red [red80]
+  # # "#ff4b4b" # Red [lightTheme.redColor]
+  # "#21c354" # Green [lightTheme.greenColor]
+  # "#a3a8b8" # Gray [lightTheme.grayColor]
 keywords:
   dance:
     # West Coast Swing
