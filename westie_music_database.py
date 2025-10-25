@@ -3,7 +3,6 @@ from typing import Final
 
 import streamlit as st
 import wordcloud
-import math
 import matplotlib.pyplot as plt
 import polars as pl
 import polars.selectors as cs
@@ -14,7 +13,7 @@ from utils.common.columns import pull_columns_to_front
 from utils.common.logging import log_query
 from utils.keyword_data import load_keyword_colors
 from utils.pull_data import automatically_pull_data_if_needed
-from utils.search import SearchEngine, TRACK_TAGS_DATA_FILE
+from utils.search import SearchEngine, TagManager
 from utils.tables import Playlist, PlaylistOwner, PlaylistTrack, Stats, Tag, Track, TrackAdjacent, TrackLyrics, TrackTag
 
 # As mentioned in the streamlit docs pyplot doesn't work well with threads,
@@ -621,21 +620,15 @@ if keyword_insights_toggle:
     st.text(f"Disclaimer: Insights are based on a manually defined list of tags and aliases that is then used to extract keywords from playlist titles, and may not be accurate or representative of reality.")
 
     tags_df = tags_data()
+    tag_manager = TagManager(tags_df)
 
-    categories = tags_df.lazy()\
-        .select(Tag.category)\
-        .filter(Tag.category().is_not_null())\
-        .unique()\
-        .sort(Tag.category)\
-        .collect()[Tag.category].to_list()
-
-    ALL_CATEGORIES: Final = "(All categories)"
-    tag_category_input = st.selectbox("Only show tags in category:", options=[ALL_CATEGORIES, *categories],
-                                      format_func=lambda category: category.title() if category != ALL_CATEGORIES else category)
+    tag_category_input = st.selectbox("Only show tags in category:",
+                                      options=tag_manager.get_categories(or_all=True),
+                                      format_func=tag_manager.format_category)
 
     show_wordcloud = st.toggle("Show wordcloud")
 
-    if tag_category_input == ALL_CATEGORIES:
+    if tag_category_input == TagManager.ALL_CATEGORIES:
         tag_category_input = ""
 
     filtered_tags_df = tags_df
@@ -666,53 +659,8 @@ if keyword_insights_toggle:
             ax.axis('off')
             st.pyplot(fig)
 
-    dark_colors = [
-        "#ffd16a",  # (1) Light Orange [orange50]
-        "#faca2b",  # (1) Light Orange [lightTheme.yellowColor]
-        "#803df5",  # (2) Violet [lightTheme.violetColor]~
-        "#00c0f2",  # (3) Turqouise~
-        "#83c9ff",  # (4) Light Blue [blue40]
-        "#29b09d",  # (5) Blue-Green [blueGreen80]~
-        "#ffabab",  # (6) Light Red [red40]
-        "#7defa1",  # (7) Light Green [green40]
-        "#d5dae5",  # (8) Light Gray [gray40]
-    ]
-    light_colors = [
-        "#ffa421",  # (1) Orange [lightTheme.orangeColor]
-        "#803df5",  # (2) Violet [lightTheme.violetColor]
-        "#00c0f2",  # (3) Turqouise
-        "#0068c9",  # (4) Dark Blue [blue80]
-        "#29b09d",  # (5) Blue-Green [blueGreen80]
-        "#ff2b2b",  # (6a) Medium Red [red80]
-        # "#ff4b4b", # (6b) Red [lightTheme.redColor]
-        "#21c354",  # (7) Green [lightTheme.greenColor]
-        "#a3a8b8",  # (8) Gray [lightTheme.grayColor]
-    ]
-    base_colors = dark_colors
-
-    # Cycle through the a predefined list of colors by default
-    category_colors = (base_colors * int(math.ceil(len(categories) / len(base_colors))))[:len(categories)]
-
-    # Allow overriding the color for specific categories
-    customized_category_colors = load_keyword_colors()
-    for i in range(0, len(categories)):
-        category = categories[i]
-        if category in customized_category_colors:
-            category_colors[i] = customized_category_colors[category]
-
-    # Create a mapping from category name => color
-    color_by_category = {categories[i]: category_colors[i] for i in range(0, len(categories))}
-
-    # Assign colors to tags based on their category
-    tags = []
-    full_tags = []
-    tag_colors = []
-
-    for row in (tags_df.filter(pl.col(Tag.short_name).is_not_null()).sort(Tag.name)
-                .select(Tag.category, Tag.short_name, Tag.name).iter_rows()):
-        tags.append(row[1])
-        full_tags.append(row[2])
-        tag_colors.append(color_by_category[row[0]])
+    tags, full_tags, tag_colors = tag_manager.get_tags_with_colors()
+    categories, category_colors = tag_manager.get_categories_with_colors()
 
     st.dataframe(filtered_tags_df, column_config={
                  Tag.category: st.column_config.MultiselectColumn(None, options=categories, color=category_colors),
@@ -722,9 +670,9 @@ if keyword_insights_toggle:
     st.markdown(f"#### ")
     st.markdown(f"#### Tagged songs & playlists")
 
-    UNTAGGED = "untagged"
-    tag_input = st.selectbox("Show playlists & songs with tag:", options=[UNTAGGED, *full_tags],
-                             format_func=lambda tag: ': '.join(tag.split(':')).title() if tag != UNTAGGED else "(Untagged)")
+    tag_input = st.selectbox("Show playlists & songs with tag:",
+                             options=tag_manager.get_tag_options(or_untagged=True),
+                             format_func=tag_manager.format_tag)
 
     if tag_input:
         st.markdown(f"Playlists tagged with _{tag_input}_:")

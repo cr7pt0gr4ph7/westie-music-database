@@ -65,7 +65,8 @@ for running the different possible queries over the data.
 from __future__ import annotations
 from dataclasses import dataclass, field
 from enum import StrEnum
-from typing import Final, Literal, NamedTuple
+import math
+from typing import Final, Literal, NamedTuple, overload
 
 import polars as pl
 import polars.selectors as cs
@@ -73,6 +74,7 @@ import polars.selectors as cs
 from utils.common.entities import PolarsLazyFrame
 from utils.common.filters import create_date_filter, create_text_filter, or_filter
 from utils.common.stats import count_n_unique
+from utils.keyword_data import load_keyword_colors
 from utils.playlist_classifiers import extract_date_strings_from_name, extract_date_types_from_name
 from utils.tables import Playlist, PlaylistOwner, PlaylistTags, PlaylistTrack, Stats, Tag, Track, TrackAdjacent, TrackLyrics, TrackTag, TrackTags
 
@@ -274,11 +276,11 @@ class PlaylistFilter:
 
         self.match_tag =\
             create_text_filter(self.playlist_tag_include, PlaylistTags.tags,
-                               is_list_column=True, match_mode='exact', no_value='untagged')
+                               is_list_column=True, match_mode='exact', no_value=TagManager.UNTAGGED)
 
         self.match_excluded_tag =\
             create_text_filter(self.playlist_tag_exclude, PlaylistTags.tags,
-                               is_list_column=True, match_mode='exact', no_value='untagged')
+                               is_list_column=True, match_mode='exact', no_value=TagManager.UNTAGGED)
 
     @property
     def has_filters(self) -> bool:
@@ -635,10 +637,10 @@ class TrackFilter:
             create_text_filter(self.artist_name, Track.artist_names)
         self.match_tag =\
             create_text_filter(self.tag_include, TrackTags.tags,
-                               is_list_column=True, match_mode='exact', no_value='untagged')
+                               is_list_column=True, match_mode='exact', no_value=TagManager.UNTAGGED)
         self.match_excluded_tag =\
             create_text_filter(self.tag_exclude, TrackTags.tags,
-                               is_list_column=True, match_mode='exact', no_value='untagged')
+                               is_list_column=True, match_mode='exact', no_value=TagManager.UNTAGGED)
 
     @property
     def has_filters(self) -> bool:
@@ -1087,6 +1089,111 @@ type PlaylistSortKey = Literal[
     'song_count',
     'artist_count',
 ]
+
+
+class TagManager:
+    ALL_CATEGORIES: Final = '*'
+    UNTAGGED: Final = 'untagged'
+
+    def __init__(self, tags_df: pl.DataFrame):
+        self.tags_df = tags_df
+
+    def get_categories(self, *, or_all: bool = False) -> list[str]:
+        categories = self.tags_df.lazy()\
+            .select(Tag.category)\
+            .filter(Tag.category().is_not_null())\
+            .unique()\
+            .sort(Tag.category)\
+            .collect()[Tag.category].to_list()
+
+        if or_all:
+            return [TagManager.ALL_CATEGORIES, *categories]
+        else:
+            return categories
+
+    @staticmethod
+    def format_category(category: str) -> str:
+        if category == TagManager.ALL_CATEGORIES:
+            return "(All categories)"
+
+        return category.title()
+
+    def get_tag_options(self, *, or_untagged: bool = False) -> list[str]:
+        tags = self.tags_df.lazy()\
+            .filter(pl.col(Tag.short_name).is_not_null())\
+            .sort(Tag.name)\
+            .collect()[Tag.name]\
+            .to_list()
+
+        if or_untagged:
+            return [TagManager.UNTAGGED, *tags]
+        else:
+            return tags
+
+    @staticmethod
+    def format_tag(tag: str) -> str:
+        if tag == TagManager.UNTAGGED:
+            return "(Untagged)"
+
+        return ': '.join(tag.split(':')).title()
+
+    def get_default_colors(self):
+        dark_colors = [
+            "#ffd16a",  # (1) Light Orange [orange50]
+            "#faca2b",  # (1) Light Orange [lightTheme.yellowColor]
+            "#803df5",  # (2) Violet [lightTheme.violetColor]~
+            "#00c0f2",  # (3) Turqouise~
+            "#83c9ff",  # (4) Light Blue [blue40]
+            "#29b09d",  # (5) Blue-Green [blueGreen80]~
+            "#ffabab",  # (6) Light Red [red40]
+            "#7defa1",  # (7) Light Green [green40]
+            "#d5dae5",  # (8) Light Gray [gray40]
+        ]
+        light_colors = [
+            "#ffa421",  # (1) Orange [lightTheme.orangeColor]
+            "#803df5",  # (2) Violet [lightTheme.violetColor]
+            "#00c0f2",  # (3) Turqouise
+            "#0068c9",  # (4) Dark Blue [blue80]
+            "#29b09d",  # (5) Blue-Green [blueGreen80]
+            "#ff2b2b",  # (6a) Medium Red [red80]
+            # "#ff4b4b", # (6b) Red [lightTheme.redColor]
+            "#21c354",  # (7) Green [lightTheme.greenColor]
+            "#a3a8b8",  # (8) Gray [lightTheme.grayColor]
+        ]
+        return dark_colors
+
+    def get_categories_with_colors(self) -> tuple[list[str], list[str]]:
+        # Cycle through the a predefined list of colors by default
+        names = self.get_categories()
+        base_colors = self.get_default_colors()
+        colors = (base_colors * int(math.ceil(len(names) / len(base_colors))))[:len(names)]
+
+        # Allow overriding the color for specific categories
+        custom_colors = load_keyword_colors()
+        for i in range(0, len(names)):
+            name = names[i]
+            if name in custom_colors:
+                colors[i] = custom_colors[name]
+
+        return names, colors
+
+    def get_tags_with_colors(self) -> tuple[list[str], list[str], list[str]]:
+        # Create a mapping from category name => color
+        categories, category_colors = self.get_categories_with_colors()
+        color_by_category = {categories[i]: category_colors[i] for i in range(0, len(categories))}
+
+        # Assign colors to tags based on their category
+        tags = []
+        full_tags = []
+        tag_colors = []
+
+        for row in (self.tags_df.filter(pl.col(Tag.short_name).is_not_null()).sort(Tag.name)
+                    .select(Tag.category, Tag.short_name, Tag.name).iter_rows()):
+            tags.append(row[1])
+            full_tags.append(row[2])
+            tag_colors.append(color_by_category[row[0]])
+
+        return tags, full_tags, tag_colors
 
 
 class SearchEngine:
