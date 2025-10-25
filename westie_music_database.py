@@ -14,7 +14,7 @@ from utils.common.logging import log_query
 from utils.keyword_data import load_keyword_colors
 from utils.pull_data import automatically_pull_data_if_needed
 from utils.search import SearchEngine, TagManager
-from utils.tables import Playlist, PlaylistOwner, PlaylistTrack, Stats, Tag, Track, TrackAdjacent, TrackLyrics, TrackTag
+from utils.tables import Playlist, PlaylistOwner, PlaylistTags, PlaylistTrack, Stats, Tag, Track, TrackAdjacent, TrackLyrics, TrackTag
 
 # As mentioned in the streamlit docs pyplot doesn't work well with threads,
 # so use a lock to protect it (as recommeded by the streamlit documentation)
@@ -553,16 +553,31 @@ if song_locator_toggle:
     st.markdown(f"#### ")
 
 
+@st.cache_data
+def tags_data():
+    return search_engine.find_tags(limit=1000, playlist_limit=20)\
+        .collect(engine='streaming')
+
+
 # Courtesy of Vishal S.
 playlist_locator_toggle = st.toggle("Find a Playlist 💿")
 if playlist_locator_toggle:
+    tags_df = tags_data()
+    tag_manager = TagManager(tags_df)
+
     playlist_col1, playlist_col2 = st.columns(2)
     with playlist_col1:
         song_and_artist_input = st.text_input("Contains the song (use `song|artist` to filter by artist):")
         playlist_input = st.text_input("Playlist name:")
+        tag_input = st.multiselect("Has tags:",
+                                   options=tag_manager.get_tag_options(or_untagged=True),
+                                   format_func=tag_manager.format_tag)
     with playlist_col2:
         dj_input = st.text_input("DJ name:")
         anti_playlist_input2 = st.text_input("Not in playlist name: ")
+        anti_tag_input = st.multiselect("Does not have tags:",
+                                        options=tag_manager.get_tag_options(or_untagged=True),
+                                        format_func=tag_manager.format_tag)
 
     song_and_artist_input = song_and_artist_input.split("|")
     song_input = song_and_artist_input[0] if len(song_and_artist_input) > 0 else ''
@@ -585,6 +600,8 @@ if playlist_locator_toggle:
             dj_name=dj_input,
             playlist_include=playlist_input,
             playlist_exclude=anti_playlist_input2,
+            tag_include=tag_input,
+            tag_exclude=anti_tag_input,
             tracks_in_result=True,
             tracks_limit=30,
             sort_by=[
@@ -598,19 +615,14 @@ if playlist_locator_toggle:
         )
 
         st.dataframe(playlist_search_df
-                     .select(Playlist.name, Playlist.url, PlaylistOwner.name,
+                     .select(Playlist.name, PlaylistTags.tags, Playlist.url, PlaylistOwner.name,
                              Playlist.matching_song_count, Stats.song_count,
                              Stats.artist_count, Track.name)
                      .collect(engine='streaming'),
-                     column_config={Playlist.url: st.column_config.LinkColumn()})
+                     column_config={Playlist.url: st.column_config.LinkColumn(),
+                                    PlaylistTags.tags: tag_manager.get_column_config(PlaylistTags.tags)})
         st.session_state["processing"] = False
     st.markdown(f"#### ")
-
-
-@st.cache_data
-def tags_data():
-    return search_engine.find_tags(limit=1000, playlist_limit=20)\
-        .collect(engine='streaming')
 
 
 keyword_insights_toggle = st.toggle("Tag Insights 🏷️")
