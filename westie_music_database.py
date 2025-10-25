@@ -663,9 +663,9 @@ if keyword_insights_toggle:
     categories, category_colors = tag_manager.get_categories_with_colors()
 
     st.dataframe(filtered_tags_df, column_config={
-                 Tag.category: st.column_config.MultiselectColumn(None, options=categories, color=category_colors),
-                 Tag.short_name: st.column_config.MultiselectColumn(None, options=tags, color=tag_colors),
-                 Tag.name: st.column_config.MultiselectColumn(None, options=full_tags, color=tag_colors)})
+                 Tag.category: tag_manager.get_column_config(Tag.category),
+                 Tag.short_name: tag_manager.get_column_config(Tag.short_name),
+                 Tag.name: tag_manager.get_column_config(Tag.name)})
 
     st.markdown(f"#### ")
     st.markdown(f"#### Tagged songs & playlists")
@@ -698,7 +698,7 @@ if keyword_insights_toggle:
                                             TrackTag.Tag.playlist_count,
                                             TrackTag.Track.playlist_percent,
                                             TrackTag.Track.playlist_count),
-                     column_config={TrackTag.tag: st.column_config.MultiselectColumn(None, options=full_tags, color=tag_colors),
+                     column_config={TrackTag.tag: tag_manager.get_column_config(TrackTag.tag),
                                     TrackTag.matching_playlist_count: st.column_config.NumberColumn('#'),
                                     TrackTag.Tag.playlist_count: st.column_config.NumberColumn('# tag'),
                                     TrackTag.Tag.playlist_percent: st.column_config.ProgressColumn('% tag'),

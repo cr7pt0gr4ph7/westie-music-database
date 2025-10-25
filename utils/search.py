@@ -70,6 +70,7 @@ from typing import Final, Literal, NamedTuple, overload
 
 import polars as pl
 import polars.selectors as cs
+import streamlit as st
 
 from utils.common.entities import PolarsLazyFrame
 from utils.common.filters import create_date_filter, create_text_filter, or_filter
@@ -1194,6 +1195,19 @@ class TagManager:
             tag_colors.append(color_by_category[row[0]])
 
         return tags, full_tags, tag_colors
+
+    def get_column_config(self, column_name: str):
+        if column_name in [Tag.name, PlaylistTags.tags, TrackTags.tags, TrackTag.tag]:
+            tags, full_tags, tag_colors = self.get_tags_with_colors()
+            return st.column_config.MultiselectColumn(None, options=full_tags, color=tag_colors)
+        elif column_name in [Tag.short_name]:
+            tags, full_tags, tag_colors = self.get_tags_with_colors()
+            return st.column_config.MultiselectColumn(None, options=tags, color=tag_colors)
+        elif column_name in [Tag.category]:
+            categories, category_colors = self.get_categories_with_colors()
+            return st.column_config.MultiselectColumn(None, options=categories, color=category_colors)
+        else:
+            raise ValueError(f"Column name not supported by get_column_config: {column_name}")
 
 
 class SearchEngine:
