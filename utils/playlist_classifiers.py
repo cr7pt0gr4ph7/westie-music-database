@@ -10,8 +10,14 @@ from utils.keyword_data import load_keyword_aliases
 
 def extract_tags_from_name(expr: pl.Expr) -> pl.Expr:
     """"Extract a list of tags from the given playlist name."""
+    def create_regex_for_term(term: str) -> str:
+        escaped_term = pl.escape_regex(term)
+        # Ignore additional whitespaces (e.g. "a b" should also match "a  b")
+        escaped_term = escaped_term.replace(' ', ' +')
+        return f'\\b{escaped_term}\\b'
+
     alias_to_tags = load_keyword_aliases()
-    all_keywords_alts = '|'.join([f'\\b{pl.escape_regex(term)}\\b' for term in alias_to_tags])
+    all_keywords_alts = '|'.join([create_regex_for_term(term) for term in alias_to_tags])
     all_keywords_regex = f'(?i)({all_keywords_alts})'
 
     # Use regexes to extract the keywords, then match the
@@ -20,7 +26,8 @@ def extract_tags_from_name(expr: pl.Expr) -> pl.Expr:
     return expr\
         .str.extract_all(all_keywords_regex)\
         .list.eval(pl.element()
-                   .replace_strict(aliases,
+                   .str.to_lowercase()
+                   .replace_strict(alias_to_tags,
                                    default=pl.lit([], dtype=pl.List(pl.String)),
                                    return_dtype=pl.List(pl.String))
                    .explode())\
