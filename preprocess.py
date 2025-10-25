@@ -718,7 +718,7 @@ def process_playlist_and_song_tags():
               .filter(pl.col(Tag.name).is_not_null()),
               how='inner', on=Playlist.id)\
         .group_by(Track.id, Tag.name)\
-        .agg(pl.col(Tag.name).count().alias(TrackTag.playlist_count))
+        .agg(pl.col(Tag.name).count().alias(TrackTag.matching_playlist_count))
 
     with TempFileTracker() as temp_files:
         temp_file = temp_files.register_for_deletion(TEMP_DATA_DIR + 'temp_track_tags.parquet')

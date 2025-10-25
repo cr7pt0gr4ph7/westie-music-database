@@ -14,8 +14,8 @@ from utils.common.columns import pull_columns_to_front
 from utils.common.logging import log_query
 from utils.keyword_data import load_keyword_colors
 from utils.pull_data import automatically_pull_data_if_needed
-from utils.search import SearchEngine
-from utils.tables import Playlist, PlaylistOwner, PlaylistTrack, Stats, Track, TrackAdjacent, TrackLyrics
+from utils.search import SearchEngine, TRACK_TAGS_DATA_FILE
+from utils.tables import Playlist, PlaylistOwner, PlaylistTrack, Stats, Tag, Track, TrackAdjacent, TrackLyrics, TrackTag
 
 # As mentioned in the streamlit docs pyplot doesn't work well with threads,
 # so use a lock to protect it (as recommeded by the streamlit documentation)
@@ -124,6 +124,7 @@ st.write(f"{djs_count:,}   Westies/DJs\n\n")
 
 st.link_button("Help fill in country info!",
                url='https://docs.google.com/spreadsheets/d/1YQaWwtIy9bqSNTXR9GrEy86Ix51cvon9zzHVh7sBi0A/edit?usp=sharing')
+
 
 # Feature flag to enable the "Random Song" section
 enable_random_song = False
@@ -631,7 +632,9 @@ if keyword_insights_toggle:
             min_font_size=10
         ).generate_from_frequencies({
             row[0]: float(row[1])
-            for row in tags_df.filter(pl.col('tag').is_not_null()).select('tag', Stats.playlist_count).iter_rows()
+            for row in (tags_df
+                        .filter(pl.col(Tag.short_name).is_not_null())
+                        .select(Tag.short_name, Tag.playlist_count).iter_rows())
         })
 
         # As mentioned in the streamlit docs pyplot doesn't work well with threads,
@@ -701,6 +704,42 @@ if keyword_insights_toggle:
                  'tag': st.column_config.MultiselectColumn(None, options=tags, color=tag_colors),
                  'full_tag': st.column_config.MultiselectColumn(None, options=full_tags, color=tag_colors),
                  })
+
+    st.markdown(f"#### ")
+    st.markdown(f"#### Tagged songs")
+
+    tag_input = st.selectbox("Show songs with tag:", options=full_tags,
+                             format_func=lambda tag: ': '.join(tag.split(':')).title())
+
+    if tag_input:
+        tagged_songs_df = search_engine\
+            .find_songs_by_tag(tag_name_exact=tag_input)\
+            .with_row_index(offset=1)\
+            .collect(engine='streaming')
+
+        st.dataframe(tagged_songs_df.select(Track.name,
+                                            Track.artists,
+                                            TrackTag.tag,
+                                            TrackTag.matching_playlist_count,
+                                            TrackTag.Tag.playlist_percent,
+                                            TrackTag.Tag.playlist_count,
+                                            TrackTag.Track.playlist_percent,
+                                            TrackTag.Track.playlist_count),
+                     column_config={TrackTag.tag: st.column_config.MultiselectColumn(None, options=full_tags, color=tag_colors),
+                                    TrackTag.matching_playlist_count: st.column_config.NumberColumn('#'),
+                                    TrackTag.Tag.playlist_count: st.column_config.NumberColumn('# tag'),
+                                    TrackTag.Tag.playlist_percent: st.column_config.ProgressColumn('% tag'),
+                                    TrackTag.Track.playlist_count: st.column_config.NumberColumn('# track'),
+                                    TrackTag.Track.playlist_percent: st.column_config.ProgressColumn('% track')})
+
+        tagged_songs_df = tagged_songs_df\
+            .limit(500)\
+            .select(pl.all().name.map(lambda x: x.replace('.', '_')))
+
+        st.bar_chart(tagged_songs_df, x='index', y='matching_playlist_count', sort=False)
+        st.bar_chart(tagged_songs_df, x='index', y='tag_playlist_percent', sort=False)
+        st.bar_chart(tagged_songs_df, x='index', y='track_playlist_count', sort=False)
+        st.bar_chart(tagged_songs_df, x='index', y='track_playlist_percent', sort=False)
 
 
 @st.cache_data
