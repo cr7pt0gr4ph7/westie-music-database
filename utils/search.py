@@ -74,7 +74,7 @@ from utils.common.entities import PolarsLazyFrame
 from utils.common.filters import create_date_filter, create_text_filter, or_filter
 from utils.common.stats import count_n_unique
 from utils.playlist_classifiers import extract_tags_from_name
-from utils.tables import Playlist, PlaylistOwner, PlaylistTags, PlaylistTrack, Stats, Tag, Track, TrackAdjacent, TrackLyrics
+from utils.tables import Playlist, PlaylistOwner, PlaylistTags, PlaylistTrack, Stats, Tag, Track, TrackAdjacent, TrackLyrics, TrackTag, TrackTags
 
 
 ####################
@@ -730,11 +730,14 @@ class CombinedData:
     """Holder for the different underlying data sources."""
 
     playlists: PolarsLazyFrame[Playlist]
+    playlist_tags: PolarsLazyFrame[PlaylistTags]
     playlist_tracks: PolarsLazyFrame[PlaylistTrack]
     track_playlists: PolarsLazyFrame[PlaylistTrack]
     tracks: PolarsLazyFrame[Track]
     tracks_adjacent: PolarsLazyFrame[TrackAdjacent]
     track_lyrics: PolarsLazyFrame[TrackLyrics]
+    track_tags: PolarsLazyFrame[TrackTags]
+    tags: PolarsLazyFrame[Tag]
     countries: list[str]
 
     @property
@@ -762,11 +765,14 @@ class CombinedData:
         """Load the pre-generated data from the Parquet files."""
         return CombinedData(
             playlists=pl.scan_parquet(PLAYLIST_DATA_FILE),
+            playlist_tags=pl.scan_parquet(PLAYLIST_TAGS_DATA_FILE),
             playlist_tracks=pl.scan_parquet(PLAYLIST_TRACKS_DATA_FILE),
             track_playlists=pl.scan_parquet(TRACK_PLAYLISTS_DATA_FILE),
             tracks=pl.scan_parquet(TRACK_DATA_FILE),
             tracks_adjacent=pl.scan_parquet(TRACK_ADJACENT_DATA_FILE),
             track_lyrics=pl.scan_parquet(TRACK_LYRICS_DATA_FILE),
+            track_tags=pl.scan_parquet(TRACK_TAGS_DATA_FILE),
+            tags=pl.scan_parquet(TAGS_DATA_FILE),
             countries=pl.read_csv(COUNTRY_DATA_FILE)['country'].to_list(),
         )
 
@@ -1088,27 +1094,17 @@ class SearchEngine:
         descending: bool | None = None,
         limit: int | None = None,
     ):
-        TAG = 'tag'
+        # NOTE: A playlist_limit larger than 20 has no effect, because at the moment
+        #       we only store at most 20 playlist names per tag in the pre-processed
+        #       Parquet files to save on space.
+        max_playlist_limit = 20
+        if playlist_limit is not None and playlist_limit > max_playlist_limit:
+            print(f"Warning: playlist_limit={playlist_limit} will be treated as playlist_limit={max_playlist_limit}")
 
-        playlists_tokenized = self.data.playlists.select(
-            pl.col(Playlist.id),
-            pl.col(Playlist.name),
-            pl.col(Playlist.name).pipe(extract_tags_from_name).alias(PlaylistTags.tags),
-        )
+        tags = self.data.tags
 
-        exploded_playlists_by_tag = playlists_tokenized\
-            .explode(PlaylistTags.tags)\
-            .rename({PlaylistTags.tags: TAG})
-
-        tags = exploded_playlists_by_tag\
-            .group_by(TAG)\
-            .agg(pl.col(TAG).count().alias(Tag.playlist_count),
-                 pl.col(Playlist.name).slice(0, playlist_limit).alias(Tag.playlist_names))\
-            .select(pl.col(TAG).str.split(':').list.get(0).alias(Tag.category),
-                    pl.col(TAG).str.split(':').list.get(1, null_on_oob=True).alias(Tag.short_name),
-                    pl.col(TAG).alias(Tag.name),
-                    Tag.playlist_count,
-                    Tag.playlist_names)
+        if playlist_limit is not None:
+            tags = tags.with_columns(Tag.playlist_names().list.head(playlist_limit))
 
         if category_name:
             tags = tags.filter(Tag.category().str.contains_any(category_name.lower().strip().split(',')))
