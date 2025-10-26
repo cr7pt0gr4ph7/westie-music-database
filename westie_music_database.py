@@ -14,7 +14,7 @@ from utils.common.logging import log_query
 from utils.keyword_data import load_keyword_colors
 from utils.pull_data import automatically_pull_data_if_needed
 from utils.search import SearchEngine, TagManager
-from utils.tables import Playlist, PlaylistOwner, PlaylistStats, PlaylistTags, PlaylistTrack, Stats, Tag, Track, TrackAdjacent, TrackLyrics, TrackTag
+from utils.tables import Playlist, PlaylistOwner, PlaylistStats, PlaylistTags, PlaylistTrack, Stats, Tag, Track, TrackAdjacent, TrackLyrics, TrackTag, TrackTags
 
 # As mentioned in the streamlit docs pyplot doesn't work well with threads,
 # so use a lock to protect it (as recommeded by the streamlit documentation)
@@ -424,11 +424,21 @@ if song_locator_toggle:
                 PlaylistOwner.name,
                 'country',
             ))\
+            .with_columns(TrackTags.tags().list.eval(
+                pl.element().str.split(':').list.get(1, null_on_oob=True).drop_nulls()))\
+            .select(pull_columns_to_front(
+                Track.name,
+                Track.artists,
+                TrackTags.tags,
+                TrackTags.playlist_counts_per_tag,
+                Track.url,
+            ))\
             .with_row_index(offset=1)\
             .collect(engine="streaming")
 
-        st.dataframe(results_df,
-                     column_config={Track.url: st.column_config.LinkColumn()})
+        st.dataframe(results_df, column_config={
+                     Track.url: st.column_config.LinkColumn(),
+                     TrackTags.tags: tag_manager.get_column_config(Tag.short_name)})
 
         # playlists_text = ' '.join(song_search_df
         #                         .select(pl.col(Playlist.name).cast(pl.List(pl.String)))
