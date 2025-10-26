@@ -13,13 +13,14 @@ from utils.keyword_data import load_keyword_aliases
 def _create_regex_for_term(term: str) -> str:
     escaped_term = pl.escape_regex(term)
     # Ignore additional whitespaces (e.g. "a b" should also match "a  b")
-    escaped_term = escaped_term.replace(' ', ' +')
-    return f'\\b{escaped_term}\\b'
+    escaped_term = escaped_term.replace(' ', r'[ \-_.]+')
+    return escaped_term
 
 
 def _extract_tags(expr: pl.Expr, tags_to_extract: dict[str, list[str]]) -> pl.Expr:
     all_keywords_alts = '|'.join([_create_regex_for_term(term) for term in tags_to_extract])
-    all_keywords_regex = f'(?i)({all_keywords_alts})'
+    optional_year_suffix = r'(?:[0-9]{4})?'
+    all_keywords_regex = f'(?i)\\b(?:{all_keywords_alts}){optional_year_suffix}\\b'
 
     # Use regexes to extract the keywords, then match the
     # extracted strings against our dictionary to check
@@ -28,6 +29,8 @@ def _extract_tags(expr: pl.Expr, tags_to_extract: dict[str, list[str]]) -> pl.Ex
         .str.extract_all(all_keywords_regex)\
         .list.eval(pl.element()
                    .str.to_lowercase()
+                   .str.extract_groups(r'^(.+?)(?:20[0-2][0-9])?$')
+                   .struct["1"]
                    .replace_strict(tags_to_extract,
                                    default=pl.lit([], dtype=pl.List(pl.String)),
                                    return_dtype=pl.List(pl.String))
