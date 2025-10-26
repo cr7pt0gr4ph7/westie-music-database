@@ -697,7 +697,8 @@ if keyword_insights_toggle:
                                             TrackTag.Tag.playlist_percent,
                                             TrackTag.Tag.playlist_count,
                                             TrackTag.Track.playlist_percent,
-                                            TrackTag.Track.playlist_count),
+                                            TrackTag.Track.playlist_count)
+                     .with_row_index(offset=1),
                      column_config={TrackTag.tag: tag_manager.get_column_config(TrackTag.tag),
                                     TrackTag.matching_playlist_count: st.column_config.NumberColumn('#'),
                                     TrackTag.Tag.playlist_count: st.column_config.NumberColumn('# tag'),
