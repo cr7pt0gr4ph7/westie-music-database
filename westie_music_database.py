@@ -95,6 +95,17 @@ def load_stats():
     return load_search_engine().get_stats()
 
 
+@st.cache_data
+def load_tags_data():
+    return load_search_engine().find_tags(limit=1000, playlist_limit=20)\
+        .collect(engine='streaming')
+
+
+@st.cache_resource
+def load_tag_manager():
+    return TagManager(load_tags_data())
+
+
 # Initialize session state
 if "processing" not in st.session_state:
     st.session_state["processing"] = False
@@ -103,6 +114,7 @@ search_engine = load_search_engine()
 df_notes = load_notes()
 countries = load_countries()
 songs_count, artists_count, playlists_count, djs_count, lyrics_count = load_stats()
+tag_manager = load_tag_manager()
 
 
 # st.write(f"Memory Usage: {psutil.virtual_memory().percent}%")
@@ -553,18 +565,9 @@ if song_locator_toggle:
     st.markdown(f"#### ")
 
 
-@st.cache_data
-def tags_data():
-    return search_engine.find_tags(limit=1000, playlist_limit=20)\
-        .collect(engine='streaming')
-
-
 # Courtesy of Vishal S.
 playlist_locator_toggle = st.toggle("Find a Playlist 💿")
 if playlist_locator_toggle:
-    tags_df = tags_data()
-    tag_manager = TagManager(tags_df)
-
     playlist_col1, playlist_col2 = st.columns(2)
     with playlist_col1:
         song_and_artist_input = st.text_input("Contains the song (use `song|artist` to filter by artist):")
@@ -634,9 +637,7 @@ if keyword_insights_toggle:
     st.markdown(f"\n\n\n#### Common Tags for Playlists:")
     st.text(f"Disclaimer: Insights are based on a manually defined list of tags and aliases that is then used to extract keywords from playlist titles, and may not be accurate or representative of reality.")
 
-    tags_df = tags_data()
-    tag_manager = TagManager(tags_df)
-
+    tags_df = load_tags_data()
     tag_category_input = st.selectbox("Only show tags in category:",
                                       options=tag_manager.get_categories(or_all=True),
                                       format_func=tag_manager.format_category)
