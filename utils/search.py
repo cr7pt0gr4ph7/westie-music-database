@@ -75,7 +75,7 @@ import streamlit as st
 from utils.common.entities import PolarsLazyFrame
 from utils.common.filters import create_date_filter, create_text_filter, or_filter
 from utils.common.stats import count_n_unique
-from utils.keyword_data import load_keyword_colors
+from utils.keyword_data import TagsToFilter, load_keyword_colors, load_track_keyword_filter, tag_matches_filter
 from utils.playlist_classifiers import extract_date_strings_from_name, extract_date_types_from_name
 from utils.tables import Playlist, PlaylistOwner, PlaylistStats, PlaylistTags, PlaylistTrack, Stats, Tag, Track, TrackAdjacent, TrackLyrics, TrackTag, TrackTags
 
@@ -821,6 +821,7 @@ class CombinedData:
     tags: PolarsLazyFrame[Tag]
     tag_stats: PolarsLazyFrame[Tag]
     countries: list[str]
+    strip_tags_from_tracks: TagsToFilter
 
     @property
     def all_playlists(self) -> PlaylistSet:
@@ -858,6 +859,7 @@ class CombinedData:
             tags=pl.scan_parquet(TAGS_DATA_FILE),
             tag_stats=pl.scan_parquet(TAG_STATS_DATA_FILE),
             countries=pl.read_csv(COUNTRY_DATA_FILE)['country'].to_list(),
+            strip_tags_from_tracks=load_track_keyword_filter(),
         )
 
 
@@ -1508,7 +1510,9 @@ class SearchEngine:
 
         return matching_tracks.with_extra_columns()\
             .sort_by(sort_by, descending=descending)\
-            .included_tracks.slice(skip_num_top_results, limit or None)
+            .included_tracks.slice(skip_num_top_results, limit or None)\
+            .with_columns(TrackTags.tags().list.filter(
+                ~tag_matches_filter(self.data.strip_tags_from_tracks, pl.element())))
 
     def find_playlists(
         self,

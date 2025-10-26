@@ -1,15 +1,19 @@
-from typing import TypedDict
+from typing import NamedTuple, TypedDict
 
 import os
+import polars as pl
 import yaml
 
 from utils.common.dicts import append_to_entry, to_dict_of_list
 
 type _KeywordEntry = str | dict[str, str | None | list[_KeywordEntry]]
 
+type _FilterSpec = dict[str, None | bool | list[str]]
+
 
 class _KeywordsFile(TypedDict):
     colors: dict[str, str]
+    strip_from_tracks: _FilterSpec
     keywords: dict[str, list[_KeywordEntry]]
 
 
@@ -83,13 +87,16 @@ def _traverse_entry(
         raise TypeError(f"Neither a str nor a dict")
 
 
-def load_keyword_aliases(category_as_tag: bool = False):
+def _load_keyword_data_from_yaml() -> _KeywordsFile:
     dir_path = os.path.dirname(os.path.realpath(__file__))
     with open(f'{dir_path}/keyword_data.yaml') as stream:
-        raw_data: _KeywordsFile = yaml.safe_load(stream)
+        return yaml.safe_load(stream)
 
+
+def load_keyword_aliases(category_as_tag: bool = False):
     _aliases: dict[str, set[str]] = {}
     _negated_aliases: dict[str, set[str]] = {}
+    raw_data = _load_keyword_data_from_yaml()
 
     for category in raw_data['keywords']:
         for entry in raw_data['keywords'][category]:
@@ -103,9 +110,40 @@ def load_keyword_aliases(category_as_tag: bool = False):
     return (to_dict_of_list(_aliases), to_dict_of_list(_negated_aliases))
 
 
-def load_keyword_colors():
-    dir_path = os.path.dirname(os.path.realpath(__file__))
-    with open(f'{dir_path}/keyword_data.yaml') as stream:
-        raw_data: _KeywordsFile = yaml.safe_load(stream)
+class TagsToFilter(NamedTuple):
+    categories: list[str]
+    tags: list[str]
 
+
+def _parse_keyword_filter(spec: _FilterSpec) -> TagsToFilter:
+    categories_to_filter: list[str] = []
+    tags_to_filter: list[str] = []
+
+    for category in spec:
+        item = spec[category]
+        if isinstance(item, bool) and item == False:
+            pass
+        elif item is None or (isinstance(item, bool) and item == True):
+            categories_to_filter.append(category)
+        elif isinstance(item, list):
+            for tag in item:
+                tags_to_filter.append(_format_tag(category, tag))
+
+    return TagsToFilter(categories_to_filter, tags_to_filter)
+
+
+def load_track_keyword_filter() -> tuple[list[str], list[str]]:
+    raw_data = _load_keyword_data_from_yaml()
+    return _parse_keyword_filter(raw_data['strip_from_tracks'])
+
+
+def tag_matches_filter(filter: TagsToFilter, tag: pl.Expr) -> pl.Expr:
+    return pl.any_horizontal(
+        tag.is_in(filter.tags),
+        tag.str.split(':').list.get(0).is_in(filter.categories),
+    )
+
+
+def load_keyword_colors():
+    raw_data = _load_keyword_data_from_yaml()
     return raw_data['colors']
