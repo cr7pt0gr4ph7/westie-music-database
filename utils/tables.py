@@ -137,6 +137,9 @@ class Playlist(Entity):
     matching_song_count: Final = field("matching_song_count", pl.UInt32)
     """The number of songs in this playlist that matched the search query."""
 
+    matching_song_percent: Final = field("matching_song_percent", pl.Float32)
+    """The percentage of songs in this playlist that matched the search query."""
+
     class Owner(SubEntity[PlaylistOwner], PlaylistOwner):
         """Represents the owner of a playlist."""
         pass

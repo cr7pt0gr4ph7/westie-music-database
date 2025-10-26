@@ -538,7 +538,9 @@ class TrackSet:
                          pl.col(Track.id).n_unique().alias(Playlist.matching_song_count))
 
             matching_playlists = playlists.included_playlists\
-                .join(aggregated_tracks_per_playlist, how='inner', on=Playlist.id)
+                .join(aggregated_tracks_per_playlist, how='inner', on=Playlist.id)\
+                .with_columns((Playlist.matching_song_count() / Stats.song_count())
+                              .alias(Playlist.matching_song_percent))
         else:
             matching_playlists = playlists.included_playlists.join(
                 playlist_tracks.included_playlist_tracks.join(
@@ -1007,6 +1009,7 @@ type TrackSortKey = Literal[
 type PlaylistSortKey = Literal[
     'hit_count',
     'matching_song_count',
+    'matching_song_percent',
     'song_count',
     'artist_count',
 ]
