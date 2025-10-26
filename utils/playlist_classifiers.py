@@ -40,8 +40,8 @@ pattern_MMM_dd_yyyy = date_pattern('MMM_dd_yyyy', f'{MMM}[-/. ]?{dd}[-/. ]?{yyyy
 pattern_yyyy_MMM_dd = date_pattern('yyyy_MMM_dd', f'{yyyy}[-/. ]?{MMM}[-/. ]?{dd}')
 pattern_yyyy_dd_MMM = date_pattern('yyyy_dd_MMM', f'{yyyy}[-/. ]?{dd}[-/. ]?{MMM}')
 
-pattern_dd_MMM_yy = date_pattern('dd_MMM_yy', f'{dd}[-/. ]?{MMM}[-/. ]?{yy}')
-pattern_MMM_dd_yy = date_pattern('MMM_dd_yy', f'{MMM}[-/. ]?{dd}[-/. ]?{yy}')
+pattern_dd_MMM_yy = date_pattern('dd_MMM_yy', f'{dd}(?:st|nd|rd|th)?[-/. ]?{MMM}[-/. ]?{yy}')
+pattern_MMM_dd_yy = date_pattern('MMM_dd_yy', f'{MMM}[-/. ]{"{0,2}"}{dd}(?:st|nd|rd|th)[-/. ]?{yy}')
 pattern_yy_MMM_dd = date_pattern('yy_MMM_dd', f'{yy}[-/. ]?{MMM}[-/. ]?{dd}')
 pattern_yy_dd_MMM = date_pattern('yy_dd_MMM', f'{yy}[-/. ]?{dd}[-/. ]?{MMM}')
 
