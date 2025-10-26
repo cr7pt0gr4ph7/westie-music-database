@@ -618,17 +618,33 @@ if playlist_locator_toggle:
             tag_exclude=anti_tag_input,
             tracks_in_result=True,
             tracks_limit=30,
-            sort_by=[
-                Playlist.matched_terms_count,
-                Playlist.matching_song_count,
-                Stats.song_count,
-                Stats.artist_count,
-            ],
+            sort_by=None,
             descending=True,
-            limit=500,
+            limit=None,
         )
 
-        st.dataframe(playlist_search_df
+        df = (playlist_search_df
+              .filter(~Playlist.is_social_set())
+              .with_columns(Playlist.name, PlaylistTags.tags, Playlist.url, PlaylistOwner.name,
+                            Playlist.matching_song_count, Stats.artist_count, Track.name)
+              .sort(PlaylistStats.wcs_song_count, nulls_last=True, descending=True))
+
+        st.dataframe(df
+                     .select(Playlist.name(),
+                             Playlist.id(),
+                             Playlist.name()
+                             .str.to_lowercase()
+                             .str.extract_all(r'\b\w+\b')
+                             .list.filter(pl.element().str.len_chars().gt(3))
+                             .alias('term'))
+                     .explode('term')
+                     .group_by('term')
+                     .agg(Playlist.id().n_unique().alias(Stats.playlist_count), Playlist.name().head(30))
+                     .filter(Stats.playlist_count().ge(10))
+                     .sort(Stats.playlist_count, descending=True)
+                     .collect(engine='streaming'))
+
+        st.dataframe(df
                      .select(Playlist.name, PlaylistTags.tags, Playlist.url, PlaylistOwner.name,
                              Playlist.matched_terms,
                              Playlist.matching_song_count, Stats.song_count,
