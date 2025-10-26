@@ -620,6 +620,7 @@ if playlist_locator_toggle:
 
         st.dataframe(playlist_search_df
                      .select(Playlist.name, PlaylistTags.tags, Playlist.url, PlaylistOwner.name,
+                             Playlist.matched_terms,
                              Playlist.matching_song_count, Stats.song_count,
                              PlaylistStats.wcs_song_count, PlaylistStats.wcs_song_percent,
                              Stats.artist_count, Track.name)
