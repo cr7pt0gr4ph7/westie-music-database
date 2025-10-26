@@ -75,7 +75,7 @@ import streamlit as st
 from utils.common.entities import PolarsLazyFrame
 from utils.common.filters import create_date_filter, create_text_filter, or_filter
 from utils.common.stats import count_n_unique
-from utils.keyword_data import TagsToFilter, load_keyword_colors, load_track_keyword_filter, tag_matches_filter
+from utils.keyword_data import TagsToFilter, filter_track_tags_by_limits, load_keyword_colors, load_keyword_limits, load_track_keyword_filter, tag_matches_filter
 from utils.playlist_classifiers import extract_date_strings_from_name, extract_date_types_from_name
 from utils.tables import Playlist, PlaylistOwner, PlaylistStats, PlaylistTags, PlaylistTrack, Stats, Tag, Track, TrackAdjacent, TrackLyrics, TrackTag, TrackTags
 
@@ -1375,6 +1375,7 @@ class SearchEngine:
                     TrackTag.Track.playlist_count,
                     Track.name,
                     Track.artists)\
+            .pipe(filter_track_tags_by_limits, load_keyword_limits())\
             .slice(0, limit or None)
 
     def find_random_songs(

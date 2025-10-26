@@ -1,18 +1,25 @@
-from typing import NamedTuple, TypedDict
+from typing import Final, NamedTuple, TypedDict
 
 import os
 import polars as pl
 import yaml
 
 from utils.common.dicts import append_to_entry, to_dict_of_list
+from utils.tables import Tag, TrackTag
 
 type _KeywordEntry = str | dict[str, str | None | list[_KeywordEntry]]
 
 type _FilterSpec = dict[str, None | bool | list[str]]
 
 
+class _LimitsSpec(TypedDict):
+    min_playlist_count: int
+    min_playlist_percent: float
+
+
 class _KeywordsFile(TypedDict):
     colors: dict[str, str]
+    limits: dict[str, dict[str, _LimitsSpec]]
     strip_from_tracks: _FilterSpec
     keywords: dict[str, list[_KeywordEntry]]
 
@@ -98,7 +105,7 @@ def load_keyword_aliases(category_as_tag: bool = False):
     _negated_aliases: dict[str, set[str]] = {}
     raw_data = _load_keyword_data_from_yaml()
 
-    for category in raw_data['keywords']:
+    for category in raw_data.get('keywords', None) or {}:
         for entry in raw_data['keywords'][category]:
             _traverse_entry(entry, category,
                             [category] if category_as_tag else [],
@@ -108,6 +115,38 @@ def load_keyword_aliases(category_as_tag: bool = False):
                             use_as_tag=True)
 
     return (to_dict_of_list(_aliases), to_dict_of_list(_negated_aliases))
+
+
+def load_keyword_limits():
+    raw_data = _load_keyword_data_from_yaml()
+    limits = raw_data.get('limits') or {}
+    result: dict[str, _FilterSpec] = {}
+
+    for category in limits:
+        tags = limits[category]
+        for tag in tags:
+            result[_format_tag(category, tag)] = tags[tag]
+
+    return result
+
+
+def filter_track_tags_by_limits(tags: pl.LazyFrame, limits: dict[str, _LimitsSpec]) -> pl.LazyFrame:
+    def get_tag_limits(limit_name):
+        return {tag: limits[tag][limit_name] for tag in limits if limits[tag].get(limit_name)}
+
+    TEMP_MIN_PLAYLIST_COUNT: Final = 'temp_min_playlist_count'
+    TEMP_MIN_PLAYLIST_PERCENT: Final = 'temp_min_playlist_percent'
+
+    return tags\
+        .with_columns(pl.col(TrackTag.tag).replace_strict(get_tag_limits('min_playlist_count'), default=None)
+                      .alias(TEMP_MIN_PLAYLIST_COUNT),
+                      pl.col(TrackTag.tag).replace_strict(get_tag_limits('min_playlist_percent'), default=None)
+                      .alias(TEMP_MIN_PLAYLIST_PERCENT))\
+        .filter(pl.col(TEMP_MIN_PLAYLIST_COUNT).is_null()
+                .or_(TrackTag.matching_playlist_count().ge(pl.col(TEMP_MIN_PLAYLIST_COUNT))),
+                pl.col(TEMP_MIN_PLAYLIST_PERCENT).is_null()
+                .or_(TrackTag.Track.playlist_percent().ge(pl.col(TEMP_MIN_PLAYLIST_PERCENT) / 100)))\
+        .drop(TEMP_MIN_PLAYLIST_COUNT, TEMP_MIN_PLAYLIST_PERCENT)
 
 
 class TagsToFilter(NamedTuple):
@@ -134,7 +173,7 @@ def _parse_keyword_filter(spec: _FilterSpec) -> TagsToFilter:
 
 def load_track_keyword_filter() -> tuple[list[str], list[str]]:
     raw_data = _load_keyword_data_from_yaml()
-    return _parse_keyword_filter(raw_data['strip_from_tracks'])
+    return _parse_keyword_filter(raw_data.get('strip_from_tracks') or {})
 
 
 def tag_matches_filter(filter: TagsToFilter, tag: pl.Expr) -> pl.Expr:
@@ -146,4 +185,4 @@ def tag_matches_filter(filter: TagsToFilter, tag: pl.Expr) -> pl.Expr:
 
 def load_keyword_colors():
     raw_data = _load_keyword_data_from_yaml()
-    return raw_data['colors']
+    return raw_data.get('colors') or {}

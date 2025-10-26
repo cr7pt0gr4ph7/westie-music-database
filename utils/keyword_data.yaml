@@ -5,6 +5,11 @@ colors:
   epoch: "#00c0f2" # Turqouise
   mood: "#29b09d" # Blue-Green [blueGreen80]
   topic: "#ffabab" # Light Red [red40]
+limits:
+  seasonal:
+    christmas:
+      min_playlist_count: 1
+      min_playlist_percent: 20.0
 strip_from_tracks:
   artist: true
   month: true
