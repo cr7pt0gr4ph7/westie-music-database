@@ -57,7 +57,6 @@ class Stats(Entity):
     """
 
 
-
 class PlaylistOwner(Entity):
     """Represents a DJ who owns one or more playlists."""
 
@@ -95,6 +94,7 @@ class PlaylistOwner(Entity):
 
     This is currently based on a manually curated dataset.
     """
+
 
 class Playlist(Entity):
     """Represents a playlist (as retrieved from Spotify or from other sources)."""
@@ -156,6 +156,20 @@ class Playlist(Entity):
     class Owner(SubEntity[PlaylistOwner], PlaylistOwner):
         """Represents the owner of a playlist."""
         pass
+
+
+class PlaylistStats(Entity):
+    id: Final = Playlist.id
+    """The Spotify ID of the playlist."""
+
+    wcs_song_count: Final = field('wcs_song_count', pl.UInt32)
+    """How many likely-to-be-WCS tracks are contained in this playlist."""
+
+    wcs_song_percent: Final = field('wcs_song_percent', pl.Float32)
+    """How many percent of this playlist are likely-to-be-WCS tracks."""
+
+    total_song_count: Final = field('total_song_count', pl.UInt32)
+    """How many tracks are contained in this playlist."""
 
 
 class Track(Entity):
@@ -267,6 +281,7 @@ class Tag(Entity):
 
     type SortFields = Literal["playlist_count", "song_count", "tag", "category", "full_tag"]
     """Fields that tags can be sorted on."""
+
 
 class TrackTag(Entity):
     """Represents the association between a single tag and a single track."""

@@ -13,6 +13,7 @@ from utils.search import (
     DATA_DIR,
     PLAYLIST_DATA_FILE,
     PLAYLIST_ORIGINAL_DATA_FILE,
+    PLAYLIST_STATS_DATA_FILE,
     PLAYLIST_TAGS_DATA_FILE,
     PLAYLIST_TRACKS_DATA_FILE,
     PLAYLIST_TRACKS_ORIGINAL_DATA_FILE,
@@ -32,7 +33,7 @@ from utils.search import (
     UNPROCESSED_TRACK_BPM_DATA_FILE,
     UNPROCESSED_TRACK_LYRICS_DATA_FILE,
 )
-from utils.tables import Playlist, PlaylistOwner, PlaylistTags, PlaylistTrack, Stats, Tag, Track, TrackAdjacent, TrackLyrics, TrackTag, TrackTags
+from utils.tables import Playlist, PlaylistOwner, PlaylistStats, PlaylistTags, PlaylistTrack, Stats, Tag, Track, TrackAdjacent, TrackLyrics, TrackTag, TrackTags
 
 # Temporary files are stored in temp_data/
 TEMP_DATA_DIR: Final = "temp_data/"
@@ -858,6 +859,38 @@ def merge_song_tags_into_metadata():
     write_to_parquet_file(tracks_with_tags, TRACK_DATA_FILE)
 
 
+def compute_playlist_wcs_score():
+    """
+    Compute a probability of how likely a playlist is wcs-related by checking
+    of how many known-WCS songs are contained in it. The known-WCS songs are
+    identified based on them being contained in many playlists that explicitly
+    have "WCS" (or some variation) in their name.
+    """
+
+    playlists = scan_parquet_file(PLAYLIST_DATA_FILE)
+    playlist_tracks = scan_parquet_file(PLAYLIST_TRACKS_DATA_FILE)
+
+    wcs_tracks = scan_parquet_file(TRACK_TAGS_DATA_FILE)\
+        .explode(TrackTags.tags, TrackTags.playlist_counts_per_tag)\
+        .rename({TrackTags.tags: TrackTag.tag,
+                 TrackTags.playlist_counts_per_tag: TrackTag.matching_playlist_count})\
+        .filter(TrackTag.tag().eq('dance:wcs'),
+                TrackTag.matching_playlist_count().ge(10))\
+        .select(Track.id)
+
+    playlist_stats = playlist_tracks\
+        .join(wcs_tracks, how='semi', on=Track.id)\
+        .group_by(Playlist.id)\
+        .agg(Track.id().n_unique().alias(PlaylistStats.wcs_song_count))\
+        .join(playlists.select(Playlist.id, Stats.song_count().alias(PlaylistStats.total_song_count)),
+              how='inner', on=Playlist.id)\
+        .with_columns((pl.col(PlaylistStats.wcs_song_count) / pl.col(PlaylistStats.total_song_count))
+                      .alias(PlaylistStats.wcs_song_percent))\
+        .sort(Playlist.id)
+
+    write_to_parquet_file(playlist_stats, PLAYLIST_STATS_DATA_FILE)
+
+
 def process_everything(merge_duplicates: bool = True):
     """Runs all pre-processing in sequence."""
     # Reset the internal file tracker (only used for debugging)
@@ -890,6 +923,9 @@ def process_everything(merge_duplicates: bool = True):
     process_tag_stats()
     merge_playlist_tags_into_metadata()
     merge_song_tags_into_metadata()
+
+    # Compute the "is_wcs" probability for each playlist
+    compute_playlist_wcs_score()
 
     print("Done.")
 

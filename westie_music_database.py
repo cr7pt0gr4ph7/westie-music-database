@@ -14,7 +14,7 @@ from utils.common.logging import log_query
 from utils.keyword_data import load_keyword_colors
 from utils.pull_data import automatically_pull_data_if_needed
 from utils.search import SearchEngine, TagManager
-from utils.tables import Playlist, PlaylistOwner, PlaylistTags, PlaylistTrack, Stats, Tag, Track, TrackAdjacent, TrackLyrics, TrackTag
+from utils.tables import Playlist, PlaylistOwner, PlaylistStats, PlaylistTags, PlaylistTrack, Stats, Tag, Track, TrackAdjacent, TrackLyrics, TrackTag
 
 # As mentioned in the streamlit docs pyplot doesn't work well with threads,
 # so use a lock to protect it (as recommeded by the streamlit documentation)
@@ -600,6 +600,7 @@ if playlist_locator_toggle:
             dj_name=dj_input,
             playlist_include=playlist_input,
             playlist_exclude=anti_playlist_input2,
+            playlist_stats_in_result=True,
             tag_include=tag_input,
             tag_exclude=anti_tag_input,
             tracks_in_result=True,
@@ -617,10 +618,12 @@ if playlist_locator_toggle:
         st.dataframe(playlist_search_df
                      .select(Playlist.name, PlaylistTags.tags, Playlist.url, PlaylistOwner.name,
                              Playlist.matching_song_count, Stats.song_count,
+                             PlaylistStats.wcs_song_count, PlaylistStats.wcs_song_percent,
                              Stats.artist_count, Track.name)
                      .collect(engine='streaming'),
                      column_config={Playlist.url: st.column_config.LinkColumn(),
-                                    PlaylistTags.tags: tag_manager.get_column_config(PlaylistTags.tags)})
+                                    PlaylistTags.tags: tag_manager.get_column_config(PlaylistTags.tags),
+                                    PlaylistStats.wcs_song_percent: st.column_config.ProgressColumn()})
         st.session_state["processing"] = False
     st.markdown(f"#### ")
 

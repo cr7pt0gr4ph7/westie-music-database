@@ -77,7 +77,7 @@ from utils.common.filters import create_date_filter, create_text_filter, or_filt
 from utils.common.stats import count_n_unique
 from utils.keyword_data import load_keyword_colors
 from utils.playlist_classifiers import extract_date_strings_from_name, extract_date_types_from_name
-from utils.tables import Playlist, PlaylistOwner, PlaylistTags, PlaylistTrack, Stats, Tag, Track, TrackAdjacent, TrackLyrics, TrackTag, TrackTags
+from utils.tables import Playlist, PlaylistOwner, PlaylistStats, PlaylistTags, PlaylistTrack, Stats, Tag, Track, TrackAdjacent, TrackLyrics, TrackTag, TrackTags
 
 
 ####################
@@ -118,6 +118,7 @@ TRACK_ORIGINAL_DATA_FILE: Final = TEMP_DATA_DIR + 'data_song_metadata.original.p
 
 # Processed files
 PLAYLIST_DATA_FILE: Final = DATA_DIR + 'data_playlist_metadata.parquet'
+PLAYLIST_STATS_DATA_FILE: Final = DATA_DIR + 'data_playlist_stats.parquet'
 PLAYLIST_TAGS_DATA_FILE: Final = DATA_DIR + 'data_playlist_tags.parquet'
 PLAYLIST_TRACKS_DATA_FILE: Final = DATA_DIR + 'data_playlist_songs.parquet'
 TAGS_DATA_FILE: Final = DATA_DIR + 'data_tags.parquet'
@@ -179,6 +180,16 @@ class PlaylistSet:
             included_playlists=self.included_playlists.with_columns(
                 Playlist.name().pipe(extract_date_strings_from_name).alias(Playlist.extracted_dates),
                 Playlist.name().pipe(extract_date_types_from_name).alias(Stats.date_formats)),
+            excluded_playlists=self.excluded_playlists,
+            all_playlists=self.all_playlists,
+            is_filtered=self.is_filtered)
+
+    def with_playlist_stats(self, playlist_stats: PolarsLazyFrame[PlaylistStats]):
+        return PlaylistSet(
+            included_playlists=self.included_playlists
+            .join(playlist_stats, how='left', on=Playlist.id)
+            .with_columns(PlaylistStats.wcs_song_count().fill_null(0),
+                          PlaylistStats.wcs_song_percent().fill_null(0.0)),
             excluded_playlists=self.excluded_playlists,
             all_playlists=self.all_playlists,
             is_filtered=self.is_filtered)
@@ -799,6 +810,7 @@ class CombinedData:
     """Holder for the different underlying data sources."""
 
     playlists: PolarsLazyFrame[Playlist]
+    playlist_stats: PolarsLazyFrame[PlaylistStats]
     playlist_tags: PolarsLazyFrame[PlaylistTags]
     playlist_tracks: PolarsLazyFrame[PlaylistTrack]
     track_playlists: PolarsLazyFrame[PlaylistTrack]
@@ -835,6 +847,7 @@ class CombinedData:
         """Load the pre-generated data from the Parquet files."""
         return CombinedData(
             playlists=pl.scan_parquet(PLAYLIST_DATA_FILE),
+            playlist_stats=pl.scan_parquet(PLAYLIST_STATS_DATA_FILE),
             playlist_tags=pl.scan_parquet(PLAYLIST_TAGS_DATA_FILE),
             playlist_tracks=pl.scan_parquet(PLAYLIST_TRACKS_DATA_FILE),
             track_playlists=pl.scan_parquet(TRACK_PLAYLISTS_DATA_FILE),
@@ -1089,6 +1102,8 @@ type PlaylistSortKey = Literal[
     'matching_song_percent',
     'song_count',
     'artist_count',
+    'wcs_song_count',
+    'wcs_song_percent',
 ]
 
 
@@ -1517,6 +1532,7 @@ class SearchEngine:
         #
         # Result options
         #
+        playlist_stats_in_result: bool = False,
         tracks_in_result: bool = False,
         tracks_limit: int | None = None,
         extracted_playlist_data_in_result: bool = False,
@@ -1572,9 +1588,14 @@ class SearchEngine:
             matching_playlists =\
                 matching_playlists.with_extracted_data()
 
+        if playlist_stats_in_result:
+            matching_playlists = matching_playlists\
+                .with_playlist_stats(self.data.playlist_stats)\
+
         return matching_playlists.with_extra_columns()\
             .sort_by(sort_by, descending=descending)\
-            .included_playlists.slice(0, limit or None)
+            .included_playlists.slice(0, limit or None)\
+            .join(self.data.playlist_stats, how='left', on=Playlist.id)
 
     def find_date_formats_by_dj(
         self,
