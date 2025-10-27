@@ -1098,6 +1098,14 @@ type TrackSortKey = Literal[
     'matched_lyrics_count',
 ]
 
+type TrackTagSortKey = Literal[
+    'matching_playlist_count',
+    'tag.playlist_count',
+    'tag.playlist_percent',
+    'track.playlist_count',
+    'track.playlist_percent',
+]
+
 type PlaylistSortKey = Literal[
     'hit_count',
     'matching_song_count',
@@ -1344,6 +1352,8 @@ class SearchEngine:
             self,
             *,
             tag_name_exact: str,
+            sort_by: TrackTagSortKey | list[TrackTagSortKey] | None = TrackTag.matching_playlist_count,
+            descending: bool = True,
             limit: int | None = None,
     ) -> pl.LazyFrame:
         track_tags = self.data.tracks\
@@ -1360,13 +1370,12 @@ class SearchEngine:
             track_tags = track_tags\
                 .filter(pl.col(TrackTag.tag).eq(tag_name_exact))
 
-        return track_tags\
+        result = track_tags\
             .join(self.data.tracks.select(Track.id, Track.name, Track.artists,
                                           Stats.playlist_count().alias('track.playlist_count')),
                   how='inner', on=Track.id)\
             .join(self.find_tags(playlist_limit=0).select(Tag.name, Tag.playlist_count),
                   how='inner', left_on=TrackTag.tag, right_on=Tag.name)\
-            .sort(TrackTag.matching_playlist_count, descending=True)\
             .select(TrackTag.Track.id,
                     TrackTag.Tag.name,
                     TrackTag.matching_playlist_count,
@@ -1381,8 +1390,13 @@ class SearchEngine:
                     TrackTag.Track.playlist_count,
                     Track.name,
                     Track.artists)\
-            .pipe(filter_track_tags_by_limits, load_keyword_limits())\
-            .slice(0, limit or None)
+            .pipe(filter_track_tags_by_limits, load_keyword_limits())
+
+        if sort_by:
+            result = result\
+                .sort(sort_by, descending=descending)
+
+        return result.slice(0, limit or None)
 
     def find_random_songs(
         self,
