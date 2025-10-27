@@ -1136,7 +1136,7 @@ class TagManager:
 
         return category.title()
 
-    def get_tag_options(self, *, or_untagged: bool = False) -> list[str]:
+    def get_tag_options(self, *, or_empty: bool = False, or_untagged: bool = False) -> list[str]:
         tags = self.tags_df.lazy()\
             .filter(pl.col(Tag.short_name).is_not_null())\
             .sort(Tag.name)\
@@ -1144,12 +1144,18 @@ class TagManager:
             .to_list()
 
         if or_untagged:
-            return [TagManager.UNTAGGED, *tags]
-        else:
-            return tags
+            tags.insert(0, TagManager.UNTAGGED)
+
+        if or_empty:
+            tags.insert(0, "")
+
+        return tags
 
     @staticmethod
     def format_tag(tag: str) -> str:
+        if tag == "":
+            return "---"
+
         if tag == TagManager.UNTAGGED:
             return "(Untagged)"
 
