@@ -91,7 +91,7 @@ def _traverse_entry(
             else:
                 raise TypeError("Neither a str nor a list nor None")
     else:
-        raise TypeError(f"Neither a str nor a dict")
+        raise TypeError(f"Neither a str nor a dict: {entry} in category {category} with parent tags {tags}")
 
 
 def _load_keyword_data_from_yaml() -> _KeywordsFile:
