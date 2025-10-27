@@ -763,10 +763,13 @@ if keyword_insights_toggle:
             .limit(500)\
             .select(pl.all().name.map(lambda x: x.replace('.', '_')))
 
-        st.bar_chart(tagged_songs_df, x='index', y='matching_playlist_count', sort=False)
-        st.bar_chart(tagged_songs_df, x='index', y='tag_playlist_percent', sort=False)
-        st.bar_chart(tagged_songs_df, x='index', y='track_playlist_count', sort=False)
-        st.bar_chart(tagged_songs_df, x='index', y='track_playlist_percent', sort=False)
+        show_graphs = st.toggle("Show graphs")
+
+        if show_graphs:
+            st.bar_chart(tagged_songs_df, x='index', y='matching_playlist_count', sort=False)
+            st.bar_chart(tagged_songs_df, x='index', y='tag_playlist_percent', sort=False)
+            st.bar_chart(tagged_songs_df, x='index', y='track_playlist_count', sort=False)
+            st.bar_chart(tagged_songs_df, x='index', y='track_playlist_percent', sort=False)
 
         st.markdown(f"Playlists that contain many songs (but are not themselves) tagged with _{tag_input}_:")
 
