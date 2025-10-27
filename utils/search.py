@@ -1445,6 +1445,7 @@ class SearchEngine:
         interval: Literal['year', 'month', 'quarter', 'week', 'day'],
         song_name: TextFilter = '',
         artist_name: TextFilter = '',
+        playlist_is_social_set: bool = False,
         year_range: tuple[int, int] | None = None,
         date_range: tuple[str, str] | None = None,
     ) -> pl.LazyFrame:
@@ -1458,8 +1459,13 @@ class SearchEngine:
             artist_name=artist_name,
         )
 
+        playlist_filter = PlaylistFilter(
+            playlist_is_social_set=playlist_is_social_set
+        )
+
         total_popularity = self._get_popularity_over_time(
             track_filter=TrackFilter(),
+            playlist_filter=playlist_filter,
             interval=interval,
             year_range=year_range,
             date_range=date_range,
@@ -1477,6 +1483,7 @@ class SearchEngine:
 
         song_popularity = self._get_popularity_over_time(
             track_filter=track_filter,
+            playlist_filter=playlist_filter,
             interval=interval,
             year_range=year_range,
             date_range=date_range,
@@ -1494,6 +1501,7 @@ class SearchEngine:
         self,
         *,
         track_filter: TrackFilter,
+        playlist_filter: PlaylistFilter,
         interval: Literal['year', 'month', 'quarter', 'week', 'day'],
         year_range: tuple[int, int] | None = None,
         date_range: tuple[str, str] | None = None,
@@ -1511,6 +1519,11 @@ class SearchEngine:
         playlist_tracks = track_filter\
             .filter_tracks(self.data.all_tracks)\
             .filter_playlist_tracks(playlist_tracks, include_track_info=False)
+
+        if playlist_filter.has_filters:
+            playlist_tracks = playlist_filter\
+                .filter_playlists(self.data.all_playlists, include_matched_terms=False)\
+                .filter_playlist_tracks(playlist_tracks, include_playlist_info=False)
 
         playlist_tracks = PlaylistTrackSet(
             playlist_tracks.included_playlist_tracks

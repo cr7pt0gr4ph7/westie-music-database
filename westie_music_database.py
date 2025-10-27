@@ -892,6 +892,7 @@ if song_popularity_toggle:
     song_combo_col1, song_combo_col2 = st.columns(2)
     with song_combo_col1:
         song_input = st.text_input("Song Name/ID:")
+        only_socials_input = st.checkbox("Only socials")
     with song_combo_col2:
         artist_name_input = st.text_input("Song artist name:")
         interval_input = st.selectbox(label="Interval", options=INTERVALS.keys(),
@@ -915,6 +916,7 @@ if song_popularity_toggle:
         popularity_df = search_engine.get_popularity_over_time(
             song_name=song_input,
             artist_name=artist_name_input,
+            playlist_is_social_set=only_socials_input,
             interval=interval_input,
             year_range=(2000, current_year))\
             .collect(engine='streaming')
