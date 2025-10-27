@@ -758,6 +758,21 @@ if keyword_insights_toggle:
         st.bar_chart(tagged_songs_df, x='index', y='track_playlist_count', sort=False)
         st.bar_chart(tagged_songs_df, x='index', y='track_playlist_percent', sort=False)
 
+        st.markdown(f"Playlists that contain many songs (but are not themselves) tagged with _{tag_input}_:")
+
+        similar_playlists_df = search_engine\
+            .find_playlists(
+                song_tag_include=[tag_input],
+                playlist_tag_exclude=[tag_input],
+                tracks_in_result=True,
+                tracks_limit=30,
+                min_song_count=20,
+                sort_by=[Playlist.matching_song_percent],
+                descending=True)\
+            .with_row_index(offset=1)
+
+        st.dataframe(similar_playlists_df)
+
 
 @st.cache_data
 def djs_data():
