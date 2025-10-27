@@ -225,6 +225,8 @@ class PlaylistFilter:
     playlist_include: TextFilter = ''
     playlist_exclude: TextFilter = ''
     playlist_is_social_set: bool = False
+    min_song_count: int | None = None
+    max_song_count: int | None = None
 
     # Parsed filters
     match_country: pl.Expr = field(init=False)
@@ -286,6 +288,14 @@ class PlaylistFilter:
         if self.match_dj_name_exclude is not None:
             matching_playlists = matching_playlists.filter(
                 ~self.match_dj_name_exclude)
+
+        if self.min_song_count is not None:
+            matching_playlists = matching_playlists.filter(
+                Stats.song_count().ge(self.min_song_count))
+
+        if self.max_song_count is not None:
+            matching_playlists = matching_playlists.filter(
+                Stats.song_count().le(self.max_song_count))
 
         # Courtesy of Tobias N. (for the suggestion of the playlist_exclude filter)
         excluded_playlists: pl.LazyFrame | None
@@ -1224,6 +1234,8 @@ class SearchEngine:
         dj_name: TextFilter = '',
         playlist_include: TextFilter = '',
         playlist_exclude: TextFilter = '',
+        min_song_count: int | None = None,
+        max_song_count: int | None = None,
         #
         # Result options
         #
@@ -1249,6 +1261,8 @@ class SearchEngine:
             dj_name=dj_name,
             playlist_include=playlist_include,
             playlist_exclude=playlist_exclude,
+            min_song_count=min_song_count,
+            max_song_count=max_song_count,
         )
 
         #####################
