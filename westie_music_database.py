@@ -713,15 +713,22 @@ if keyword_insights_toggle:
     st.markdown(f"#### ")
     st.markdown(f"#### Tagged songs & playlists")
 
-    tag_input = st.selectbox("Show playlists & songs with tag:",
-                             options=tag_manager.get_tag_options(or_untagged=True),
-                             format_func=tag_manager.format_tag)
+    col1, col2 = st.columns(2)
+    with col1:
+        tag_input = st.selectbox("Show playlists & songs with tag:",
+                                 options=tag_manager.get_tag_options(or_untagged=True),
+                                 format_func=tag_manager.format_tag)
+    with col2:
+        anti_tag_input = st.selectbox("That are not also tagged with:",
+                                      options=tag_manager.get_tag_options(or_empty=True),
+                                      format_func=tag_manager.format_tag)
 
     if tag_input:
         st.markdown(f"Playlists tagged with _{tag_input}_:")
 
         tagged_playlists_df = search_engine\
-            .find_playlists(tag_include=[tag_input])\
+            .find_playlists(tag_include=[tag_input],
+                            tag_exclude=anti_tag_input)\
             .with_row_index(offset=1)
 
         st.dataframe(tagged_playlists_df)
@@ -729,19 +736,22 @@ if keyword_insights_toggle:
         st.markdown(f"Songs tagged with _{tag_input}_:")
 
         tagged_songs_df = search_engine\
-            .find_songs_by_tag(tag_name_exact=tag_input)\
+            .find_songs_by_tag(tag_name_exact=tag_input,
+                               not_tag_name_exact=anti_tag_input,
+                               sort_by=TrackTag.matching_playlist_count,
+                               descending=True)\
             .with_row_index(offset=1)\
             .collect(engine='streaming')
 
-        st.dataframe(tagged_songs_df.select(Track.name,
+        st.dataframe(tagged_songs_df.select(pull_columns_to_front(
+                                            Track.name,
                                             Track.artists,
                                             TrackTag.tag,
                                             TrackTag.matching_playlist_count,
                                             TrackTag.Tag.playlist_percent,
                                             TrackTag.Tag.playlist_count,
                                             TrackTag.Track.playlist_percent,
-                                            TrackTag.Track.playlist_count)
-                     .with_row_index(offset=1),
+                                            TrackTag.Track.playlist_count)),
                      column_config={TrackTag.tag: tag_manager.get_column_config(TrackTag.tag),
                                     TrackTag.matching_playlist_count: st.column_config.NumberColumn('#'),
                                     TrackTag.Tag.playlist_count: st.column_config.NumberColumn('# tag'),

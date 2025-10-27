@@ -1104,6 +1104,11 @@ type TrackTagSortKey = Literal[
     'tag.playlist_percent',
     'track.playlist_count',
     'track.playlist_percent',
+    'other.matching_playlist_count',
+    'other.tag.playlist_percent',
+    'other.track.playlist_percent',
+    'diff.matching_playlist_count',
+    'diff.track.playlist_percent',
 ]
 
 type PlaylistSortKey = Literal[
@@ -1352,10 +1357,35 @@ class SearchEngine:
             self,
             *,
             tag_name_exact: str,
+            not_tag_name_exact: str = '',
             sort_by: TrackTagSortKey | list[TrackTagSortKey] | None = TrackTag.matching_playlist_count,
             descending: bool = True,
             limit: int | None = None,
     ) -> pl.LazyFrame:
+        track_tags = self._find_songs_by_tag(tag_name_exact=tag_name_exact)
+
+        if not_tag_name_exact:
+            anti_track_tags = self\
+                ._find_songs_by_tag(tag_name_exact=not_tag_name_exact)\
+                .select(Track.id,
+                        TrackTag.matching_playlist_count().alias('other.matching_playlist_count'),
+                        TrackTag.Tag.playlist_percent().alias('other.tag.playlist_percent'),
+                        TrackTag.Track.playlist_percent().alias('other.track.playlist_percent'))
+
+            track_tags = track_tags\
+                .join(anti_track_tags, how='left', on=Track.id)\
+                .with_columns((TrackTag.matching_playlist_count().cast(pl.Int32) - pl.col('other.matching_playlist_count').fill_null(0).cast(pl.Int32))
+                              .alias('diff.matching_playlist_count'),
+                              (TrackTag.Track.playlist_percent() - pl.col('other.track.playlist_percent').fill_null(0))
+                              .alias('diff.track.playlist_percent'))\
+
+        if sort_by:
+            track_tags = track_tags\
+                .sort(sort_by, descending=descending)\
+
+        return track_tags.slice(0, limit or None)
+
+    def _find_songs_by_tag(self, *, tag_name_exact: str) -> pl.LazyFrame:
         track_tags = self.data.tracks\
             .explode(TrackTags.tags, TrackTags.playlist_counts_per_tag)\
             .rename({TrackTags.tags: TrackTag.tag,
@@ -1370,7 +1400,7 @@ class SearchEngine:
             track_tags = track_tags\
                 .filter(pl.col(TrackTag.tag).eq(tag_name_exact))
 
-        result = track_tags\
+        return track_tags\
             .join(self.data.tracks.select(Track.id, Track.name, Track.artists,
                                           Stats.playlist_count().alias('track.playlist_count')),
                   how='inner', on=Track.id)\
@@ -1391,12 +1421,6 @@ class SearchEngine:
                     Track.name,
                     Track.artists)\
             .pipe(filter_track_tags_by_limits, load_keyword_limits())
-
-        if sort_by:
-            result = result\
-                .sort(sort_by, descending=descending)
-
-        return result.slice(0, limit or None)
 
     def find_random_songs(
         self,
