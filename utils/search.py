@@ -1521,8 +1521,10 @@ class SearchEngine:
         #
         # Track-specific filters
         #
-        song_name: str = '',
-        artist_name: str = '',
+        song_name: TextFilter = '',
+        artist_name: TextFilter = '',
+        song_tag_include: TextFilter = '',
+        song_tag_exclude: TextFilter = '',
         #
         # Playlist-specific filters
         #
@@ -1532,6 +1534,8 @@ class SearchEngine:
         playlist_exclude: TextFilter = '',
         tag_include: TextFilter = '',
         tag_exclude: TextFilter = '',
+        playlist_tag_include: TextFilter = '',
+        playlist_tag_exclude: TextFilter = '',
         min_song_count: int | None = None,
         max_song_count: int | None = None,
         #
@@ -1551,9 +1555,20 @@ class SearchEngine:
         # Filter parameters #
         #####################
 
+        if playlist_tag_include and tag_include:
+            raise ValueError("At most one of playlist_tag_include and tag_include can be used")
+
+        if playlist_tag_exclude and tag_exclude:
+            raise ValueError("At most one of playlist_tag_exclude and tag_exclude can be used")
+
+        playlist_tag_include = playlist_tag_include or tag_include
+        playlist_tag_exclude = playlist_tag_exclude or tag_exclude
+
         track_filter = TrackFilter(
             song_name=song_name,
             artist_name=artist_name,
+            tag_include=song_tag_include,
+            tag_exclude=song_tag_exclude,
         )
 
         playlist_filter = PlaylistFilter(
@@ -1561,8 +1576,8 @@ class SearchEngine:
             dj_name=dj_name,
             playlist_include=playlist_include,
             playlist_exclude=playlist_exclude,
-            playlist_tag_include=tag_include,
-            playlist_tag_exclude=tag_exclude,
+            playlist_tag_include=playlist_tag_include,
+            playlist_tag_exclude=playlist_tag_exclude,
             min_song_count=min_song_count,
             max_song_count=max_song_count,
         )
