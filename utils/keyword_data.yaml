@@ -1234,6 +1234,8 @@ keywords:
     - dislikes:
         - dislike
         - dislikes
+        - exclude
+        - excluded
         - hate these songs
 
     - hits:
@@ -1309,7 +1311,6 @@ keywords:
     # Audience requests
     - suggestions:
         # - new # but not "new years", "new playlist", "new day"
-        - new wcs
         - requests
         - suggestions
         - request song
@@ -1323,6 +1324,7 @@ keywords:
         - finds
         - incoming
         - inspiration
+        - new wcs
 
     # Playlists with the following in their name are collections
     # created by users that indicate a very subjective sorting.
@@ -1478,6 +1480,8 @@ keywords:
     - dc swing experience: # EVENT: DC Swing eXperience
         - dcsx
         - dc swing experience
+    - derby city swing: # EVENT: Derby City Swing
+        - derby city swing
     - detonation dance: # EVENT: Detonation Dance in Manchester
         - detonation
     - dunedin
