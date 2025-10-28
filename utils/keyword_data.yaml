@@ -80,44 +80,45 @@ keywords:
         - bruno mars
     - april:
         - apr
-        - april
-        - avril
+        - april # german / english
+        - avril # french
     - may:
         - may
-        - mai
+        - mai # german
+        - majowy # polish: may
     - june:
         - jun
         - june
-        - juni
-        - juin
+        - juni # german
+        - juin # french
     - july:
         - jul
         - july
-        - juli
-        - juillet
+        - juli # german
+        - juillet # french
     - august:
         - aug
-        - august
-        - août
+        - august # german / english
+        - août # french
     - september:
         - sep
         - sept
-        - september
-        - septembre
+        - september # german / english
+        - septembre # french
     - october:
         - oct
         - october
-        - okt
-        - oktober
+        - okt # german
+        - oktober # german
     - november:
         - nov
-        - november
-        - novembre
+        - november # german / english
+        - novembre # french
     - december:
         - dec
         - december
-        - dez
-        - dezember
+        - dez # german
+        - dezember # german
   time-of-day:
     - morning
     - noon
@@ -129,39 +130,61 @@ keywords:
         - mon
         - monday
         - mondays
-        - lundi
-    - tuesdays:
+        - lundi # french
+        - mo. # german
+        - montag # german
+        - montags # german
+        - måndagar # swedish
+    - tuesday:
         - tue
         - tues
         - tuesday
         - tuesdays
-        - mardi
+        - mardi # french
+        - di. # german
+        - dienstag # german
+        - dienstags # german
     - wednesday:
         - wed
         - wednesday
         - wednesdays
         - mercredi
+        - mi. # german
+        - mittwoch # german
+        - mittwochs # german
     - thursday:
         - thu
         - thurs
         - thursday
         - thursdays
-        - jeudi
+        - jeudi # french
+        - do. # german
+        - donnerstag # german
     - friday:
         - fri
         - friday
         - fridays
-        - vendredi
+        - vendredi # french
+        - fr. # german
+        - freitag # german
+        - piatku # slowakian: friday('s)
+        - piątkowe # polish: friday's
+        - piątkowy # polish: friday
     - saturday:
         - sat
         - saturday
         - saturdays
-        - samedi
+        - samedi # french
+        - sa. # german
+        - samstag # german
+        - sobota # slowenian
     - sunday:
         - sun
         - sunday
         - sundays
-        - dimanche
+        - dimanche # french
+        - so. # german
+        - sonntag # german
   language:
     - chinese
     - english
@@ -204,6 +227,7 @@ keywords:
         - westcoast
         - westcoastswing
         - westie
+        - westiepracticesongs
         - westies
         - westcoastradio
         - westy
@@ -452,6 +476,7 @@ keywords:
         - träning
         - treino
         - trening
+        - träningsgruppen # swedish: training group
         - torsdagstrening # translation: thursday training
 
     # WCS Rally / Flashmob
@@ -500,8 +525,9 @@ keywords:
         - beginner
         - beginners
         - friendly
-        - débutant
+        - débutant # french: beginner
         - iniciante # portugese (brazilian): beginner
+        - kezdő # hungarian: beginner
     - champions:
         - champs
         - champions
@@ -605,6 +631,8 @@ keywords:
         - instrumental
         - without lyrics
     - late night:
+        - ln
+        - lns
         - late nigt's
         - late night
         - late nights
@@ -740,6 +768,7 @@ keywords:
         - santa cruz
         - sesame club
         - strip club
+        - tyrol club # tyrol club of solvay
     - epic
     - happy:
         - happy
@@ -827,7 +856,14 @@ keywords:
         - wake up
         - wake-up
         - wakeup
-    - cool
+    - cool:
+        - cool
+        - coool
+        - cooool
+        - coooool
+        - cooooool
+    - cool-:
+        - cool down
     - funky
     - groovy
     - groovy-:
@@ -1080,7 +1116,10 @@ keywords:
         - follower style
         - leader style
         - styling
-    - footwork
+    - footwork:
+        - footwork
+        - fun w feet
+        - fun with feet
     - lyrical:
         - lyrical
         - lyrcical
@@ -1173,6 +1212,7 @@ keywords:
         - noël
         - swingmas
         - weihnachten
+        - westmas
         - x-mas
         - xmas
     - christmas-:
@@ -1183,12 +1223,25 @@ keywords:
     - valentine's day:
         - valentine
         - valentines
+        - valentine's
         - valentunes
+        - walentynki # polish: valentine's day
+    - new year's eve:
+        - new years
+        - new year's
+        - new year’s
+        - sylvester
+        - sylwester # polish: new year's eve
+        - sylewester # polish: new year's eve (misspelling)
+        - szilveszter # hungarian: new year's eve
     - autumn: # todo: remove event titles from matches
         - "🍂"
         - autumn
         - fall
     - halloween: # todo: remove event titles from matches
+        - haloween
+        - halowen
+        - hallowen
         - halloween
         - spooky
     - spring: # todo: remove event titles from matches
@@ -1237,6 +1290,7 @@ keywords:
         - exclude
         - excluded
         - hate these songs
+        - odrzucone # slowakian: rejected
 
     - hits:
         - all time
@@ -1246,6 +1300,8 @@ keywords:
         - anthems
         - bangers
         - bops
+        - crowd pleaser
+        - floor fillers
         - great songs
         - hit
         - hits
@@ -1295,6 +1351,8 @@ keywords:
         # on their name alone...
         - experiment
         - experimental
+        - experimentální # polish: experimental
+        - experymentalnie # polish?: experimentally
         - ideas
         - interesting
         - listen
@@ -1357,14 +1415,14 @@ keywords:
     - cukr push # Cukr Push
     - cwf
     - dance lab
-    - dyos # DYOS
+    - dansfest
     - elevation dance
     - elk
     - elks
     - esdc
     - evolve
     - explore
-    - fnpl
+    - fnpl # FNPL - event or org, google search yields no results
     # - getreadywith<name>
     - gm
     - hb
@@ -1373,9 +1431,7 @@ keywords:
     - infinity
     - ivra
     - lbb
-    - lundi plain air
     - lyon à la maison # Lyon à la Maison
-    - majowy poronin # Majowy Poronin
     - mambita
     - mcs # EVENT?: MCS, MCS FH, MCS Later
     - mdj
@@ -1384,20 +1440,16 @@ keywords:
     - nyc # NYC
     - omj # OMJ
     - papillon
-    - poronin
-    - rideau swing collective
+    - rideau swing collective # ORG: Rideau Swing Collective
     - rowell
     - roxie's
     - sds
-    - tatarska
+    - tatarska # polish: tartar sauce, tartarian, republic of tatarstan
     - the kårner # PARTY?/ORG?: The Kårner
     - trivia # PARTY?
     - ulm
-    - walentynki
     - wieczorek
-    - wprawki
     - wsca
-    - żaczek
     - zf # sometimes appearing together with KonoBueno
     - zonawcs # ZonaWCS
     #
@@ -1449,6 +1501,9 @@ keywords:
         - boston swing labs
         - bsl
     - budafest # EVENT: Budafest
+    - canadian swing championships: # EVENT: Canadian Swing Championships
+        - canadian swing championships
+        - csc
     - candy swing # EVENT?
     - capital swing # EVENT: Captial Swing
     - cds
@@ -1469,6 +1524,7 @@ keywords:
         - dancing for dessert
         - df
     - dance for hope # EVENT?: Dance for Hope
+    - dance n play # EVENT: Dance n Play
     - dance out loud
     - dance with joy: # ORG: Dance with Joy
         - dance with joy
@@ -1484,6 +1540,9 @@ keywords:
         - derby city swing
     - detonation dance: # EVENT: Detonation Dance in Manchester
         - detonation
+    - do your own swing: # ORG: Do Your Own Swing
+        - do your own swing
+        - dyos
     - dunedin
     - d-town swing:
         - d-town
@@ -1513,10 +1572,16 @@ keywords:
     - french open:
         - french open # EVENT: French Open [year]
         - fowcs
+        - fo[year]
         - fo22
         - fo23
     - friday jams # PARTY: Friday Jams
     - friday tulsa dance # PARTY: Friday Tulsa Dance
+    - german open: # EVENT: German Open WCS in Freiburg, Germany
+        - german open
+        - go[year]
+        - go24
+    - gowest # EVENT: GoWest
     - groovetopia
     - groovy tuesdays: # PARTY: Groovy Tuesdays
         - groovy tuesday
@@ -1537,9 +1602,12 @@ keywords:
         - kiwi
     - klc # EVENT, but seems to be discontinued (could only find references to KLC 2013 online)
     - konobueno # ZF Konobueno # I have no idea what this is, but it appears consistently in multiple playlist names
-    - korean open:
-        - korea open # EVENT: Korea Open [year]
+    - korean open: # EVENT: Korea Open [year]
+        - ko # GO[yy]
+        - korea open
         - korean open
+        - koreanopen
+        - koreaopen
     - korea westival
     - kv # Probably an event, but not sure which one
     - lakeside swing: # EVENT: Lakeside Swing
@@ -1547,6 +1615,7 @@ keywords:
     - liberty swing:
         - liberty # EVENT: Liberty [year]
         - liberty swing
+    - longhorn westies # ORG: Longhorn Westies
     - lollapalooza: # ?: LOLLA
         - lolla
         - lollapalooza
@@ -1591,16 +1660,23 @@ keywords:
         - new zealand open
         - nz open
         - nzo
-    - neverland swing: # EVENT: NeverlandSwing
-        - nls
+    - neverland swing: # EVENT: NeverlandSwing in the Netherlands
+        - nls # could also be next level swing
         - neverland
         - neverlandswing
-    - nordic swing:
+    - next level swing: # EVENT: Next Level Swing in Sweden
+        - next level swing
+    - nordic wcs championships:
+        - nordic
+        - nordic[year]
+        - nordic24
         - nordic 2018
         - nordic 2019
         - nordic friday
         - nordic saturday
         - nordic sunday
+        - nordic wcs
+        - nordic wcs champs
         - nordicwcschampionships
     - northern california dance collective: # ORG: Northern California Dance Collective
         - northern california dance collective
@@ -1681,7 +1757,11 @@ keywords:
     - simply adelaide
     - skåneswing # EVENT: SkåneSwing
     - slingshot swing # EVENT: Slingshot Swing
-    - slovenian open # EVENT: Slovenian Open
+    - slovenian open: # EVENT: Slovenian Open
+        - slovenian open
+        - so[year]
+        - so2025 # could also be scandinavian open
+        - so25
     - sofiensäle # LOCATION: Sofiensäle
     - spacecoastdc # EVENT: SpaceCoastDC
     - spring time swing: # EVENT: Spring Time Swing in Freiburg, Germany
@@ -1692,10 +1772,6 @@ keywords:
     - summer swing camp: # EVENT: SummerSwingCamp
         - summer swing camp
         - summerswingcamp
-    - swingside invitational: # EVENT: Swingside Invitational
-        - ssi
-        - swingside
-        - swingside invitational
     - sunday & swing # PARTY: Sunday & Swing
     - sunday swing # PARTY: Sunday Swing
     - sunset swing
@@ -1724,7 +1800,7 @@ keywords:
         - swing connect
         - swingconnecthtx
     - swingcouver # EVENT: Swingcouver
-    - swingesota # EVENT: Swingesota
+    - swingesota # EVENT: Swingesota # + Swingesota Snow Day
     - swinggeneration: # EVENT: SwingGeneration
         - swingg
         - swing generation
@@ -1737,12 +1813,18 @@ keywords:
     - swinglebell # EVENT: Swinglebell
     - swingsation: # EVENT: Swingsation
         - swingsation
+    - swingside invitational: # EVENT: Swingside Invitational
+        - ssi
+        - swingside
+        - swingside invitational
     - swingtac # ORG?/EVENT?: Swingtac
     - swingtacular # EVENT: Swingtacular [year]
     - swingtimate # EVENT: Swingtimate
     - swingtime # EVENT: Swingtime [year]
     - swingting: # EVENT: SwingTing
         - swingting
+        - swingtingapr
+        - swingtingapr24
         - swing ting
     - swingout # EVENT: SwingOut
     - swingsoul # EVENT: SwingSoul
@@ -1750,13 +1832,17 @@ keywords:
     - swingvasion # EVENT: Swingvasion
     - swingvester # EVENT: Swingvester
     - switchxperience: # EVENT: SwitchX
-        - switchx
         - switch experience
-        - switch xperience
         - switch x
         - switch x perience
+        - switch xperience
+        - switchx
+        - switchxp
         - switchxperience
-    - symphony swing # EVENT: Symphony Swing
+    - swung/texas: # PARTY: Swung/Texas: "Swung/TX is a WCS social on the third Saturday of every month..."
+        - swung/texas
+        - swung/tx
+    - symphony swing # EVENT: Symphony Swing in Bonn, Germany
     - tanzbogen # ORG: Tanzbogen Wien
     - tanzbrunnen # LOCATION: Tanzbrunnen (there are multiple locations with this name, also not always WCS)
     - tanzes # ORG: TanzEs
@@ -1772,6 +1858,7 @@ keywords:
             - ski west
     - the after party: # EVENT: The After Party [year] / TAP [year]
         - tap
+        - tap [year]
         - the after party
     - the open: # EVENT: The Open [year]
         - the open
@@ -1785,7 +1872,12 @@ keywords:
         - twc
     - txfx:
         - txfx
-    - tyrol club of solvay # ORG: Tyrol Club of Solvay
+    - tyrol club of solvay: # LOCATION: Tyrol Club of Solvay in Syracuse, US
+        - tyrol club
+        - tyrol club of solvay
+    - ucandance: # ORG: UCanDance
+        - ucd
+        - ucandance-o-mat
     - university city swing philadelphia: # ORG: University City Swing in Philadelphia
         - ucswing # UCSwing
         - ucwdc # EVENT:? ucswing winter dance camp?
@@ -1823,6 +1915,7 @@ keywords:
     - west cone swing # EVENT: West Cone Swing
     - west duck swing # EVENT: West Duck Swing
     - west family # EVENT: West Family
+    - westie gala # EVENT: Westie Gala
     - west in honfleur # EVENt: West In Honfleur
     - west in lyon: # EVENT: West in Lyon
         - west in lyon
