@@ -7,6 +7,7 @@ import polars as pl
 
 from utils.additional_data import actual_wcs_djs, queer_artists, poc_artists
 from utils.common.temp_files import TempFileTracker, with_temp_files
+from utils.keyword_data import load_track_keyword_filter, tag_matches_filter
 from utils.playlist_classifiers import extract_date_strings_from_name, extract_tags_from_name
 from utils.search import (
     COUNTRY_DATA_FILE,
@@ -750,6 +751,7 @@ def process_playlist_and_song_tags():
         .join(exploded_playlists_by_tag.rename({TAG: Tag.name})
               .filter(pl.col(Tag.name).is_not_null()),
               how='inner', on=Playlist.id)\
+        .filter(~tag_matches_filter(load_track_keyword_filter(), Tag.name()))\
         .group_by(Track.id, Tag.name)\
         .agg(pl.col(Playlist.id).n_unique().alias(TrackTag.matching_playlist_count))
 
