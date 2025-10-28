@@ -602,7 +602,10 @@ keywords:
         - k-pop
     - broadway
     - jazz
-    - karaoke
+    - karaoke:
+        - karaoke
+        - sing along
+        - sing alongs
     - musicals
     - pop
     - trance
@@ -1468,6 +1471,9 @@ keywords:
          - asiaopen
          - awcso
          - awcso200424
+    - atlanta social: # PARTY: Atlanta Social
+        - atlanta social
+        - atl social
     - atlanta swing classic: # EVENT: Atlanta Swing Classic
         - atlanta swing classic
         - asc
@@ -1475,6 +1481,11 @@ keywords:
         - augsburg westie station
         - westie station
         - westiestation
+    - austin rocks: # EVENT: ATX ROX - Austin Rocks
+        - austin rocks
+        - atx rox
+        - atxrox
+        - atx
     - austin westie academy: # ORG: Austin Westie Academy
         - austin westie academy
         - awa
@@ -1742,6 +1753,11 @@ keywords:
         - sea sun swing
         - ssw # check if this is right
         - sss
+    - seattle easter swing: # EVENT: Seattle Easter Swing
+        - seattle easter swing
+        - ses
+        - ses[year]
+        - ses2023
     - seattle swing dance club: # ORG: Seattle Swing Dance Club
         - seattle swing dance club
         - ssdc
@@ -1767,7 +1783,6 @@ keywords:
     - spring time swing: # EVENT: Spring Time Swing in Freiburg, Germany
         - spring time swing
         - springtimeswing
-    - steve ryan dance # ORG: Steve Ryan Dance
     - street swing # PARTY?: Street Swing
     - summer swing camp: # EVENT: SummerSwingCamp
         - summer swing camp
@@ -1779,7 +1794,10 @@ keywords:
         - swing amore
         - swingamore
     - swing city chicago # EVENT: Swing City Chicago [year]
-    - swing crush
+    - swing crush # EVENT: Swing Crush
+    - swing dance alley: # ORG/LOCATION: Swing Dance Alley in Syracuse, USA
+        - swing dance alley
+        - steve ryan dance
     - swing diego: # EVENT: Swing Diego
         - swingdiego
         - swing diego
@@ -1843,6 +1861,7 @@ keywords:
         - swung/texas
         - swung/tx
     - symphony swing # EVENT: Symphony Swing in Bonn, Germany
+    - synergy swing # ORG: Synergy Swing
     - tanzbogen # ORG: Tanzbogen Wien
     - tanzbrunnen # LOCATION: Tanzbrunnen (there are multiple locations with this name, also not always WCS)
     - tanzes # ORG: TanzEs
