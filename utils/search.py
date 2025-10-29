@@ -648,10 +648,10 @@ class TrackFilter:
         self.match_artist_name =\
             create_text_filter(self.artist_name, Track.artist_names)
         self.match_tag =\
-            create_text_filter(self.tag_include, TrackTags.tags,
+            create_text_filter(self.tag_include, TrackTags.extract_tags(),
                                is_list_column=True, match_mode='exact', no_value=TagManager.UNTAGGED)
         self.match_excluded_tag =\
-            create_text_filter(self.tag_exclude, TrackTags.tags,
+            create_text_filter(self.tag_exclude, TrackTags.extract_tags(),
                                is_list_column=True, match_mode='exact', no_value=TagManager.UNTAGGED)
 
     @property
@@ -1383,6 +1383,7 @@ class SearchEngine:
 
     def _find_songs_by_tag(self, *, tag_name_exact: str) -> pl.LazyFrame:
         track_tags = self.data.tracks\
+            .with_columns(TrackTags.unnest_tags_data())\
             .explode(TrackTags.tags, TrackTags.playlist_counts_per_tag)\
             .rename({TrackTags.tags: TrackTag.tag,
                      TrackTags.playlist_counts_per_tag: TrackTag.matching_playlist_count,
@@ -1552,8 +1553,10 @@ class SearchEngine:
         return matching_tracks.with_extra_columns()\
             .sort_by(sort_by, descending=descending)\
             .included_tracks.slice(skip_num_top_results, limit or None)\
-            .with_columns(TrackTags.tags().list.filter(
-                ~tag_matches_filter(self.data.strip_tags_from_tracks, pl.element())))
+            .with_columns(TrackTags.tags_data().list.filter(
+                ~tag_matches_filter(self.data.strip_tags_from_tracks,
+                                    pl.element().struct.field(TrackTag.tag))))\
+            .with_columns(TrackTags.unnest_tags_data())
 
     def find_playlists(
         self,

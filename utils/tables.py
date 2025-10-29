@@ -1,5 +1,5 @@
 """Provides typed column name constants."""
-from typing import Final, Literal
+from typing import Final, Literal, overload
 
 import polars as pl
 
@@ -312,8 +312,57 @@ class TrackTags(Entity):
     playlist_counts_per_tag: Final = field("playlist_counts_per_tag", pl.List(pl.UInt32))
     """How often each tag is associated with this song. Has same length and order as `tags`."""
 
+    tags_data: Final = field("tags_data", pl.List(pl.Struct({
+        TrackTag.tag: TrackTag.tag.field_type,
+        TrackTag.matching_playlist_count: TrackTag.matching_playlist_count.field_type,
+    })))
+    """Combined information from `tags` and `playlist_counts_per_tag`."""
+
     tag_relations_count: Final = field("tag_relations_count", pl.UInt32)
     """The total number of `(Track=this_track, Tag, Playlist)` tuples. Same as `sum(playlist_counts_per_tag)`."""
+
+    @staticmethod
+    def unnest_tags_data():
+        yield TrackTags.extract_tags()
+        yield TrackTags.extract_playlist_counts_per_tag()
+
+    @overload
+    @staticmethod
+    def extract_tags() -> pl.Expr:
+        pass
+
+    @overload
+    @staticmethod
+    def extract_tags(expr: pl.Expr) -> pl.Expr:
+        pass
+
+    @staticmethod
+    def extract_tags(expr: pl.Expr | None = None) -> pl.Expr:
+        if expr is None:
+            expr = TrackTags.tags_data()
+
+        return expr\
+            .list.eval(pl.element().struct.field(TrackTag.tag))\
+            .alias(TrackTags.tags)
+
+    @overload
+    @staticmethod
+    def extract_playlist_counts_per_tag():
+        pass
+
+    @overload
+    @staticmethod
+    def extract_playlist_counts_per_tag(expr: pl.Expr):
+        pass
+
+    @staticmethod
+    def extract_playlist_counts_per_tag(expr: pl.Expr | None = None):
+        if expr is None:
+            expr = TrackTags.tags_data()
+
+        return expr\
+            .list.eval(pl.element().struct.field(TrackTag.matching_playlist_count))\
+            .alias(TrackTags.playlist_counts_per_tag)
 
 
 class PlaylistTags(Entity):

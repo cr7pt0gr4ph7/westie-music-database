@@ -765,14 +765,15 @@ def process_playlist_and_song_tags():
         write_to_parquet_file(track_tags_by_track_id, temp_file)
         track_tags_by_track_id = scan_parquet_file(temp_file)
 
+        TAG_DATA: Final = 'tag_data'
+
         def process_track_tags_batch(tracks_batch: pl.LazyFrame) -> pl.LazyFrame:
             return tracks_batch\
+                .with_columns(pl.struct(TrackTag.tag, TrackTag.matching_playlist_count).alias(TAG_DATA))\
                 .group_by(Track.id)\
-                .agg(pl.col(Tag.name).sort_by(TrackTag.matching_playlist_count, descending=True)
-                     .alias(TrackTags.tags),
-                     pl.col(TrackTag.matching_playlist_count).sort(descending=True)
-                     .alias(TrackTags.playlist_counts_per_tag),
-                     pl.col(TrackTag.matching_playlist_count).sort(descending=True)
+                .agg(pl.col(TAG_DATA).sort_by(TrackTag.matching_playlist_count, descending=True)
+                     .alias(TrackTags.tags_data),
+                     pl.col(TrackTag.matching_playlist_count)
                      .sum().alias(TrackTags.tag_relations_count))
 
         process_in_batches(
@@ -790,6 +791,7 @@ def process_tag_stats():
     """Compute confidence statistics for each tag."""
     tags = scan_parquet_file(TAGS_DATA_FILE)
     track_tags = scan_parquet_file(TRACK_TAGS_DATA_FILE)\
+        .with_columns(TrackTags.unnest_tags_data())\
         .explode(TrackTags.tags, TrackTags.playlist_counts_per_tag)\
         .rename({TrackTags.tags: TrackTag.tag,
                  TrackTags.playlist_counts_per_tag: TrackTag.matching_playlist_count,
@@ -849,11 +851,11 @@ def merge_song_tags_into_metadata():
     track_tags = scan_parquet_file(TRACK_TAGS_DATA_FILE)
     tracks_with_tags = tracks\
         .select(pl.exclude(TrackTags.tags,
+                           TrackTags.tags_data,
                            TrackTags.playlist_counts_per_tag,
                            TrackTags.tag_relations_count))\
         .join(track_tags.select(Track.id,
-                                TrackTags.tags,
-                                TrackTags.playlist_counts_per_tag,
+                                TrackTags.tags_data,
                                 TrackTags.tag_relations_count),
               how='left', on=Track.id)\
         .sort(Track.id)
@@ -873,6 +875,7 @@ def compute_playlist_wcs_score():
     playlist_tracks = scan_parquet_file(PLAYLIST_TRACKS_DATA_FILE)
 
     wcs_tracks = scan_parquet_file(TRACK_TAGS_DATA_FILE)\
+        .with_columns(TrackTags.unnest_tags_data())\
         .explode(TrackTags.tags, TrackTags.playlist_counts_per_tag)\
         .rename({TrackTags.tags: TrackTag.tag,
                  TrackTags.playlist_counts_per_tag: TrackTag.matching_playlist_count})\
