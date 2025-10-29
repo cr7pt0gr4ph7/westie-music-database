@@ -811,13 +811,11 @@ class CombinedData:
 
     playlists: PolarsLazyFrame[Playlist]
     playlist_stats: PolarsLazyFrame[PlaylistStats]
-    playlist_tags: PolarsLazyFrame[PlaylistTags]
     playlist_tracks: PolarsLazyFrame[PlaylistTrack]
     track_playlists: PolarsLazyFrame[PlaylistTrack]
     tracks: PolarsLazyFrame[Track]
     tracks_adjacent: PolarsLazyFrame[TrackAdjacent]
     track_lyrics: PolarsLazyFrame[TrackLyrics]
-    track_tags: PolarsLazyFrame[TrackTags]
     tags: PolarsLazyFrame[Tag]
     tag_stats: PolarsLazyFrame[Tag]
     countries: list[str]
@@ -849,13 +847,11 @@ class CombinedData:
         return CombinedData(
             playlists=pl.scan_parquet(PLAYLIST_DATA_FILE),
             playlist_stats=pl.scan_parquet(PLAYLIST_STATS_DATA_FILE),
-            playlist_tags=pl.scan_parquet(PLAYLIST_TAGS_DATA_FILE),
             playlist_tracks=pl.scan_parquet(PLAYLIST_TRACKS_DATA_FILE),
             track_playlists=pl.scan_parquet(TRACK_PLAYLISTS_DATA_FILE),
             tracks=pl.scan_parquet(TRACK_DATA_FILE),
             tracks_adjacent=pl.scan_parquet(TRACK_ADJACENT_DATA_FILE),
             track_lyrics=pl.scan_parquet(TRACK_LYRICS_DATA_FILE),
-            track_tags=pl.scan_parquet(TRACK_TAGS_DATA_FILE),
             tags=pl.scan_parquet(TAGS_DATA_FILE),
             tag_stats=pl.scan_parquet(TAG_STATS_DATA_FILE),
             countries=pl.read_csv(COUNTRY_DATA_FILE)['country'].to_list(),
