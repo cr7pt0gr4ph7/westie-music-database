@@ -560,6 +560,8 @@ keywords:
         - blues-y
         - b l u e s
     - blues-:
+        - blues dance
+        - fusion
         - no blues
         - not blues
     - bluesy
@@ -1587,6 +1589,10 @@ keywords:
         - fo22
         - fo23
     - friday jams # PARTY: Friday Jams
+    - friday swing: # Different parties
+        - friday swing
+        - piątkowy west # polish: friday west
+        - piątkowe wcs
     - friday tulsa dance # PARTY: Friday Tulsa Dance
     - german open: # EVENT: German Open WCS in Freiburg, Germany
         - german open
