@@ -397,6 +397,20 @@ if song_locator_toggle:
         results_df = song_search_df\
             .with_columns(
                 pl.col(Playlist.name).list.head(30),
+                TrackTags.tags_data()
+                .list.eval(pl.concat_str(
+                    pl.element().struct.field(TrackTag.tag),
+                    pl.lit(" ("),
+                    pl.element().struct.field(TrackTag.matching_playlist_count),
+                    pl.lit(")")))
+                .alias('tag_frequency'),
+                pl.col('adjacent_tags_data')
+                .list.eval(pl.concat_str(
+                    pl.element().struct.field(TrackTag.tag),
+                    pl.lit(" ("),
+                    pl.element().struct.field(TrackTag.matching_playlist_count),
+                    pl.lit(")")))
+                .alias('adjacent_tag_frequency'),
             )\
             .rename({Track.country: 'country'})\
             .drop(Track.id, Track.release_date, Track.region,
@@ -428,7 +442,8 @@ if song_locator_toggle:
                 Track.name,
                 Track.artists,
                 TrackTags.tags,
-                TrackTags.playlist_counts_per_tag,
+                'tag_frequency',
+                'adjacent_tag_frequency',
                 Track.url,
             ))\
             .with_row_index(offset=1)\

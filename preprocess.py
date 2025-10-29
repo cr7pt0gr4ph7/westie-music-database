@@ -829,6 +829,82 @@ def process_tag_stats():
     )
 
 
+def process_adjacent_song_tags():
+    """
+    Computes the tags of the tracks a given song usually appears next to.
+
+    This allows us to use the many untagged-but-probably-clustered social
+    playlists to amplify the explicit tagging data obtained from the fewer
+    tagged playlists.
+
+    E.g. if a song almost always appears next to (or near) other songs that are
+    tagged with `genre:late night`, it is more likely that it should also
+    be tagged with `genre:late night` as well.
+    """
+    tracks = scan_parquet_file(TRACK_DATA_FILE)
+    adjacent_tracks = scan_parquet_file(TRACK_ADJACENT_DATA_FILE)
+    track_tags = scan_parquet_file(TRACK_TAGS_DATA_FILE)\
+        .with_columns(TrackTags.unnest_tags_data())
+
+    TAG_DATA: Final = 'tag_data'
+
+    # TODO: Take into account how confident we are in that the tags
+    #       of the adjacent tracks are themselves correct. We might e.g.
+    #       perform multiple rounds of this aggregation, where each round
+    #       propagates the confidence scores computed in the previous round
+    #       to the adjacent tracks. We have to try it to see if that actually
+    #       has a positive effect on the correctness of the tags.
+    bidirectional_adjacent_tracks = pl.concat(
+        adjacent_tracks,
+        adjacent_tracks.rename({
+            TrackAdjacent.FirstTrack.id: TrackAdjacent.SecondTrack.id,
+            TrackAdjacent.SecondTrack.id: TrackAdjacent.FirstTrack.id,
+        }))
+
+    adjacent_track_tags = bidirectional_adjacent_tracks\
+        .select(TrackAdjacent.FirstTrack.id, TrackAdjacent.SecondTrack.id)\
+        .join(track_tags.select(Track.id, TrackTags.tags, TrackTags.playlist_counts_per_tag),
+              how='inner', left_on=TrackAdjacent.SecondTrack.id, right_on=Track.id)\
+        .drop(TrackAdjacent.SecondTrack.id)\
+        .rename({TrackAdjacent.FirstTrack.id: Track.id})\
+        .explode(TrackTags.tags, TrackTags.playlist_counts_per_tag)\
+        .rename({TrackTags.tags: TrackTag.tag,
+                 TrackTags.playlist_counts_per_tag: TrackTag.matching_playlist_count})\
+        .group_by(Track.id, TrackTag.tag)\
+        .agg(TrackTag.tag().count().alias(TrackTag.matching_playlist_count))
+
+    with TempFileTracker() as temp_files:
+        temp_file = temp_files.register_for_deletion(TEMP_DATA_DIR + 'temp_track_adjacent_tags.parquet')
+        write_to_parquet_file(adjacent_track_tags, temp_file)
+        adjacent_track_tags = scan_parquet_file(temp_file)
+
+        temp_file = temp_files.register_for_deletion(TEMP_DATA_DIR + 'temp_track_adjacent_tags_by_track_id.parquet')
+        adjacent_track_tags_by_track_id = adjacent_track_tags.sort(Track.id)
+        write_to_parquet_file(adjacent_track_tags_by_track_id, temp_file)
+        adjacent_track_tags_by_track_id = scan_parquet_file(temp_file)
+
+        TAG_DATA: Final = 'tag_data'
+
+        def process_track_adjacent_tags_batch(tracks_batch: pl.LazyFrame) -> pl.LazyFrame:
+            return tracks_batch\
+                .with_columns(pl.struct(TrackTag.tag, TrackTag.matching_playlist_count).alias(TAG_DATA))\
+                .group_by(Track.id)\
+                .agg(pl.col(TAG_DATA).sort_by(TrackTag.matching_playlist_count, descending=True)
+                     .alias(TrackTags.tags_data),
+                     pl.col(TrackTag.matching_playlist_count)
+                     .sum().alias(TrackTags.tag_relations_count))
+
+        process_in_batches(
+            adjacent_track_tags_by_track_id,
+            process_track_adjacent_tags_batch,
+            batch_by=Track.id,
+            batch_values=tracks,
+            batch_name="adjacent_tags",
+            batch_size=10000,  # Higher batch sizes are faster but have a righer OOM risk
+            output_name=DATA_DIR + "data_song_adjacent_tags.parquet",
+        )
+
+
 def merge_playlist_tags_into_metadata():
     UNTAGGED_PLAYLISTS_DATA_FILE = TEMP_DATA_DIR + 'data_playlist_metadata.untagged.parquet'
     rename_file(PLAYLIST_DATA_FILE, UNTAGGED_PLAYLISTS_DATA_FILE)
@@ -849,14 +925,20 @@ def merge_song_tags_into_metadata():
 
     tracks = scan_parquet_file(UNTAGGED_TRACKS_DATA_FILE)
     track_tags = scan_parquet_file(TRACK_TAGS_DATA_FILE)
+    adjacent_track_tags = scan_parquet_file(DATA_DIR + "data_song_adjacent_tags.parquet")
     tracks_with_tags = tracks\
         .select(pl.exclude(TrackTags.tags,
                            TrackTags.tags_data,
                            TrackTags.playlist_counts_per_tag,
-                           TrackTags.tag_relations_count))\
+                           TrackTags.tag_relations_count,
+                           "adjacent_tags_data",
+                           "adjacent_tags_data_right"))\
         .join(track_tags.select(Track.id,
                                 TrackTags.tags_data,
                                 TrackTags.tag_relations_count),
+              how='left', on=Track.id)\
+        .join(adjacent_track_tags.select(Track.id,
+                                         TrackTags.tags_data().alias("adjacent_tags_data")),
               how='left', on=Track.id)\
         .sort(Track.id)
 
@@ -926,6 +1008,7 @@ def process_everything(merge_duplicates: bool = True):
     # Extract tags from playlist titles and assign to songs
     process_playlist_and_song_tags()
     process_tag_stats()
+    process_adjacent_song_tags()
     merge_playlist_tags_into_metadata()
     merge_song_tags_into_metadata()
 
