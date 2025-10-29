@@ -56,8 +56,6 @@ def sample_with_bpm_range(df, prev_bpm):
     ).sample(n=1, seed=42)
 
 
-# makes it so streamlit doesn't have to reload for every sesson.
-@st.cache_resource
 def load_search_engine():
     engine = SearchEngine()
     engine.load_data()
@@ -87,17 +85,17 @@ def load_notes():
 
 @st.cache_data
 def load_countries():
-    return load_search_engine().data.countries
+    return search_engine.data.countries
 
 
 @st.cache_data
 def load_stats():
-    return load_search_engine().get_stats()
+    return search_engine.get_stats()
 
 
 @st.cache_data
 def load_tags_data():
-    return load_search_engine().find_tags(limit=1000, playlist_limit=20)\
+    return search_engine.find_tags(limit=1000, playlist_limit=20)\
         .collect(engine='streaming')
 
 
