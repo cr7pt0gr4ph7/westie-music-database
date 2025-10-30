@@ -22,6 +22,7 @@ class SubEntity[Child: Entity]:
 
 
 type PolarsLazyFrame[T: Entity] = pl.LazyFrame
+type PolarsExpr[T] = pl.Expr
 
 
 class Field[FieldName: LiteralString, FieldType: pl.DataType](str):

@@ -11,7 +11,6 @@ import time
 
 from utils.common.columns import pull_columns_to_front
 from utils.common.logging import log_query
-from utils.keyword_data import load_keyword_colors
 from utils.pull_data import automatically_pull_data_if_needed
 from utils.search import SearchEngine, TagManager
 from utils.tables import Playlist, PlaylistOwner, PlaylistStats, PlaylistTags, PlaylistTrack, Stats, Tag, Track, TrackAdjacent, TrackLyrics, TrackTag, TrackTags
@@ -101,7 +100,7 @@ def load_tags_data():
 
 @st.cache_resource
 def load_tag_manager():
-    return TagManager(load_tags_data())
+    return TagManager(load_tags_data(), search_engine.data.keywords)
 
 
 # Initialize session state
@@ -653,7 +652,7 @@ if playlist_locator_toggle:
                      .explode('term')
                      .group_by('term')
                      .agg(Playlist.id().n_unique().alias(Stats.playlist_count), Playlist.name().head(30))
-                     .filter(Stats.playlist_count().ge(10))
+                     .filter(Stats.playlist_count().lt(10))
                      .sort(Stats.playlist_count, descending=True)
                      .collect(engine='streaming'))
 

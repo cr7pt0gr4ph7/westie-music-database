@@ -66,7 +66,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from enum import StrEnum
 import math
-from typing import Final, Literal, NamedTuple, overload
+from typing import Final, Literal, NamedTuple
 
 import polars as pl
 import polars.selectors as cs
@@ -75,7 +75,7 @@ import streamlit as st
 from utils.common.entities import PolarsLazyFrame
 from utils.common.filters import create_date_filter, create_text_filter, or_filter
 from utils.common.stats import count_n_unique
-from utils.keyword_data import TagsToFilter, filter_track_tags_by_limits, load_keyword_colors, load_keyword_limits, load_track_keyword_filter, tag_matches_filter
+from utils.keyword_data import CategoryName, HexColor, KeywordData, ShortTagName, TagName, load_keyword_data
 from utils.playlist_classifiers import extract_date_strings_from_name, extract_date_types_from_name
 from utils.tables import Playlist, PlaylistOwner, PlaylistStats, PlaylistTags, PlaylistTrack, Stats, Tag, Track, TrackAdjacent, TrackLyrics, TrackTag, TrackTags
 
@@ -819,7 +819,7 @@ class CombinedData:
     tags: PolarsLazyFrame[Tag]
     tag_stats: PolarsLazyFrame[Tag]
     countries: list[str]
-    strip_tags_from_tracks: TagsToFilter
+    keywords: KeywordData
 
     @property
     def all_playlists(self) -> PlaylistSet:
@@ -855,7 +855,7 @@ class CombinedData:
             tags=pl.scan_parquet(TAGS_DATA_FILE),
             tag_stats=pl.scan_parquet(TAG_STATS_DATA_FILE),
             countries=pl.read_csv(COUNTRY_DATA_FILE)['country'].to_list(),
-            strip_tags_from_tracks=load_track_keyword_filter(),
+            keywords=load_keyword_data(),
         )
 
 
@@ -1122,10 +1122,11 @@ class TagManager:
     ALL_CATEGORIES: Final = '*'
     UNTAGGED: Final = 'untagged'
 
-    def __init__(self, tags_df: pl.DataFrame):
+    def __init__(self, tags_df: pl.DataFrame, config: KeywordData):
         self.tags_df = tags_df
+        self.config = config
 
-    def get_categories(self, *, or_all: bool = False) -> list[str]:
+    def get_categories(self, *, or_all: bool = False) -> list[CategoryName]:
         categories = self.tags_df.lazy()\
             .select(Tag.category)\
             .filter(Tag.category().is_not_null())\
@@ -1139,13 +1140,13 @@ class TagManager:
             return categories
 
     @staticmethod
-    def format_category(category: str) -> str:
+    def format_category(category: CategoryName) -> str:
         if category == TagManager.ALL_CATEGORIES:
             return "(All categories)"
 
         return category.title()
 
-    def get_tag_options(self, *, or_empty: bool = False, or_untagged: bool = False) -> list[str]:
+    def get_tag_options(self, *, or_empty: bool = False, or_untagged: bool = False) -> list[TagName]:
         tags = self.tags_df.lazy()\
             .filter(pl.col(Tag.short_name).is_not_null())\
             .sort(Tag.name)\
@@ -1161,7 +1162,7 @@ class TagManager:
         return tags
 
     @staticmethod
-    def format_tag(tag: str) -> str:
+    def format_tag(tag: TagName) -> str:
         if tag == "":
             return "---"
 
@@ -1195,14 +1196,14 @@ class TagManager:
         ]
         return dark_colors
 
-    def get_categories_with_colors(self) -> tuple[list[str], list[str]]:
+    def get_categories_with_colors(self) -> tuple[list[CategoryName], list[HexColor]]:
         # Cycle through the a predefined list of colors by default
         names = self.get_categories()
         base_colors = self.get_default_colors()
         colors = (base_colors * int(math.ceil(len(names) / len(base_colors))))[:len(names)]
 
         # Allow overriding the color for specific categories
-        custom_colors = load_keyword_colors()
+        custom_colors = self.config.colors_by_category
         for i in range(0, len(names)):
             name = names[i]
             if name in custom_colors:
@@ -1210,7 +1211,7 @@ class TagManager:
 
         return names, colors
 
-    def get_tags_with_colors(self) -> tuple[list[str], list[str], list[str]]:
+    def get_tags_with_colors(self) -> tuple[list[ShortTagName], list[TagName], list[HexColor]]:
         # Create a mapping from category name => color
         categories, category_colors = self.get_categories_with_colors()
         color_by_category = {categories[i]: category_colors[i] for i in range(0, len(categories))}
@@ -1417,7 +1418,7 @@ class SearchEngine:
                     TrackTag.Track.playlist_count,
                     Track.name,
                     Track.artists)\
-            .pipe(filter_track_tags_by_limits, load_keyword_limits())
+            .pipe(self.data.keywords.limits_by_tag.filter_track_tags)
 
     def find_random_songs(
         self,
@@ -1554,8 +1555,8 @@ class SearchEngine:
             .sort_by(sort_by, descending=descending)\
             .included_tracks.slice(skip_num_top_results, limit or None)\
             .with_columns(TrackTags.tags_data().list.filter(
-                ~tag_matches_filter(self.data.strip_tags_from_tracks,
-                                    pl.element().struct.field(TrackTag.tag))))\
+                ~self.data.keywords.strip_from_tracks.matches(
+                    pl.element().struct.field(TrackTag.tag))))\
             .with_columns(TrackTags.unnest_tags_data())
 
     def find_playlists(

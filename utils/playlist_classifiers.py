@@ -1,9 +1,8 @@
 """Utilities for extracting calendar dates and BPM ranges from playlist names."""
 
-from typing import NamedTuple
 import polars as pl
 
-from utils.keyword_data import load_keyword_aliases
+from utils.keyword_data import load_keyword_data
 
 ###################
 # Keywords / Tags #
@@ -39,10 +38,10 @@ def _extract_tags(expr: pl.Expr, tags_to_extract: dict[str, list[str]]) -> pl.Ex
 
 def extract_tags_from_name(expr: pl.Expr) -> pl.Expr:
     """"Extract a list of tags from the given playlist name."""
-    alias_to_tags, negated_alias_to_tags = load_keyword_aliases()
+    keywords = load_keyword_data()
 
-    tags_to_include: pl.Expr = _extract_tags(expr, alias_to_tags)
-    tags_to_exclude: pl.Expr = _extract_tags(expr, negated_alias_to_tags)
+    tags_to_include: pl.Expr = _extract_tags(expr, keywords.keywords_to_tags)
+    tags_to_exclude: pl.Expr = _extract_tags(expr, keywords.keywords_to_excluded_tags)
 
     return tags_to_include\
         .list.set_difference(tags_to_exclude)\
