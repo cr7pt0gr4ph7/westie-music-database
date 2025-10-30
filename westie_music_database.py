@@ -69,7 +69,7 @@ def wcs_specific(df_: pl.DataFrame):
 # makes it so streamlit doesn't have to reload for every sesson.
 @st.cache_resource
 def load_notes():
-    return (pl.scan_csv('processed_data/data_notes.csv')
+    return (pl.scan_csv('unprocessed_data_huggingface/data_notes.csv')
             .rename({'Artist': Track.artist_names, 'Song': Track.name})
             .with_columns(pl.col([Track.name, Track.artist_names]).cast(pl.Categorical))
             )
