@@ -55,6 +55,9 @@ class Field[FieldName: LiteralString, FieldType: pl.DataType](str):
     def as_expr(self) -> pl.Expr:
         return pl.col(self.field_name)
 
+    def as_struct_field(self) -> pl.Field:
+        return pl.Field(self.field_name, self.field_type)
+
 
 def field[FieldName: LiteralString, FieldType: pl.DataType](
     field_name: FieldName,
