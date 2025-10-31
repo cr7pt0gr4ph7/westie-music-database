@@ -881,6 +881,11 @@ def process_adjacent_song_tags(temp_files: TempFileTracker):
     tagged with `genre:late night`, it is more likely that it should also
     be tagged with `genre:late night` as well.
     """
+    min_playlist_size = 10
+    prev_size = 2
+    next_size = 2
+    window_size = prev_size + 1 + next_size
+
     tracks = scan_parquet_file(TRACK_DATA_FILE)
     track_tags = scan_parquet_file(TRACK_TAGS_DATA_FILE)\
         .with_columns(TrackTags.tags_data()
@@ -888,7 +893,7 @@ def process_adjacent_song_tags(temp_files: TempFileTracker):
                                    .is_in(["genre", "mood", "tempo", "topic"])))
     playlist_tracks = scan_parquet_file(PLAYLIST_TRACKS_DATA_FILE)
     social_playlists = scan_parquet_file(PLAYLIST_DATA_FILE)\
-        .filter(Stats.song_count().gt(10))\
+        .filter(Stats.song_count().ge(min_playlist_size))\
         .select(Playlist.id)
 
     temp_file = temp_files.register_for_deletion(TEMP_DATA_DIR + 'temp_aggregation_playlists.parquet')
@@ -902,36 +907,28 @@ def process_adjacent_song_tags(temp_files: TempFileTracker):
         #       propagates the confidence scores computed in the previous round
         #       to the adjacent tracks. We have to try it to see if that actually
         #       has a positive effect on the correctness of the tags.
-        return playlist_tracks_batch\
+        x = playlist_tracks_batch\
+            .join(track_tags.select(Track.id, TrackTags.extract_tags()),
+                  how='inner', on=Track.id)\
             .sort(Playlist.id, PlaylistTrack.number)\
-            .rolling(index_column=PlaylistTrack.number, period='5i', group_by=Playlist.id)\
-            .agg(Track.id)\
-            .filter(Track.id().list.len().eq(5))\
-            .select(Track.id().list.get(0).alias('prev.1.track.id'),
-                    Track.id().list.get(1).alias('prev.0.track.id'),
-                    Track.id().list.get(2).alias(Track.id),
-                    Track.id().list.get(3).alias('next.0.track.id'),
-                    Track.id().list.get(4).alias('next.1.track.id'),
-                    Playlist.id())\
-            .join(track_tags.select(pl.col(Track.id, TrackTags.tags_data).name.prefix('prev.1.')),
-                  how='inner', on='prev.1.track.id')\
-            .join(track_tags.select(pl.col(Track.id, TrackTags.tags_data).name.prefix('prev.0.')),
-                  how='inner', on='prev.0.track.id')\
-            .join(track_tags.select(pl.col(Track.id, TrackTags.tags_data).name.prefix('next.0.')),
-                  how='inner', on='next.0.track.id')\
-            .join(track_tags.select(pl.col(Track.id, TrackTags.tags_data).name.prefix('next.1.')),
-                  how='inner', on='next.1.track.id')\
-            .select(Playlist.id, Track.id,
-                    pl.reduce([pl.col(f'prev.1.{TrackTags.tags_data}').pipe(TrackTags.extract_tags),
-                               pl.col(f'prev.0.{TrackTags.tags_data}').pipe(TrackTags.extract_tags),
-                               pl.col(f'next.0.{TrackTags.tags_data}').pipe(TrackTags.extract_tags),
-                               pl.col(f'next.1.{TrackTags.tags_data}').pipe(TrackTags.extract_tags)],
-                              lambda acc, x: acc.list.set_intersection(x))
-                    .alias(TrackTags.tags))
+            .rolling(index_column=PlaylistTrack.number, period=f'{window_size}i', group_by=Playlist.id)\
+            .agg(Track.id().get(prev_size),
+                 Track.id().count().alias('window_size'),
+                 pl.when(Track.id().count().eq(window_size))
+                   .then(pl.reduce(exprs=pl.concat([TrackTags.tags().head(prev_size),
+                                                    TrackTags.tags().tail(next_size)])
+                                   .list.to_array(prev_size + next_size)
+                                   .arr.to_struct(lambda idx: f'context.{idx}.tags')
+                                   .struct.unnest(),
+                                   function=lambda acc, x: acc.list.set_intersection(x)).alias(TrackTags.tags)))\
+            .filter(pl.col('window_size').eq(window_size))\
+            .drop('window_size')
+        x.show_graph(engine='streaming', plan_stage='physical', optimized=True, output_path='plan.png')
+        return x
 
     temp_file = temp_files.register_for_deletion(TEMP_DATA_DIR + 'temp_adjacent_track_tags.parquet')
     process_in_batches(
-        playlist_tracks.with_columns(pl.col(PlaylistTrack.number).cast(pl.Int64)),
+        playlist_tracks.select(Playlist.id, Track.id, PlaylistTrack.number),
         process_playlist_tracks_batch,
         batch_by=Playlist.id,
         batch_values=social_playlists,
@@ -967,7 +964,8 @@ def process_adjacent_song_tags(temp_files: TempFileTracker):
         batch_values=tracks,
         batch_name="adjacent_tags",
         batch_size=10000,  # Higher batch sizes are faster but have a righer OOM risk
-        output_name=DATA_DIR + "data_song_adjacent_tags.parquet",
+        output_name=DATA_DIR +
+        f"data_song_adjacent_tags[min_size_{min_playlist_size}][-{prev_size},+{next_size}].parquet",
     )
 
 
