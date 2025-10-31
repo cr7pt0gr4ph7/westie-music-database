@@ -882,9 +882,13 @@ def process_adjacent_song_tags(temp_files: TempFileTracker):
     be tagged with `genre:late night` as well.
     """
     tracks = scan_parquet_file(TRACK_DATA_FILE)
-    track_tags = scan_parquet_file(TRACK_TAGS_DATA_FILE)
+    track_tags = scan_parquet_file(TRACK_TAGS_DATA_FILE)\
+        .with_columns(TrackTags.tags_data()
+                      .list.filter(extract_category(pl.element().struct.field(TrackTag.tag))
+                                   .is_in(["genre", "mood", "tempo", "topic"])))
+    playlist_tracks = scan_parquet_file(PLAYLIST_TRACKS_DATA_FILE)
     social_playlists = scan_parquet_file(PLAYLIST_DATA_FILE)\
-        .filter(pl.col(Playlist.is_social_set))\
+        .filter(Stats.song_count().gt(10))\
         .select(Playlist.id)
 
     temp_file = temp_files.register_for_deletion(TEMP_DATA_DIR + 'temp_aggregation_playlists.parquet')
@@ -900,20 +904,29 @@ def process_adjacent_song_tags(temp_files: TempFileTracker):
         #       has a positive effect on the correctness of the tags.
         return playlist_tracks_batch\
             .sort(Playlist.id, PlaylistTrack.number)\
-            .rolling(index_column=PlaylistTrack.number, period='3i', group_by=Playlist.id)\
+            .rolling(index_column=PlaylistTrack.number, period='5i', group_by=Playlist.id)\
             .agg(Track.id)\
-            .filter(Track.id().list.len().eq(3))\
-            .select(Track.id().list.get(0).alias('prev.0.track.id'),
-                    Track.id().list.get(1).alias(Track.id),
-                    Track.id().list.get(2).alias('next.0.track.id'),
+            .filter(Track.id().list.len().eq(5))\
+            .select(Track.id().list.get(0).alias('prev.1.track.id'),
+                    Track.id().list.get(1).alias('prev.0.track.id'),
+                    Track.id().list.get(2).alias(Track.id),
+                    Track.id().list.get(3).alias('next.0.track.id'),
+                    Track.id().list.get(4).alias('next.1.track.id'),
                     Playlist.id())\
+            .join(track_tags.select(pl.col(Track.id, TrackTags.tags_data).name.prefix('prev.1.')),
+                  how='inner', on='prev.1.track.id')\
             .join(track_tags.select(pl.col(Track.id, TrackTags.tags_data).name.prefix('prev.0.')),
                   how='inner', on='prev.0.track.id')\
             .join(track_tags.select(pl.col(Track.id, TrackTags.tags_data).name.prefix('next.0.')),
                   how='inner', on='next.0.track.id')\
+            .join(track_tags.select(pl.col(Track.id, TrackTags.tags_data).name.prefix('next.1.')),
+                  how='inner', on='next.1.track.id')\
             .select(Playlist.id, Track.id,
-                    pl.col(f'prev.0.{TrackTags.tags_data}').pipe(TrackTags.extract_tags)
-                    .list.set_intersection(pl.col(f'next.0.{TrackTags.tags_data}').pipe(TrackTags.extract_tags))
+                    pl.reduce([pl.col(f'prev.1.{TrackTags.tags_data}').pipe(TrackTags.extract_tags),
+                               pl.col(f'prev.0.{TrackTags.tags_data}').pipe(TrackTags.extract_tags),
+                               pl.col(f'next.0.{TrackTags.tags_data}').pipe(TrackTags.extract_tags),
+                               pl.col(f'next.1.{TrackTags.tags_data}').pipe(TrackTags.extract_tags)],
+                              lambda acc, x: acc.list.set_intersection(x))
                     .alias(TrackTags.tags))
 
     temp_file = temp_files.register_for_deletion(TEMP_DATA_DIR + 'temp_adjacent_track_tags.parquet')
