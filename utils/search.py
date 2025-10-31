@@ -66,7 +66,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from enum import StrEnum
 import math
-from typing import Final, Literal, NamedTuple
+from typing import Callable, Final, Literal, NamedTuple, Self
 
 import polars as pl
 import polars.selectors as cs
@@ -139,36 +139,63 @@ TRACK_CANONICAL_DATA_FILE: Final = DATA_DIR + 'data_song_canonical.parquet'
 #############################
 
 
+class BaseSet:
+    def transform(self, fn: Callable[[pl.LazyFrame], pl.LazyFrame], is_filtered: bool = False) -> Self:
+        raise NotImplementedError("BaseSet.transform must be overridden in subclasses.")
+
+    def filter(self, *args, **kwargs) -> Self:
+        return self.transform(lambda df: df.filter(*args, **kwargs))
+
+    def join(self, *args, **kwargs) -> Self:
+        return self.transform(lambda df: df.join(*args, **kwargs),
+                              is_filtered=kwargs['how'] != "left")
+
+    def rename(self, mapping: dict[str, str]):
+        return self.transform(lambda df: df.rename(mapping))
+
+    def select(self, *args, **kwargs) -> Self:
+        return self.transform(lambda df: df.select(*args, **kwargs))
+
+    def slice(self, *args, **kwargs) -> Self:
+        return self.transform(lambda df: df.slice(*args, **kwargs))
+
+    def sort_by(self, by, *more_by, descending: bool) -> Self:
+        return (self if by is None or (isinstance(by, list) and len(by) == 0) else
+                self.transform(lambda df: df.sort(by, *more_by, descending=descending)))
+
+    def with_columns(self, *args, **kwargs) -> Self:
+        return self.transform(lambda df: df.with_columns(*args, **kwargs))
+
+
 # ----------------------------
 # Playlists: Filtering & Joins
 # ----------------------------
 
 
 @dataclass(slots=True)
-class PlaylistSet:
+class PlaylistSet(BaseSet):
     """A collection of playlists. Each `playlist.id` should appear at most once within each collection."""
     included_playlists: PolarsLazyFrame[Playlist]
     excluded_playlists: PolarsLazyFrame[Playlist] | None
     all_playlists: PolarsLazyFrame[Playlist]
     is_filtered: bool
 
-    def with_playlist_url(self):
+    def transform(self, fn: Callable[[pl.LazyFrame], pl.LazyFrame], is_filtered: bool = False) -> Self:
         return PlaylistSet(
-            included_playlists=self.included_playlists.with_columns(
-                pl.when(pl.col(Playlist.id).is_not_null()).then(pl.concat_str(
-                    pl.lit('https://open.spotify.com/playlist/'), Playlist.id)).alias(Playlist.url)),
+            included_playlists=fn(self.included_playlists),
             excluded_playlists=self.excluded_playlists,
             all_playlists=self.all_playlists,
-            is_filtered=self.is_filtered)
+            is_filtered=self.is_filtered or is_filtered)
+
+    def with_playlist_url(self):
+        return self.with_columns(
+            pl.when(pl.col(Playlist.id).is_not_null()).then(pl.concat_str(
+                pl.lit('https://open.spotify.com/playlist/'), Playlist.id)).alias(Playlist.url))
 
     def with_owner_url(self):
-        return PlaylistSet(
-            included_playlists=self.included_playlists.with_columns(
-                pl.when(pl.col(PlaylistOwner.id).is_not_null()).then(pl.concat_str(
-                    pl.lit('https://open.spotify.com/user/'), PlaylistOwner.id)).alias(PlaylistOwner.url)),
-            excluded_playlists=self.excluded_playlists,
-            all_playlists=self.all_playlists,
-            is_filtered=self.is_filtered)
+        return self.with_columns(
+            pl.when(pl.col(PlaylistOwner.id).is_not_null()).then(pl.concat_str(
+                pl.lit('https://open.spotify.com/user/'), PlaylistOwner.id)).alias(PlaylistOwner.url))
 
     def with_extra_columns(self):
         return self\
@@ -176,30 +203,15 @@ class PlaylistSet:
             .with_owner_url()
 
     def with_extracted_data(self):
-        return PlaylistSet(
-            included_playlists=self.included_playlists.with_columns(
-                Playlist.name().pipe(extract_date_strings_from_name).alias(Playlist.extracted_dates),
-                Playlist.name().pipe(extract_date_types_from_name).alias(Stats.date_formats)),
-            excluded_playlists=self.excluded_playlists,
-            all_playlists=self.all_playlists,
-            is_filtered=self.is_filtered)
+        return self.with_columns(
+            Playlist.name().pipe(extract_date_strings_from_name).alias(Playlist.extracted_dates),
+            Playlist.name().pipe(extract_date_types_from_name).alias(Stats.date_formats))
 
     def with_playlist_stats(self, playlist_stats: PolarsLazyFrame[PlaylistStats]):
-        return PlaylistSet(
-            included_playlists=self.included_playlists
-            .join(playlist_stats, how='left', on=Playlist.id)
+        return self\
+            .join(playlist_stats, how='left', on=Playlist.id)\
             .with_columns(PlaylistStats.wcs_song_count().fill_null(0),
-                          PlaylistStats.wcs_song_percent().fill_null(0.0)),
-            excluded_playlists=self.excluded_playlists,
-            all_playlists=self.all_playlists,
-            is_filtered=self.is_filtered)
-
-    def sort_by(self, by, *more_by, descending: bool):
-        return (self if by is None or (isinstance(by, list) and len(by) == 0) else
-                PlaylistSet(included_playlists=self.included_playlists.sort(by, *more_by, descending=descending),
-                            excluded_playlists=self.excluded_playlists,
-                            all_playlists=self.all_playlists,
-                            is_filtered=self.is_filtered))
+                          PlaylistStats.wcs_song_percent().fill_null(0.0))
 
     def filter_playlist_tracks(self, playlist_tracks: PlaylistTrackSet, *, include_playlist_info: bool) -> PlaylistTrackSet:
         """Filter the specified playlist_tracks to only include tracks from matched playlists."""
@@ -404,10 +416,15 @@ class PlaylistFilter:
 
 
 @dataclass(slots=True)
-class PlaylistTrackSet:
+class PlaylistTrackSet(BaseSet):
     """A collection of playlist-to-track relations."""
     included_playlist_tracks: PolarsLazyFrame[PlaylistTrack]  # PlaylistTrackWithPlaylist
     is_filtered: bool
+
+    def transform(self, fn: Callable[[pl.LazyFrame], pl.LazyFrame], is_filtered: bool = False) -> Self:
+        return PlaylistTrackSet(
+            included_playlist_tracks=fn(self.included_playlist_tracks),
+            is_filtered=self.is_filtered or is_filtered)
 
     def filter_playlists(self, playlists: PlaylistSet) -> PlaylistSet:
         """Filter the specified playlists to only include playlists mentioned in this set."""
@@ -522,26 +539,21 @@ class PlaylistTrackFilter:
 
 
 @dataclass(slots=True)
-class TrackSet:
+class TrackSet(BaseSet):
     """A collection of tracks. Each `track.id` should appear at most once with each collection."""
     included_tracks: PolarsLazyFrame[Track]  # TrackWithPlaylist
     is_filtered: bool
 
-    def rename(self, mapping: dict[str, str]):
-        return TrackSet(self.included_tracks.rename(mapping),
-                        is_filtered=self.is_filtered)
+    def transform(self, fn: Callable[[pl.LazyFrame], pl.LazyFrame], is_filtered: bool = False) -> Self:
+        return TrackSet(
+            included_tracks=fn(self.included_tracks),
+            is_filtered=self.is_filtered or is_filtered)
 
     def with_extra_columns(self):
-        return TrackSet(self.included_tracks.with_columns(
+        return self.with_columns(
             pl.col(Track.beats_per_minute).fill_null(0.0),
             pl.when(pl.col(Track.id).is_not_null()).then(pl.concat_str(
-                pl.lit('https://open.spotify.com/track/'), Track.id)).alias(Track.url)),
-            is_filtered=self.is_filtered)
-
-    def sort_by(self, by, *more_by, descending: bool):
-        return (self if by is None or (isinstance(by, list) and len(by) == 0) else
-                TrackSet(self.included_tracks.sort(by, *more_by, descending=descending),
-                         is_filtered=self.is_filtered))
+                pl.lit('https://open.spotify.com/track/'), Track.id)).alias(Track.url))
 
     def filter_lyrics(self, lyrics: TrackLyricsSet) -> TrackLyricsSet:
         """Filter the specified track lyrics to only include ones for tracks in this set."""
@@ -721,9 +733,14 @@ class TrackFilter:
 
 
 @dataclass(slots=True)
-class TrackLyricsSet:
+class TrackLyricsSet(BaseSet):
     included_track_lyrics: PolarsLazyFrame[TrackLyrics]
     is_filtered: bool
+
+    def transform(self, fn: Callable[[pl.LazyFrame], pl.LazyFrame], is_filtered: bool = False) -> Self:
+        return TrackLyricsSet(
+            included_track_lyrics=fn(self.included_track_lyrics),
+            is_filtered=self.is_filtered or is_filtered)
 
     def filter_tracks(self, tracks: TrackSet, *, include_lyrics: bool) -> TrackSet:
         """Filter the specified tracks to only include tracks with matching lyrics."""
