@@ -8,7 +8,7 @@ import polars as pl
 
 from utils.additional_data import actual_wcs_djs, queer_artists, poc_artists
 from utils.common.temp_files import TempFileTracker, with_temp_files
-from utils.keyword_data import load_keyword_data
+from utils.keyword_data import extract_category, load_keyword_data
 from utils.playlist_classifiers import extract_date_strings_from_name, extract_tags_from_name
 from utils.search import (
     COUNTRY_DATA_FILE,
@@ -887,36 +887,47 @@ def process_adjacent_song_tags(temp_files: TempFileTracker):
         .filter(pl.col(Playlist.is_social_set))\
         .select(Playlist.id)
 
-    print(track_tags.schema)
+    temp_file = temp_files.register_for_deletion(TEMP_DATA_DIR + 'temp_aggregation_playlists.parquet')
+    write_to_parquet_file(social_playlists, temp_file)
+    social_playlists = scan_parquet_file(temp_file)
 
-    # TODO: Take into account how confident we are in that the tags
-    #       of the adjacent tracks are themselves correct. We might e.g.
-    #       perform multiple rounds of this aggregation, where each round
-    #       propagates the confidence scores computed in the previous round
-    #       to the adjacent tracks. We have to try it to see if that actually
-    #       has a positive effect on the correctness of the tags.
-    adjacent_track_tags = scan_parquet_file(PLAYLIST_TRACKS_DATA_FILE)\
-        .with_columns(pl.col(PlaylistTrack.number).cast(pl.Int64))\
-        .join(social_playlists, how='semi', on=[Playlist.id])\
-        .sort(Playlist.id, PlaylistTrack.number)\
-        .rolling(index_column=PlaylistTrack.number, period='3i', group_by=Playlist.id)\
-        .agg(Track.id)\
-        .filter(Track.id().list.len().eq(3))\
-        .select(Track.id().list.get(0).alias('prev.0.track.id'),
-                Track.id().list.get(1).alias(Track.id),
-                Track.id().list.get(2).alias('next.0.track.id'),
-                Playlist.id())\
-        .join(track_tags.select(pl.col(Track.id, TrackTags.tags_data).name.prefix('prev.0.')),
-              how='inner', on='prev.0.track.id')\
-        .join(track_tags.select(pl.col(Track.id, TrackTags.tags_data).name.prefix('next.0.')),
-              how='inner', on='next.0.track.id')\
-        .select(Playlist.id, Track.id,
-                pl.col(f'prev.0.{TrackTags.tags_data}').pipe(TrackTags.extract_tags)
-                .list.set_intersection(pl.col(f'next.0.{TrackTags.tags_data}').pipe(TrackTags.extract_tags))
-                .alias(TrackTags.tags))
+    def process_playlist_tracks_batch(playlist_tracks_batch: pl.LazyFrame) -> pl.LazyFrame:
+        # TODO: Take into account how confident we are in that the tags
+        #       of the adjacent tracks are themselves correct. We might e.g.
+        #       perform multiple rounds of this aggregation, where each round
+        #       propagates the confidence scores computed in the previous round
+        #       to the adjacent tracks. We have to try it to see if that actually
+        #       has a positive effect on the correctness of the tags.
+        return playlist_tracks_batch\
+            .sort(Playlist.id, PlaylistTrack.number)\
+            .rolling(index_column=PlaylistTrack.number, period='3i', group_by=Playlist.id)\
+            .agg(Track.id)\
+            .filter(Track.id().list.len().eq(3))\
+            .select(Track.id().list.get(0).alias('prev.0.track.id'),
+                    Track.id().list.get(1).alias(Track.id),
+                    Track.id().list.get(2).alias('next.0.track.id'),
+                    Playlist.id())\
+            .join(track_tags.select(pl.col(Track.id, TrackTags.tags_data).name.prefix('prev.0.')),
+                  how='inner', on='prev.0.track.id')\
+            .join(track_tags.select(pl.col(Track.id, TrackTags.tags_data).name.prefix('next.0.')),
+                  how='inner', on='next.0.track.id')\
+            .select(Playlist.id, Track.id,
+                    pl.col(f'prev.0.{TrackTags.tags_data}').pipe(TrackTags.extract_tags)
+                    .list.set_intersection(pl.col(f'next.0.{TrackTags.tags_data}').pipe(TrackTags.extract_tags))
+                    .alias(TrackTags.tags))
 
     temp_file = temp_files.register_for_deletion(TEMP_DATA_DIR + 'temp_adjacent_track_tags.parquet')
-    write_to_parquet_file(adjacent_track_tags, temp_file)
+    process_in_batches(
+        playlist_tracks.with_columns(pl.col(PlaylistTrack.number).cast(pl.Int64)),
+        process_playlist_tracks_batch,
+        batch_by=Playlist.id,
+        batch_values=social_playlists,
+        batch_name="adjacent_tags_raw",
+        batch_size=5000,  # Higher batch sizes are faster but have a righer OOM risk
+        output_name=temp_file,
+        sort_by=None,
+        merge_type='unsorted',
+    )
     adjacent_track_tags = scan_parquet_file(temp_file)
 
     TAG_DATA: Final = 'tag_data'
@@ -934,8 +945,7 @@ def process_adjacent_song_tags(temp_files: TempFileTracker):
             .agg(pl.col(TAG_DATA).sort_by(TrackTag.matching_playlist_count, descending=True)
                  .alias(TrackTags.tags_data),
                  pl.col(TrackTag.matching_playlist_count)
-                 .sum().alias(TrackTags.tag_relations_count))\
-            .sort(Track.id)
+                 .sum().alias(TrackTags.tag_relations_count))
 
     process_in_batches(
         adjacent_track_tags,
