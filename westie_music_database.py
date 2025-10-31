@@ -464,6 +464,50 @@ if song_locator_toggle:
                      Track.url: st.column_config.LinkColumn(),
                      TrackTags.tags: tag_manager.get_column_config(Tag.short_name)})
 
+        if song_search_df.shape[0] <= 3:
+            playlists_with_song = search_engine.data.playlists\
+                .select(Playlist.id, Playlist.name)\
+                .join(search_engine.data.playlist_tracks.select(Playlist.id, Track.id)
+                      .join(song_search_df.lazy().select(Track.id), how='semi', on=Track.id),
+                      how='semi', on=Playlist.id)
+
+            min_playlist_size = 10
+            prev_size = 2
+            next_size = 2
+            window_size = prev_size + 1 + next_size
+            check_for_tags = ['mood:high energy']
+
+            surrounding_tracks = search_engine.data.playlist_tracks\
+                .join(playlists_with_song, how='semi', on=Playlist.id)\
+                .select(Playlist.id, Track.id, PlaylistTrack.number().cast(pl.Int64))\
+                .join(search_engine.data.tracks
+                      .select(Track.id,
+                              pl.concat_str(Track.name(), pl.lit(" - "), Track.artist_names()).alias('track_name'),
+                              TrackTags.extract_tags().list.filter(pl.element().is_in(check_for_tags))),
+                      how='inner', on=Track.id)\
+                .join(song_search_df.lazy().select(Track.id, pl.lit(True).alias('is_target_track')),
+                      how='left', on=Track.id)\
+                .with_columns(TrackTags.tags().fill_null([]))\
+                .with_columns(
+                    pl.any_horizontal([
+                        TrackTags.tags().list.contains(tag)
+                        .or_(pl.col('is_target_track'))
+                        for tag in check_for_tags
+                    ]).alias('is_match'))\
+                .sort(Playlist.id, PlaylistTrack.number)\
+                .rolling(index_column=PlaylistTrack.number, period=f'{window_size}i', group_by=Playlist.id)\
+                .agg(Track.id().get(prev_size),
+                     pl.col('is_match').all(),
+                     pl.col('track_name').alias('tracks'))\
+                .filter(pl.col('is_match'))\
+                .join(song_search_df.lazy().select(Track.id),
+                      how='semi', on=Track.id)\
+                .join(search_engine.data.playlists.select(Playlist.id, Playlist.name),
+                      how='inner', on=Playlist.id)\
+                .select(Playlist.name, PlaylistTrack.number, 'tracks')
+
+            st.dataframe(surrounding_tracks)
+
         # playlists_text = ' '.join(song_search_df
         #                         .select(pl.col(Playlist.name).cast(pl.List(pl.String)))
         #                         .explode(Playlist.name)
