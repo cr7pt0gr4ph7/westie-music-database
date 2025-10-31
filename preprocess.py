@@ -183,7 +183,7 @@ def process_in_batches(
     for batch_index in range(0, batch_count):
         batch_start = batch_index * batch_size
 
-        print(f"Processing batch {batch_index:,}/{batch_count:,}")
+        print(f"Processing batch {batch_index+1:,}/{batch_count:,}")
 
         if batch_by or batch_values is not None:
             batch_input = data\
@@ -199,7 +199,7 @@ def process_in_batches(
 
         # Write batch result to temp file
         temp_file = batch_temp_files.register_for_deletion(
-            create_temp_dir() + f'temp_{batch_name}_batch_{batch_index}.parquet')
+            create_temp_dir() + f'temp_{batch_name}_batch_{batch_index+1}.parquet')
         write_to_parquet_file(batch_output, temp_file)
 
         # Add temp file to final merge
