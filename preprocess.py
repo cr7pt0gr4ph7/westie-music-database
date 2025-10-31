@@ -849,32 +849,37 @@ def process_adjacent_song_tags():
 
     TAG_DATA: Final = 'tag_data'
 
-    # TODO: Take into account how confident we are in that the tags
-    #       of the adjacent tracks are themselves correct. We might e.g.
-    #       perform multiple rounds of this aggregation, where each round
-    #       propagates the confidence scores computed in the previous round
-    #       to the adjacent tracks. We have to try it to see if that actually
-    #       has a positive effect on the correctness of the tags.
-    bidirectional_adjacent_tracks = pl.concat(
-        adjacent_tracks,
-        adjacent_tracks.rename({
-            TrackAdjacent.FirstTrack.id: TrackAdjacent.SecondTrack.id,
-            TrackAdjacent.SecondTrack.id: TrackAdjacent.FirstTrack.id,
-        }))
-
-    adjacent_track_tags = bidirectional_adjacent_tracks\
-        .select(TrackAdjacent.FirstTrack.id, TrackAdjacent.SecondTrack.id)\
-        .join(track_tags.select(Track.id, TrackTags.tags, TrackTags.playlist_counts_per_tag),
-              how='inner', left_on=TrackAdjacent.SecondTrack.id, right_on=Track.id)\
-        .drop(TrackAdjacent.SecondTrack.id)\
-        .rename({TrackAdjacent.FirstTrack.id: Track.id})\
-        .explode(TrackTags.tags, TrackTags.playlist_counts_per_tag)\
-        .rename({TrackTags.tags: TrackTag.tag,
-                 TrackTags.playlist_counts_per_tag: TrackTag.matching_playlist_count})\
-        .group_by(Track.id, TrackTag.tag)\
-        .agg(TrackTag.tag().count().alias(TrackTag.matching_playlist_count))
-
     with TempFileTracker() as temp_files:
+        bidirectional_adjacent_tracks =\
+            adjacent_tracks.merge_sorted(
+                adjacent_tracks.select(
+                    TrackAdjacent.SecondTrack.id().alias(TrackAdjacent.FirstTrack.id),
+                    TrackAdjacent.FirstTrack.id().alias(TrackAdjacent.SecondTrack.id),
+                    Stats.playlist_count,
+                ).sort(TrackAdjacent.FirstTrack.id), TrackAdjacent.FirstTrack.id)
+
+        temp_file = temp_files.register_for_deletion(TEMP_DATA_DIR + 'temp_track_adjacent_bidirectional.parquet')
+        write_to_parquet_file(bidirectional_adjacent_tracks, temp_file)
+        bidirectional_adjacent_tracks = scan_parquet_file(temp_file)
+
+        # TODO: Take into account how confident we are in that the tags
+        #       of the adjacent tracks are themselves correct. We might e.g.
+        #       perform multiple rounds of this aggregation, where each round
+        #       propagates the confidence scores computed in the previous round
+        #       to the adjacent tracks. We have to try it to see if that actually
+        #       has a positive effect on the correctness of the tags.
+        adjacent_track_tags = bidirectional_adjacent_tracks\
+            .select(TrackAdjacent.FirstTrack.id, TrackAdjacent.SecondTrack.id)\
+            .join(track_tags.select(Track.id, TrackTags.tags, TrackTags.playlist_counts_per_tag),
+                  how='inner', left_on=TrackAdjacent.SecondTrack.id, right_on=Track.id)\
+            .drop(TrackAdjacent.SecondTrack.id)\
+            .rename({TrackAdjacent.FirstTrack.id: Track.id})\
+            .explode(TrackTags.tags, TrackTags.playlist_counts_per_tag)\
+            .rename({TrackTags.tags: TrackTag.tag,
+                    TrackTags.playlist_counts_per_tag: TrackTag.matching_playlist_count})\
+            .group_by(Track.id, TrackTag.tag)\
+            .agg(TrackTag.tag().count().alias(TrackTag.matching_playlist_count))\
+
         temp_file = temp_files.register_for_deletion(TEMP_DATA_DIR + 'temp_track_adjacent_tags.parquet')
         write_to_parquet_file(adjacent_track_tags, temp_file)
         adjacent_track_tags = scan_parquet_file(temp_file)
