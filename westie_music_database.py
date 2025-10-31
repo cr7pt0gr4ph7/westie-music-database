@@ -11,6 +11,7 @@ import time
 
 from utils.common.columns import pull_columns_to_front
 from utils.common.logging import log_query
+from utils.keyword_data import extract_category
 from utils.pull_data import automatically_pull_data_if_needed
 from utils.search import SearchEngine, TagManager
 from utils.tables import Playlist, PlaylistOwner, PlaylistStats, PlaylistTags, PlaylistTrack, Stats, Tag, Track, TrackAdjacent, TrackLyrics, TrackTag, TrackTags
@@ -391,12 +392,18 @@ if song_locator_toggle:
             ],
             descending=True,
             limit=1000,
-        )
+        ).collect(engine="streaming")
 
-        results_df = song_search_df\
+        results_df = song_search_df.lazy()\
             .with_columns(
                 pl.col(Playlist.name).list.head(30),
                 TrackTags.tags_data()
+                .list.filter(extract_category(pl.element().struct.field(TrackTag.tag))
+                             .is_in(["genre", "mood", "tempo", "level", "topic"]))
+                .list.eval(
+                    pl.element().sort_by(pl.element().struct.field(TrackTag.matching_playlist_count),
+                                         pl.element().struct.field(TrackTag.tag),
+                                         descending=[True, False]))
                 .list.eval(pl.concat_str(
                     pl.element().struct.field(TrackTag.tag),
                     pl.lit(" ("),
@@ -404,13 +411,18 @@ if song_locator_toggle:
                     pl.lit(")")))
                 .alias('tag_frequency'),
                 pl.col('adjacent_tags_data')
+                .list.filter(extract_category(pl.element().struct.field(TrackTag.tag))
+                             .is_in(["genre", "mood", "tempo", "level", "topic"]))
+                .list.eval(
+                    pl.element().sort_by(pl.element().struct.field(TrackTag.matching_playlist_count),
+                                         pl.element().struct.field(TrackTag.tag),
+                                         descending=[True, False]))
                 .list.eval(pl.concat_str(
                     pl.element().struct.field(TrackTag.tag),
                     pl.lit(" ("),
                     pl.element().struct.field(TrackTag.matching_playlist_count),
                     pl.lit(")")))
-                .alias('adjacent_tag_frequency'),
-            )\
+                .alias('adjacent_tag_frequency'))\
             .rename({Track.country: 'country'})\
             .drop(Track.id, Track.release_date, Track.region,
                   Playlist.matched_terms_count)\
