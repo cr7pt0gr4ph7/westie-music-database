@@ -160,14 +160,15 @@ def process_in_batches(
     data: pl.LazyFrame,
     map: Callable[[pl.LazyFrame], pl.LazyFrame],
     *,
-    batch_by: str,
-    batch_values: pl.LazyFrame,
     batch_name: str,
     batch_size: int,
     output_name: str,
-    sort_by: str = '',
+    sort_by: str | None = '',
+    batch_by: str = '',
+    batch_values: pl.LazyFrame = None,
+    merge_type: Literal['sorted', 'unsorted'] = 'sorted',
 ):
-    if not sort_by:
+    if sort_by == '':
         sort_by = batch_by
 
     if batch_by or batch_values is not None:
@@ -176,7 +177,7 @@ def process_in_batches(
         row_count = data.select(pl.len()).collect().item()
 
     batch_count = int(math.ceil(row_count / batch_size))
-    merged: pl.LazyFrame | None = None
+    batch_outputs: list[str] = []
 
     print(f"Processing {row_count:,} {batch_name} in {batch_count:,} batches of {batch_size:,} items...")
 
@@ -194,8 +195,11 @@ def process_in_batches(
                 .slice(batch_start, batch_size)
 
         batch_output = batch_input\
-            .pipe(map)\
-            .sort(sort_by)
+            .pipe(map)
+
+        if sort_by is not None:
+            batch_output = batch_output\
+                .sort(sort_by)
 
         # Write batch result to temp file
         temp_file = batch_temp_files.register_for_deletion(
@@ -203,11 +207,23 @@ def process_in_batches(
         write_to_parquet_file(batch_output, temp_file)
 
         # Add temp file to final merge
-        batch_output = scan_parquet_file(temp_file)
-        merged = (batch_output if merged is None else
-                  merged.merge_sorted(batch_output, sort_by))
+        batch_outputs.append(temp_file)
 
     print("Merging batches...")
+
+    if merge_type == 'sorted':
+        merged: pl.LazyFrame | None = None
+
+        for temp_file in batch_outputs:
+            batch_output = scan_parquet_file(temp_file)
+            merged = (batch_output if merged is None else
+                      merged.merge_sorted(batch_output, sort_by))
+
+    elif merge_type == 'unsorted':
+        merged = pl.concat([scan_parquet_file(temp_file) for temp_file in batch_outputs])
+
+    else:
+        raise ValueError(f'Invalid merge_type: {merge_type}')
 
     write_to_parquet_file(merged, output_name)
 
