@@ -125,22 +125,22 @@ def write_to_csv_file(data: pl.LazyFrame | pl.DataFrame, file_name: str):
     write_to_file(data, file_name, 'csv')
 
 
-def scan_file(file_name: str, format: Literal['parquet', 'csv']) -> pl.LazyFrame:
+def scan_file(file_name: str, format: Literal['parquet', 'csv'], glob: bool = False) -> pl.LazyFrame:
     if file_name in written_files:
         print(f'<< Reading {file_name} from previous step...')
     else:
         print(f'<< Reading {file_name}...')
 
     check_pre_read(file_name, track_file=True)
-    return pl.scan_parquet(file_name)
+    return pl.scan_parquet(file_name, glob=glob)
 
 
-def scan_parquet_file(file_name: str) -> pl.LazyFrame:
-    return scan_file(file_name, 'parquet')
+def scan_parquet_file(file_name: str, glob: bool = False) -> pl.LazyFrame:
+    return scan_file(file_name, 'parquet', glob=glob)
 
 
-def scan_csv_file(file_name: str) -> pl.LazyFrame:
-    return scan_file(file_name, 'csv')
+def scan_csv_file(file_name: str, glob: bool = False) -> pl.LazyFrame:
+    return scan_file(file_name, 'csv', glob=glob)
 
 ############################
 # Batch processing helpers #
