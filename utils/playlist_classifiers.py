@@ -1,5 +1,7 @@
 """Utilities for extracting calendar dates and BPM ranges from playlist names."""
 
+from typing import NamedTuple
+
 import polars as pl
 
 from utils.keyword_data import load_keyword_data
@@ -157,13 +159,37 @@ def contains_date_in_name(playlist_name: pl.Expr):
 #######################################################
 
 
-pattern_bpm_range = r'(\d{2,3})\s*[-–]\s*(\d{2,3})\s*(?:bpm|BPM)?'  # 70 – 79bpm
-pattern_bpm_appx = r'[~≈]\s*(\d{2,3})\s*(?:bpm|BPM)?'  # ~100bpm
-pattern_bpm_relational = r'[<>]=?\s*(\d{2,3})\s*(?:bpm|BPM)?'  # >120 BPM
-pattern_bpm_mention = r'(?:bpm|BPM)[^\d]{0,5}(\d{2,3})'  # bpm 105
-pattern_bpm_loose_fallback = r'\b(\d{2,3})\s*(?:bpm|BPM)\b'  # 117 BPM”
+class BpmPattern(NamedTuple):
+    name: str
+    example: str
+    pattern: str
 
 
-def extract_bpm_from_name(playlist_name: pl.Expr):
+pattern_bpm_range = BpmPattern('range', '70 – 79bpm', r'(\d{2,3})\s*[-–]\s*(\d{2,3})\s*(?:bpm|BPM)?')
+pattern_bpm_appx = BpmPattern('approximate', '~100bpm', r'[~≈]\s*(\d{2,3})\s*(?:bpm|BPM)?')
+pattern_bpm_relational = BpmPattern('relational', '>120 BPM', r'[<>]=?\s*(\d{2,3})\s*(?:bpm|BPM)?')
+pattern_bpm_mention = BpmPattern('mention', 'bpm 105', r'(?:bpm|BPM)[^\d]{0,5}(\d{2,3})')
+pattern_bpm_loose_fallback = BpmPattern('loose', '117 BPM”', r'\b(\d{2,3})(-|\s*)(?:bpm|BPM)\b')
+
+patterns_bpm = [
+    pattern_bpm_range,
+    pattern_bpm_appx,
+    pattern_bpm_relational,
+    pattern_bpm_mention,
+    pattern_bpm_loose_fallback,
+]
+
+
+def extract_bpm_from_name(playlist_name: pl.Expr, *, sort: bool = False):
     """"Extract a list of possible BPM specifications from the given playlist name."""
-    raise NotImplementedError()
+    result = pl.concat_list([
+        playlist_name.str.extract_all(pat.pattern)
+        for pat in patterns_bpm
+    ]).list.drop_nulls().list.unique()
+
+    return result.list.sort() if sort else result
+
+
+def contains_bpm_in_name(playlist_name: pl.Expr):
+    """Returns whether `playlist_name` likely contains a BPM specification."""
+    return extract_bpm_from_name(playlist_name).list.len().gt(0)
