@@ -1570,11 +1570,18 @@ class SearchEngine:
 
         return matching_tracks.with_extra_columns()\
             .sort_by(sort_by, descending=descending)\
-            .included_tracks.slice(skip_num_top_results, limit or None)\
+            .slice(skip_num_top_results, limit or None)\
             .with_columns(TrackTags.tags_data().list.filter(
                 ~self.data.keywords.strip_from_tracks.matches(
                     pl.element().struct.field(TrackTag.tag))))\
-            .with_columns(TrackTags.unnest_tags_data())
+            .with_columns(TrackTags.unnest_tags_data())\
+            .select(pl.exclude('adjacent_tags'))\
+            .join(pl.scan_parquet(DATA_DIR + 'data_song_adjacent_tags[min_size_11][-2,+2].parquet', glob=False)
+                  .select(Track.id, TrackTags.tags_data().alias('adjacent_tags_data')),
+                  how='left', on=Track.id)\
+            .with_columns(pl.col('adjacent_tags_data').fill_null(pl.lit([])))\
+            .sort_by(sort_by, descending=descending)\
+            .included_tracks
 
     def find_playlists(
         self,
