@@ -129,12 +129,21 @@ def _traverse_tag_or_keyword(
 ):
     """Visit the given `entry` and its children, and add the resulting keyword-to-tag mappings to `result`."""
     if isinstance(tag_or_keyword, str):
-        # keywords:
-        #   genre:
-        #     - pop # <--
-        append_to_entry(alias_to_negated_tags if is_negated else alias_to_tags,
-                        tag_or_keyword, parent_tags if not use_as_tag else
-                        [*parent_tags, format_tag(parent_category, tag_or_keyword)])
+        if tag_or_keyword.startswith('+'):
+            # keywords:
+            #   genre:
+            #     - pop:
+            #         - +contemporary # <--
+            for part in tag_or_keyword[1:].split('+'):
+                for tag in part.split('/'):
+                    parent_tags.add(format_tag(parent_category, tag))
+        else:
+            # keywords:
+            #   genre:
+            #     - pop # <--
+            append_to_entry(alias_to_negated_tags if is_negated else alias_to_tags,
+                            tag_or_keyword, parent_tags if not use_as_tag else
+                            [*parent_tags, format_tag(parent_category, tag_or_keyword)])
 
     elif isinstance(tag_or_keyword, dict):
         # keywords:
@@ -147,6 +156,7 @@ def _traverse_tag_or_keyword(
             is_unnamed = False
             is_lower_weight = False
             is_negated = False
+            more_tags = []
 
             # Adding a question mark "?" to the end of a tag indicates
             # that its child entries might be only imprecise matches
@@ -157,10 +167,18 @@ def _traverse_tag_or_keyword(
                 tag, is_unnamed = tag[:-1], True
             elif tag.endswith("-"):
                 tag, is_negated = tag[:-1], True
+            else:
+                tag_parts = tag.split('+')
+                tag = tag_parts[0]
+                more_tags = [t
+                             for p in tag_parts[1:]
+                             for t in p.split('/')]
 
             children = tag_or_keyword[tag_spec]
-            child_tags = (parent_tags if is_unnamed else
-                          [*parent_tags, format_tag(parent_category, tag)])
+            child_tags = (parent_tags.copy() if is_unnamed else
+                          [*parent_tags,
+                           format_tag(parent_category, tag),
+                           *[format_tag(parent_category, t) for t in more_tags]])
             target = alias_to_negated_tags if is_negated else alias_to_tags
 
             if children is None:
@@ -169,7 +187,7 @@ def _traverse_tag_or_keyword(
                 # keywords:
                 #   genre:
                 #     - acoustic:
-                append_to_entry(target, tag, parent_tags)
+                append_to_entry(target, tag, child_tags)
 
             elif isinstance(children, str):
                 # (3) tag name with single keyword
@@ -177,7 +195,7 @@ def _traverse_tag_or_keyword(
                 # keywords:
                 #   genre:
                 #     - poprock: pop-rock
-                append_to_entry(target, children, parent_tags)
+                append_to_entry(target, children, child_tags)
 
             elif isinstance(children, list):
                 # (4) tag name with multiple keywords and/or child tags
