@@ -1606,7 +1606,7 @@ class SearchEngine:
         tracks_in_result: bool = False,
         tracks_limit: int | None = None,
         extracted_playlist_data_in_result: bool = False,
-        sort_by: PlaylistSortKey | list[PlaylistSortKey] | None = None,
+        sort_by: Literal['default'] | PlaylistSortKey | list[PlaylistSortKey] | None = None,
         descending: bool = True,
         limit: int | None = None,
     ) -> pl.LazyFrame:
@@ -1671,7 +1671,15 @@ class SearchEngine:
 
         if playlist_stats_in_result:
             matching_playlists = matching_playlists\
-                .with_playlist_stats(self.data.playlist_stats)\
+                .with_playlist_stats(self.data.playlist_stats)
+
+        if sort_by == 'default':
+            sort_by = [
+                Playlist.matched_terms_count,
+                Playlist.matching_song_count,
+                Stats.song_count,
+                Stats.artist_count,
+            ]
 
         return matching_playlists.with_extra_columns()\
             .sort_by(sort_by, descending=descending)\
