@@ -64,13 +64,17 @@ def date_part(name: str, pattern: str):
 
 yy = date_part('year', r'\d{2}')
 yyyy = date_part('year', r'(?:19|20)\d{2}')
+m = date_part('month', r'(?:[1-9]|1[0-2])')
 mm = date_part('month', r'(?:0[1-9]|1[0-2])')
 MMM = date_part('month', r'(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)')
+d = date_part('day', r'(?:[1-9]|[12]\d|3[01])')
 dd = date_part('day', r'(?:0[1-9]|[12]\d|3[01])')
+DDD = date_part('weekday', r'(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun)')
+DDDD = date_part('weekday', r'(?:Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)')
 
 
 def date_pattern(name: str, pattern: str):
-    return (name, f'\\b{pattern}\\b')
+    return (name, f'(?i)\\b{pattern}\\b')
 
 
 pattern_yyyy_mm_dd = date_pattern('yyyy_mm_dd', f'{yyyy}[-/.]{mm}[-/.]{dd}')
@@ -97,6 +101,11 @@ pattern_mm_yy = date_pattern('mm_yy', f'{mm}[-/. ]{yy}')
 pattern_dd_mm = date_pattern('dd_mm', f'{dd}[-/. ]{mm}')
 pattern_yy_mm = date_pattern('yy_mm', f'{yy}[-/. ]{mm}')
 pattern_mm_dd = date_pattern('mm_dd', f'{mm}[-/. ]{dd}')
+
+pattern_d_m_yy = date_pattern('d_m_yy', f'{d}[-/.]{m}[-/.]{yy}')
+pattern_d_m_yyyy = date_pattern('d_m_yyyy', f'{d}[-/.]{m}[-/.]{yyyy}')
+pattern_DDD_dd_MMM = date_pattern('DDD_dd_MMM', f'{DDD}[., ]+{dd}(?:\.|st|nd|rd|th)?( of |[-, ]){MMM}')
+pattern_DDDD_dd_MMM = date_pattern('DDDD_dd_MMM', f'{DDDD}[., ]+{dd}(?:.|st|nd|rd|th)?( of |[-, ]){MMM}')
 
 pattern_month_year_or_reversed = date_pattern('month_year_or_reversed', f'(?:{MMM}[a-z]* {yyyy}|{yyyy} {MMM}[a-z]*)')
 
@@ -125,6 +134,12 @@ patterns_date = [
     # pattern_dd_mm,
     # pattern_yy_mm,
     # pattern_mm_dd,
+
+    pattern_d_m_yy,
+    pattern_d_m_yyyy,
+
+    pattern_DDD_dd_MMM,
+    pattern_DDDD_dd_MMM,
 ]
 
 
