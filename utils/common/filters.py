@@ -3,6 +3,8 @@ from typing import Literal
 
 import polars as pl
 
+from utils.keyword_data import extract_category
+
 IntoExpr = str | list[str] | pl.Expr
 
 
@@ -23,19 +25,19 @@ def or_filter(*filters: pl.Expr | None) -> pl.Expr | None:
 
 
 def create_text_filter(
-    filter_expression: str | list[str] | None,
+    filter_expression: str | list[str] | tuple[str] | None,
     column: IntoExpr,
     *,
     no_value: str = '',
     is_list_column: bool = False,
     ascii_case_insensitive: bool = True,
-    match_mode: Literal['exact', 'contains'] = 'contains',
+    match_mode: Literal['exact', 'exact|category', 'contains'] = 'contains',
 ) -> pl.Expr | None:
     """Parse a filter expression for a text column."""
     if filter_expression is None:
         return None
 
-    if isinstance(filter_expression, list):
+    if isinstance(filter_expression, list) or isinstance(filter_expression, tuple):
         if ascii_case_insensitive:
             values = [item.lower() for item in filter_expression if item]
         else:
@@ -58,6 +60,13 @@ def create_text_filter(
                 return expr.cast(pl.String).str.to_lowercase().is_in(values)
             else:
                 return expr.cast(pl.String).is_in(values)
+        elif match_mode == 'exact|category':
+            if ascii_case_insensitive:
+                return pl.any_horizontal(expr.cast(pl.String).str.to_lowercase().is_in(values),
+                                         extract_category(expr.cast(pl.String)).str.to_lowercase().is_in(values))
+            else:
+                return pl.any_horizontal(expr.cast(pl.String).is_in(values),
+                                         extract_category(expr.cast(pl.String)).is_in(values))
         else:
             raise ValueError(f'Invalid match mode: {match_mode}')
 

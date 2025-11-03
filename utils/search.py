@@ -300,11 +300,11 @@ class PlaylistFilter:
 
         self.match_tag =\
             create_text_filter(self.playlist_tag_include, PlaylistTags.tags,
-                               is_list_column=True, match_mode='exact', no_value=TagManager.UNTAGGED)
+                               is_list_column=True, match_mode='exact|category', no_value=TagManager.UNTAGGED)
 
         self.match_excluded_tag =\
             create_text_filter(self.playlist_tag_exclude, PlaylistTags.tags,
-                               is_list_column=True, match_mode='exact', no_value=TagManager.UNTAGGED)
+                               is_list_column=True, match_mode='exact|category', no_value=TagManager.UNTAGGED)
 
     @property
     def has_filters(self) -> bool:
@@ -661,10 +661,10 @@ class TrackFilter:
             create_text_filter(self.artist_name, Track.artist_names)
         self.match_tag =\
             create_text_filter(self.tag_include, TrackTags.extract_tags(),
-                               is_list_column=True, match_mode='exact', no_value=TagManager.UNTAGGED)
+                               is_list_column=True, match_mode='exact|category', no_value=TagManager.UNTAGGED)
         self.match_excluded_tag =\
             create_text_filter(self.tag_exclude, TrackTags.extract_tags(),
-                               is_list_column=True, match_mode='exact', no_value=TagManager.UNTAGGED)
+                               is_list_column=True, match_mode='exact|category', no_value=TagManager.UNTAGGED)
 
     @property
     def has_filters(self) -> bool:
