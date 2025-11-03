@@ -1457,233 +1457,267 @@ keywords:
     - wsca
     - zf # sometimes appearing together with KonoBueno
     - zonawcs # ZonaWCS
-    #
+    # other: we don't know whether it's an event/organization/location/...
+    # various: multiple dances
+    # unrelated: unrelated to wcs
+    # unclear: unclear location
     - amigo's # PARTY?: AMIGO'S
-    - aix on west: # EVENT: Aix on West / AoW
+    - aix on west+event/wcs/france: # EVENT: Aix on West / AoW
         - aiw
         - aix on west
     - arnic: # EVENT?: [ArNic]
         - arnic
         - "[arnic]"
-    - asia open: # EVENT: Asia Open
-         - asia open
-         - asia west coast swing open
-         - asian open
-         - asianopen
-         - asiaopen
-         - awcso
-         - awcso200424
-    - atlanta social: # PARTY: Atlanta Social
+    - asia open+event/wcs/singapore: # EVENT: Asia Open
+        - asia open
+        - asia west coast swing open
+        - asian open
+        - asianopen
+        - asiaopen
+        - awcso
+        - awcso200424
+    - atlanta social+social/wcs/usa: # PARTY: Atlanta Social
         - atlanta social
         - atl social
-    - atlanta swing classic: # EVENT: Atlanta Swing Classic
+    - atlanta swing classic+event/wcs/usa: # EVENT: Atlanta Swing Classic
         - atlanta swing classic
         - asc
-    - augsburg westie station: # EVENT: Augsburg Westie Station
+    - augsburg westie station+event/wcs/germany: # EVENT: Augsburg Westie Station
         - augsburg westie station
         - westie station
         - westiestation
-    - austin rocks: # EVENT: ATX ROX - Austin Rocks
+    - austin rocks+event/wcs/usa: # EVENT: ATX ROX - Austin Rocks
         - austin rocks
         - atx rox
         - atxrox
         - atx
-    - austin westie academy: # ORG: Austin Westie Academy
+    - austin westie academy+organization/wcs/usa: # ORG: Austin Westie Academy
         - austin westie academy
         - awa
-    - baltic swing # EVENT: Baltic Swing [year]
-    - bavarian open
+    - baltic swing+event/wcs/poland: # EVENT: Baltic Swing [year]
+    - bavarian open+event/wcs/germany: bavarian open
     - bcsdc
-    - berlin swing revolution # EVENT: Berlin Swing Revolution [year]
-    - blackout friday
-    - bonn tanzt: # ORG: Bonn Tanzt
+    - berlin swing revolution+event/wcs/germany: # EVENT: Berlin Swing Revolution [year]
+        - berlin swing revolution
+    - blackout friday+other/unknown:
+        - blackout friday
+    - bonn tanzt+organization/wcs/germany: # ORG: Bonn Tanzt
         - bonn-tanzt
         - bonn tanzt
-    - boogie on the bay: # EVENT: BotB
+    - boogie on the bay+event/wcs/usa: # EVENT: BotB - WCS Event in San Francisco
         - botb
         - boogie on the bay
-    - breizh coast swing # EVENT: Breizh Coast Swing
-    - bretzel swing # EVENT: Bretzel Swing
-    - bridgetown
-    - bristol swing fiesta # EVENT: Bristol Swing Fiesta
-    - brivi swing: # EVENT?/PARTY?/ORG?: BriVi Buli (Hungarian: "BriVi Party")
+    - breizh coast swing+event/wcs/france: # EVENT: Breizh Coast Swing in France
+    - bretzel swing+event/wcs/france: # EVENT: Bretzel Swing in France
+    - bridgetown swing: # EVENT: Bridgetown Swing in Oregon
+        - bridgetown
+        - bridgetown swing
+        - brtidgetown
+        - brtidgetown swing
+        # maybe: - bts
+    - bristol swing fiesta+event/wcs/uk: # EVENT: Bristol Swing Fiesta
+    - brivi swing+other/wcs/hungary: # EVENT?/PARTY?/ORG?: BriVi Buli (Hungarian: "BriVi Party")
         - brivi
         - brivi buli
         - brivi swing
-    - boston swing labs: # ORG: Boston Swing Labs
+    - boston swing labs+organization/wcs/usa: # ORG: Boston Swing Labs
         - boston swing labs
         - bsl
-    - budafest # EVENT: Budafest
-    - canadian swing championships: # EVENT: Canadian Swing Championships
+    - budafest+event/wcs/hungary: # EVENT: Budafest
+    - canadian swing championships+event/wcs/canada: # EVENT: Canadian Swing Championships
         - canadian swing championships
         - csc
-    - candy swing # EVENT?
-    - capital swing # EVENT: Captial Swing
+    - candy swing+social/lindy hop/germany+werk36: # PARTY: Candy Swing - Lindy Hop Party by weRK36
+        - candy swing
+    - capital swing+event/wcs/usa: # EVENT: Capital Swing in Sacramento, California
     - cds
-    - cincy westie bash # ?: Cincy Westie Bash
-    - code03: # PARTY?/ORG?: Code 03
+    - cincy westie bash+event/wcs/usa: # EVENT: Cincy Westie Bash in Cincinatti, USA
+        - cincy westie bash
+        - Cincinatti westie bash
+    - code03+unrelated: # PARTY?/ORG?/DANCE GROUP?: Code 03
         - code03
         - code 03
-    - countdown swing boston: # EVENT: Countdown Boston
+    - countdown swing boston+event/wcs/usa+danceboston: # EVENT: Countdown Boston
         - countdown boston
         - countdown swing
         - countdown swing boston
-    - danceboston:
+    - dance boston+organization/wcs/usa: # ORG: Dance Boston
         - danceboston
         - dance boston
-    - boston westie
-    - dancing for dessert: # ORG/LOCATION: Dacing for Desert Ballroom in Vancouver
+    - boston westie+organization+social/wcs/usa: # ORG/PARTY: Boston Westie
+    - dancing for dessert+organization+location/various/canada: # ORG/LOCATION: Dancing for Desert Ballroom in Vancouver
         - dancing for desert
         - dancing for dessert
-        - df
+        - dfd
     - dance for hope # EVENT?: Dance for Hope
-    - dance n play # EVENT: Dance n Play
-    - dance out loud
-    - dance with joy: # ORG: Dance with Joy
+    - dance n play+event/wcs/usa: # EVENT: Dance n Play in Oregon
+    - dance out loud+organization/ballet: # ORG: Dance Out Loud / ORG: Let's Dance Out Loud (both are ballet studios)
+    - dance with joy+organization/various/usa: # ORG: Dance with Joy Studios in Oregon (WCS, ECS & more)
         - dance with joy
         - dwj
-    - dancing fools # EVENT: Dancing Fools
-    - dc bachata experience: # EVENT: DCBXperience
+    - dancing fools+event/wcs/usa: # EVENT: Dancing Fools in Massachusetts
+    - dc bachata experience+event/bachata/usa: # EVENT: DCBXperience
         - dcbx
         - dc bachata experience
-    - dc swing experience: # EVENT: DC Swing eXperience
+    - dc swing experience+event/wcs/usa: # EVENT: DC Swing eXperience
         - dcsx
         - dc swing experience
-    - derby city swing: # EVENT: Derby City Swing
+    - dcwcs+organization/wcsusa: # ORG: Washington DC WCS - see also MADjam
+    - derby city swing+event/wcs/usa: # EVENT: Derby City Swing
         - derby city swing
-    - detonation dance: # EVENT: Detonation Dance in Manchester
+    - detonation dance+event/wcs/uk: # EVENT: Detonation Dance in Manchester
         - detonation
-    - do your own swing: # ORG: Do Your Own Swing
+    - do your own swing+organization/wcs/usa: # ORG: Do Your Own Swing in San Jose, California
         - do your own swing
         - dyos
-    - dunedin
-    - d-town swing:
+    - d-town swing+event/wcs/germany: # EVENT: D-Town Swing in Germany
         - d-town
         - dtown
         - d town swing
         - d townswing
         - d-town swing
-    - easter swing # ?: Probably matches multiple events
-    - fall into swing # EVENT: Fall into Swing
-    - farnham friday # PARTY: Farnham Friday
+    - easter swing+event/various/unclear: # ?: Probably matches multiple events
+    - fall into swing+event/wcs/poland: # EVENT: Fall into Swing in Poland
+    - farnham friday freestyle+social/wcs/uk: # PARTY: Farnham Friday Freestyle
+        - farnham friday
+        - farnham fridays
     - feel good fridays # PARTY: Feel Good Fridays
-    - finnfest # EVENT: Finnfest
-    - fin4swing
-    - first friday: # PARTY: First Friday
+    - finnfest+event/wcs/finland: # EVENT: Finnfest
+    - fin4swing+event/wcs/finland: # Event Fin4Swing
+    - first friday+social/various/unclear: # PARTY: First Friday
         - first friday
         - ff
-    - flow friday: # PARTY: Flow Friday
+    - flow friday+social/wcs/usa: # PARTY: Flow Fridays in New York
         - flow friday
         - flow fridays
-    - flow state: # EVENT: FlowState
+    - flow state+event/various/unrelated: # EVENT: Flow State Festival (Flow Arts & Performance Development) - probably unrelated
         - flow state
         - flowstate
-    - forest city brewery # LOCATION: Forest City Brewery
-    - frankfurt tanzt # ORG: Frankfurt Tanzt
-    - freedom swing # EVENT: Freedom Swing
+    - forest city brewery+location/various/usa: # LOCATION: Forest City Brewery in Cleveland, Ohio, USA
+    - frankfurt tanzt+organization/wcs/germany: # ORG: Frankfurt Tanzt
+    - freedom swing dance challenge+event/wcs/usa: # EVENT: Freedom Swing Dance Challenge in Delaware
+        - freedom swing
     - frenchco # ?: FrenchCo
-    - french open:
-        - french open # EVENT: French Open [year]
+    - french open+event/wcs/france: # EVENT: French Open [year] in Paris
+        - french open
         - fowcs
         - fo[year]
         - fo22
         - fo23
-    - friday jams # PARTY: Friday Jams
-    - friday swing: # Different parties
+    - friday jams # PARTY?: Friday Jams
+    - friday swing+social/wcs/unclear: # Different parties
         - friday swing
+    - friday swing+social/wcs/poland:
         - piątkowy west # polish: friday west
         - piątkowe wcs
-    - friday tulsa dance # PARTY: Friday Tulsa Dance
-    - german open: # EVENT: German Open WCS in Freiburg, Germany
+    - friday tulsa dance+social/wcs/usa: # PARTY: Friday Tulsa Dance
+    - german open+social/wcs/germany: # EVENT: German Open WCS in Freiburg, Germany
         - german open
         - go[year]
         - go24
-    - gowest # EVENT: GoWest
-    - groovetopia
-    - groovy tuesdays: # PARTY: Groovy Tuesdays
+    - go west swingfest+event/wcs/australia: # EVENT: Go West Swingfest in Australia
+        - go west
+        - gowest
+        - gws
+    - groovetopia+event/wcs/usa: # EVENT: Groovetopia - Weekend Intensive
+    - groovy tuesdays+social/wcs/usa: # PARTY: Groovy Tuesdays in San Jose, California
         - groovy tuesday
         - groovy tuesdays
         - groovy tuesday's
     - hike & dance:
         - hike & dance
         - hike&dance
-    - idance # ORG: iDance
-    - intensiv' experience # EVENT?: Intensiv' Experience
-    - jinglebellswing # EVENT: JingleBellSwing
-    - karelliswing
-    - king swing: # EVENT: King Swing
+    - idance+organization/various/usa: # ORG: iDance - mainly online lessons?
+    - intensiv' experience+event/wcs/unclear: # EVENT?: Intensiv' Experience
+    - jinglebellswing+event/various/unclear: # EVENT: JingleBellSwing
+    - karelliswing+organization/wcs/france: # ORG: KarelliSwing in Paris
+    - king swing+event/wcs/poland: # EVENT: King Swing in Kraków, Poland
         - king swing
         - ks
-    - kiwi fest: # EVENT: Kiwi Fest
+    - kiwi fest+event/wcs/new zealand: # EVENT: Kiwi Fest
         - kiwi fest
         - kiwi
     - klc # EVENT, but seems to be discontinued (could only find references to KLC 2013 online)
     - konobueno # ZF Konobueno # I have no idea what this is, but it appears consistently in multiple playlist names
-    - korean open: # EVENT: Korea Open [year]
+    - korean open+event/wcs/korea: # EVENT: Korea Open [year]
         - ko # GO[yy]
         - korea open
         - korean open
         - koreanopen
         - koreaopen
-    - korea westival
+    - korea westival+event/wcs/korea: # EVENT: Korea Westival
     - kv # Probably an event, but not sure which one
-    - lakeside swing: # EVENT: Lakeside Swing
+    - lakeside swing+event/wcs/usa: # EVENT: Lakeside Swing in Oakland, California
         - lakeside swing
-    - liberty swing:
-        - liberty # EVENT: Liberty [year]
+    - liberty swing+event/wcs/usa: # EVENT: Liberty [year]
+        - liberty
         - liberty swing
-    - longhorn westies # ORG: Longhorn Westies
-    - lollapalooza: # ?: LOLLA
+    - longhorn westies+organization/wcs/usa: # ORG: Longhorn Westies is a WCS Dance Club at the University of Texas at Austin
+    - lollapalooza+event/various/germany/usa+unrelated: # EVENT: LOLLA - GERMANY/USA
         - lolla
         - lollapalooza
-    - love & swing # EVENT: LOVE & SWING [year]
-    - madison west coast swing club: # ORG: Madison West Coast Swing Club
+    - love & swing+event/wcs/france: # EVENT: LOVE & SWING [year] in Bordeaux, Frane
+    - madison west coast swing club+organization/wcs/usa: # ORG: Madison West Coast Swing Club
         - madison west coast swing club
         - mwcsc
-    - madjam # EVENT: MADJam [year]
-    - med in swing: # EVENT: Med In Swing
+    - madjam+event/wcs/usa: # EVENT: MADJam [year] aka. Mid Atlantic Dance Jam in Washington DC
+        - madjam
+        - mad jam
+        - mid atlantic dance jam
+    - med in swing+event/wcs/france: # EVENT: Med In Swing at the Côte d'Azur in France
         - med in swing
+        - medinswing
         - med vendredi
         - med dimanche
         - med venedi
-    - mega tiny festival
-    - midland swing open: # EVENT: Midland Swing Open
+    - mega tiny westy festival+event/wcs/france: # EVENT: Mega Tiny Westy Festival in France
+        - mega tiny
+        - mega tiny festival
+    - midland swing open+event/wcs/uk: # EVENT: Midland Swing Open in London, UK
         - midland
         - mso
-    - midtown dance: # ORG: Midtown Dance
+    - midsummer swing+event/wcs/latvia: # EVENT: Midsummer Swing in Riga, Latvia
+        - midsummer swing
+    - midtown dance+organization/various/usa: # ORG: Midtown Dance
         - midtown
         - midtown dance
         - midtown swing
         - midtown swings
-    - midwest westie fest: # EVENT: Midwest Westie Fest
+    - midwest westie fest+event/wcs/usa: # EVENT: Midwest Westie Fest
         - midwest westie fest
         - midwest friday
         - midwest saturday
         - midwest sunday
         - mwf # MWF [year]
-    - milan modern swing:
+    - milan modern swing+event/wcs/italy:
         - milanms2024
         - milanms
         - mms
         - milan modern swing
-    - monterey swingfest # EVENT: Monterey SwingFest
-    - mountain magic # EVENT: Mountain Magic [year]
+    - monterey swingfest+event/wcs/usa: # EVENT: Monterey SwingFest
+    - mountain magic dance convention+event/various/usa: # EVENT: Mountain Magic Dance Convention [year] - WCS, Country 2-Step, Hustle, Nightclub 2-Step, Line Dance
+        - mountain magic
+        - mountain magic dance convention
+        - mmdc
     - msm # EVENT? Could only find references to MSM Dance Showcase
-    - myswing # EVENT?: MySwing
-    - new england dance festival: # EVENT: New England Dance Festival
+    - my swing open+event/wcs/malaysia: # EVENT: MySwing Open in Malaysia
+        - myswing
+        - myswing open
+        - my swing open
+    - new england dance festival+event/various/: # EVENT: New England Dance Festival - WCS + other dances
         - nedf
         - new england dance festival
-    - new zealand open: # EVENT: New Zealand Open
+    - new zealand open+event/wcs/enw zealand: # EVENT: New Zealand Open
         - new zealand open
         - nz open
         - nzo
-    - neverland swing: # EVENT: NeverlandSwing in the Netherlands
+    - neverland swing+event/wcs/netherlands: # EVENT: NeverlandSwing in the Netherlands
         - nls # could also be next level swing
         - neverland
         - neverlandswing
-    - next level swing: # EVENT: Next Level Swing in Sweden
+    - next level swing+event/wcs/sweden: # EVENT: Next Level Swing in Sweden
         - next level swing
-    - nordic wcs championships:
+    - nordic wcs championships+event/wcs/sweden: # EVENT: Nordic WCS Championships in Stockholm, Sweden
         - nordic
         - nordic[year]
         - nordic24
@@ -1695,29 +1729,33 @@ keywords:
         - nordic wcs
         - nordic wcs champs
         - nordicwcschampionships
-    - northern california dance collective: # ORG: Northern California Dance Collective
+        - nordic wcs championships
+    - northern california dance collective+organization/wcs/usa: # ORG: Northern California Dance Collective # also organizes summer dance camps
         - northern california dance collective
         - ncdc
         - nye ncdc
     - odyssey # EVENT?: Odyssey ?
-    - openair böblingen # PARTY: OpenAir Böblingen
+    - openair böblingen+social/wcs/germany: # PARTY: OpenAir Böblingen
     - paris swing classic: # EVENT: Paris Swing Classic
         - paris swing
         - paris swing classic
-        - psc
+        - psc # could also be philly swing slassic
         - psc4
-    - phillyswing:
+    - philly swing classic+organization/wcs/usa: # EVENT: Philly Swing Classic in Philadelphia
         - phillyswing
         - phillyswing22
-    - portland swing dance club:
+        - philly swing classic
+        # - psc # could also be paris swing classic
+    - portland swing dance club+organization/wcs/usa:
         - portland swing dance club
         - psdc
-    - push ton west # EVENT: PUSH TON WEST
+    - push ton west+event/wcs/france: # EVENT: PUSH' TON WEST in Toulouse, France
+        - push ton west
     - red white and blue dance
-    - riga summer swing # EVENT: Riga Summer Swing
-    - rocketwesties
-    - rolling swing # EVENT: Rolling Swing
-    - rose city swing: # EVENT: Rose City Swing
+    - riga summer swing+event/wcs/latvia: # EVENT: Riga Summer Swing in Riga, Latvia
+    - rocketwesties+organization/wcs/usa: # ORG: Rocket Westies - Huntsville's West Coast Swing dance community
+    - rolling swing+event/wcs/france: # EVENT: Rolling Swing in France
+    - rose city swing+event/wcs/usa: # EVENT: Rose City Swing
         - rose city
         - rose city swing
         - rcs
@@ -1725,16 +1763,17 @@ keywords:
     - rsb:
         - rsb
     - rtb
-    - the roundhouse experiment vancouver: # PARTY: The Roundhouse Experiment
+    - the roundhouse experiment vancouver+social/wcs/canada: # PARTY: The Roundhouse Experiment
         - rx
         - roundhouse experiment
-    - sauna swing: # EVENT: Sauna Swing
+    - sauna swing+event/wcs/finland: # EVENT: Sauna Swing
         - saunaswing
         - sauna swing
         - satsauna25
-    - scandinavian open:
+    - scandinavian open+event/wcs/sweden: # EVENT: Scandinavian Open in Stockholm, Sweden
         - scandinavian open
         - snow_
+        - snow_06_11_2022
         - snow friday
         - snow saturday
         - snow sunday
@@ -1755,107 +1794,128 @@ keywords:
         - snow 2025
         - snow 2026
         - snow 2027
-    - sea sun swing: # EVENT: Sea Sun Swing
+    - sea sun swing+event/wcs/france: # EVENT: Sea Sun Swing in France
         - sea sun swing
         - ssw # check if this is right
         - sss
-    - seattle easter swing: # EVENT: Seattle Easter Swing
+    - seattle easter swing+event/wcs/usa: # EVENT: Seattle Easter Swing
         - seattle easter swing
         - ses
         - ses[year]
         - ses2023
-    - seattle swing dance club: # ORG: Seattle Swing Dance Club
+    - seattle swing dance club+organization/wcs/usa: # ORG: Seattle Swing Dance Club
         - seattle swing dance club
         - ssdc
-    - shakedown # EVENT: Shakedown
-    - shoreline: # EVENT: ShoreLINE
+    - shakedown swing+event/wcs/new zealand: # EVENT: Shakedown in New Zealand
+        - shakedown
+        - shakedown swing
+    - shoreline+event/various/usa: # EVENT: ShoreLINE in Florida - WCS & Lindy Hop festival
         - shoreline
         - shoreline friday
         - shoreline saturday
         - shoreline sunday
-    - sharky swing # EVENT?: Sharky Swing
-    - showme # ?: ShowMe
-    - silbando # ORG: Club Silbando in Zurich
-    - simply adelaide
-    - skåneswing # EVENT: SkåneSwing
-    - slingshot swing # EVENT: Slingshot Swing
-    - slovenian open: # EVENT: Slovenian Open
+    - sharky swing+social/wcs/usa: # PARTY: Sharky Swing in San Jose, California
+    - showme showdown+social/wcs/usa: # EVENT: Showme Showdown - now called Gateway Swing Classic
+        - showme
+        - showme showdown
+    - silbando+organization/various/switzerland: # ORG: Club Silbando in Zurich
+    - simply adelaide+event/wcs/australia: # EVENT: Simply Adelaide in Adelaide, Australia
+    - skåneswing+event/wcs/sweden # EVENT: SkåneSwing in Lund, Sweden
+    - slingshot swing+event/wcs/norway: # EVENT: Slingshot Swing in Oslo, Norway
+        - slingshot swing
+        - slingshot wcs
+    - slovenian open+event/wcs/sloviania: # EVENT: Slovenian Open
         - slovenian open
         - so[year]
         - so2025 # could also be scandinavian open
         - so25
-    - sofiensäle # LOCATION: Sofiensäle
-    - spacecoastdc # EVENT: SpaceCoastDC
-    - spring time swing: # EVENT: Spring Time Swing in Freiburg, Germany
+    - sofiensäle+location/various/vienna: # LOCATION: Sofiensäle in Vienna, Austria
+    - spacecoastdc+event/wcs/usa: # EVENT: SpaceCoastDC
+    - spring time swing+event/wcs/germany: # EVENT: Spring Time Swing in Freiburg, Germany
         - spring time swing
         - springtimeswing
-    - street swing # PARTY?: Street Swing
-    - summer swing camp: # EVENT: SummerSwingCamp
+    - street swing+organization/wcs/new zealand: # ORG: Street Swing dance studio in Auckland, New Zealand
+    - summer swing camp: # EVENT: SummerSwingCamp - there are multiple events with this title
         - summer swing camp
         - summerswingcamp
-    - sunday & swing # PARTY: Sunday & Swing
-    - sunday swing # PARTY: Sunday Swing
-    - sunset swing
-    - swing amore: # EVENT: Swing Amore
+    - sunday & swing+social/various/unclear: # PARTY: Sunday & Swing - there are multiple parties with this name
+    - sunday swing+social/various/unclear: # PARTY: Sunday Swing - there are multiple parties with this name
+    - sunset swing+social/wcs/usa: # PARTY: Sunset Swing at Omni Dance Studios in Oakland, California
+    - swing amore: # ORG: Swing Amore - Amoré Dance Studio in Oregon
         - swing amore
+        - swing amoré
         - swingamore
-    - swing city chicago # EVENT: Swing City Chicago [year]
-    - swing crush # EVENT: Swing Crush
-    - swing dance alley: # ORG/LOCATION: Swing Dance Alley in Syracuse, USA
+        - swingamoré
+        - amore dance studio
+        - amoré dance studio
+    - swing city chicago+event/wcs/usa: # EVENT: Swing City Chicago [year]
+    - swing crush+event/wcs/usa: # EVENT: Swing Crush
+    - swing dance alley+organization+location/wcs/usa: # ORG/LOCATION: Swing Dance Alley in Syracuse, USA
         - swing dance alley
         - steve ryan dance
-    - swing diego: # EVENT: Swing Diego
+    - swing diego+event/wcs/usa: # EVENT: Swing Diego in San Diego, USA
         - swingdiego
         - swing diego
-    - swing fiction: # EVENT: Swing Fiction
+    - swing fiction+event/wcs/czechia: # EVENT: Swing Fiction in Brno, Czechia
         - swingfiction
         - swing fiction
-    - swing fling:
+    - swing fling+event/wcs/usa: # EVENT: Swing Fling in Washington DC
         - swing fling
         - swingfling
     - swing n groove
     - swing n sway
-    - swing of music # EVENT: Swing of Music
-    - swing over
-    - swing together
-    - swingapalooza # EVENT: Swingapalooza
-    - swingconnect: # EVENT: SwingConnect in Houston, Texas
+    - swing of music+event/wcs/austria: # EVENT: Swing of Music in Wels, Austria
+    - swingover+event/wcs/usa: # EVENT: Swingover [year] in Orlando, Floria, USA
+        - swingover
+        - swing over
+    - swing together+organization/wcs/france: # ORG: Swing Together in France
+    - swingapalooza+event/wcs/usa: # EVENT: Swingapalooza in Baton Rouge, Lousiana, USA
+    - swingconnect+event/wcs/usa: # EVENT: SwingConnect in Houston, Texas
         - swingconnect
         - swing connect
         - swingconnecthtx
-    - swingcouver # EVENT: Swingcouver
-    - swingesota # EVENT: Swingesota # + Swingesota Snow Day
-    - swinggeneration: # EVENT: SwingGeneration
+    - swingcouver+event/wcs/canada: # EVENT: Swingcouver
+    - swingesota+event/wcs/usa: # EVENT: Swingesota # + Swingesota Snow Day
+    - swinggeneration+event/wcs/germany: # EVENT: SwingGeneration in Erding, Germany
         - swingg
         - swing generation
         - swinggeneration
-    - swinghearts # EVENT: Swinghearts
-    - swingin festival: # EVENT: SwingIn Festival
+    - swinghearts dance studio+organization/wcs/hungary: # EVENT: Swing Hearts Dance Studio in Hungary
+        - swinghearts
+        - swing hearts
+        - swinghearts dance studio
+        - swing hearts dance studio
+    - swingin festival+event/wcs/germany: # EVENT: SwingIn Festival in Germany
         - swingin festival
         - swing in festival
         - swingin # potential problem: matches too much?
-    - swinglebell # EVENT: Swinglebell
-    - swingsation: # EVENT: Swingsation
+    - swingle bell rock+event/wcs/usa: # EVENT: Swingle Bell Rock in New York City
+        - swinglebell
+        - swingle bell
+        - swingle bell rock
+    - swingsation+event/wcs/australia: # EVENT: Swingsation in Australia
         - swingsation
-    - swingside invitational: # EVENT: Swingside Invitational
+    - swingside invitational+event/wcs/belgium: # EVENT: Swingside Invitational in Belgium
         - ssi
         - swingside
         - swingside invitational
-    - swingtac # ORG?/EVENT?: Swingtac
-    - swingtacular # EVENT: Swingtacular [year]
-    - swingtimate # EVENT: Swingtimate
-    - swingtime # EVENT: Swingtime [year]
-    - swingting: # EVENT: SwingTing
+    - swingtacular+event/wcs/usa: # EVENT: Swingtacular [year] in Burlingame, California
+        - swingtac
+        - swingtacular
+    - swingtimate+event/wcs/australia: # EVENT: Swingtimate
+    - swingtime denver+organization/wcs/usa: # ORG: Swingtime Denver
+        - swingtime
+    - swingting+event/wcs/uk: # EVENT: SwingTing in Manchester (discontinued)
         - swingting
         - swingtingapr
         - swingtingapr24
         - swing ting
-    - swingout # EVENT: SwingOut
-    - swingsoul # EVENT: SwingSoul
-    - swingtzerland # EVENT Swingtzerland
-    - swingvasion # EVENT: Swingvasion
-    - swingvester # EVENT: Swingvester
-    - switchxperience: # EVENT: SwitchX
+    - swingout+social/wcs/usa: # PARTY: SwingOut in Oakland, California
+    - swingsoul+organization/wcs/canada: # ORG: SwingSoul - WCS in Vancouver
+    - swingtzerland+event/wcs/switzerland: # EVENT: Swingtzerland
+    - swingvasion+event/wcs/new zealand: # EVENT: Swingvasion
+    - swingvester+event/wcs/austria: # EVENT: Swingvester
+    - switchxperience+event/wcs/germany+paris: # EVENT: SwitchX in Berlin and Paris
         - switch experience
         - switch x
         - switch x perience
@@ -1863,125 +1923,127 @@ keywords:
         - switchx
         - switchxp
         - switchxperience
-    - swung/texas: # PARTY: Swung/Texas: "Swung/TX is a WCS social on the third Saturday of every month..."
+    - swung/texas+social/wcs/usa: # PARTY: Swung/Texas: "Swung/TX is a WCS social on the third Saturday of every month..."
         - swung/texas
         - swung/tx
-    - symphony swing # EVENT: Symphony Swing in Bonn, Germany
-    - synergy swing # ORG: Synergy Swing
-    - tanzbogen # ORG: Tanzbogen Wien
-    - tanzbrunnen # LOCATION: Tanzbrunnen (there are multiple locations with this name, also not always WCS)
-    - tanzes # ORG: TanzEs
+    - symphony swing+event/wcs/germany: # EVENT: Symphony Swing in Bonn, Germany
+    - synergy swing+organization/wcs/switzerland: # ORG: Synergy Swing in Zurich, Switzerland
+    - tanzbogen+organization/wcs/austria: # ORG: Tanzbogen Wien
+    - tanzbrunnen+location/various/unclear: # LOCATION: Tanzbrunnen (there are multiple locations with this name, also not always WCS)
+    - tanzes+organization/various/germany: # ORG: TanzEs dance studio in Esslingen, Germany
     - tb swing # ORG: TB Swing
     - tc rebels: # ?: TC Rebels
         - tc rebels
         - rebels anniversary
-    - temple du swing: # ORG: Temple du Swing
+    - temple du swing+organization/wcs/france: # ORG: Temple du Swing
         - temple du swing
         - tds
         - afterwork tds # PARTY: Afterwork by Temple Du Swing
         - ski west: # EVENT: Ski West by Temple du Swing
             - ski west
-    - the after party: # EVENT: The After Party [year] / TAP [year]
+    - the after party+event/wcs/usa: # EVENT: The After Party [year] / TAP [year]
         - tap
         - tap [year]
         - the after party
-    - the open: # EVENT: The Open [year]
+    - the open+event/various/usa: # EVENT: The Open Swing Dance Championships [year]
         - the open
         - theopenfri22
-    - tlv swingfest # EVENT: TLV SwingFest
-    - tri-town swing: # EVENT: Tri-Town Swing
+    - tlv swingfest+event/wcs/israel: # EVENT: TLV SwingFest
+    - tri-town swing+event/wcs/usa: # EVENT: Tri-Town Swing
         - tri-town swing
         - tritown
-    - toulon westie camp: # EVENT: Toulon Westie Camp
+    - toulon westie camp+event/wcs/france: # EVENT: Toulon Westie Camp
         - toulon westie camp
         - twc
     - txfx:
         - txfx
-    - tyrol club of solvay: # LOCATION: Tyrol Club of Solvay in Syracuse, US
+    - tyrol club of solvay+location/various/usa: # LOCATION: Tyrol Club of Solvay in Syracuse, US
         - tyrol club
         - tyrol club of solvay
-    - ucandance: # ORG: UCanDance
+    - ucandance+organization/wcs/new zealand: # ORG: UCanDance
         - ucd
         - ucandance-o-mat
-    - university city swing philadelphia: # ORG: University City Swing in Philadelphia
+    - university city swing philadelphia+organization/wcs/usa: # ORG: University City Swing in Philadelphia
         - ucswing # UCSwing
         - ucwdc # EVENT:? ucswing winter dance camp?
-    - umea westie weekend: # EVENT: Umeå Westie Weekend
+    - umea westie weekend+event/wcs/sweden: # EVENT: Umeå Westie Weekend in Umeå, Sweden
         - umeå westie weekend
         - umea westie weekend
         - uww
-    - utah dance fest:
+    - utah dance fest+event/various/usa:
         - udf # EVENT: UDF [year]
         - utah dance fest
-    - uptown: # EVENT: UpTown
+    - uptown swing+event/wcs/sweden: # EVENT: UpTown Swing in Stockholm, Sweden
         - uptown
         - up town swing
-    - ukrainian open: # EVENT: Ukrainian Open [year]
+    - ukrainian open+event/wcs/ukraine: # EVENT: Ukrainian Open [year]
         - ukrainian open
         - ua open
-    - us open # EVENT: US Open [year]
+    - us open+event/wcs/usa: # EVENT: US Open [year]
     - valentine swing
-    - warsaw halloween swing: # EVENT: Warsaw Halloween Swing
+    - warsaw halloween swing+event/wcs/poland: # EVENT: Warsaw Halloween Swing
         - warsaw halloween swing
         - whs
-    - warsaw summer nights westival: # EVENT: Warsaw Summer Nights Westival
+    - warsaw summer nights westival+event/wcs/poland: # EVENT: Warsaw Summer Nights Westival
         - summer nights westival
         - warsaw summer nights
         - wsnw
     - wcsa # ?: WCSA | West Coast Swing Amsterdam?
     - wcsr # ?: WCSR
-    - wcstuesday # PARTY: WCSTuesday
-    - werk36 # ORG/LOCATION: Werk36
+    - wcstuesday+social/wcs/unclear: # PARTY: WCSTuesday
+    - werk36+organization+location/various/germany: # ORG/LOCATION: weRK36
     - west coast swingmas # EVENT: West Coast Swingmas
     - west coast wednesdays: # PARTY: West Coast Wednesdays in Chicago
         - west coast wednesday
         - west coast wednesdays
         - wcw
-    - west cone swing # EVENT: West Cone Swing
-    - west duck swing # EVENT: West Duck Swing
-    - west family # EVENT: West Family
-    - westie gala # EVENT: Westie Gala
-    - west in honfleur # EVENt: West In Honfleur
-    - west in lyon: # EVENT: West in Lyon
+    - west cone swing+social/wcs/usa: # PARTY: West Cone Swing in the Minneapolis Region
+    - west duck swing+event/wcs/france: # EVENT: West Duck Swing in Toulouse
+    - west family festival+event/wcs/france: # EVENT: West Family Festival in France
+        - west family
+        - west family festival
+    - westie gala+event/wcs/sweden: # EVENT: Westie Gala in Stockholm, Sweden
+    - west in honfleur+event/wcs/france: # EVENT: West in Honfleur
+    - west in lyon+event/wcs/france: # EVENT: West in Lyon
         - west in lyon
         - wil
-    - westie spring thing # EVENT: Westie Spring Thing
-    - westie wednesdays: # PARTY: Westie Wednesday's
+    - westie spring thing+event/wcs/hungary: # EVENT: Westie Spring Thing in Budapest, Hungary
+    - westie wednesdays+social/wcs/unclear: # PARTY: Westie Wednesday's
         - westie wednesday
         - westie wednesdays
         - westie wednesday's
-    - westie wisdom:
+    - westie wisdom+event/wcs/germany: # EVENT: Westie Wisdom in Nürnberg, Germany
         - westie wisdom
         - westie wisdom2024
-    - westie's angels # EVENT: Westie's Angels
-    - westieval: # EVENT: Westieval
+    - westie's angels+event/wcs/france: # EVENT: Westie's Angels in France
+    - westieval+event/wcs/unclear: # EVENT: Westieval - multiple events have this name?
         - westieval
         - 9westieval
-    - westiebos # ?: WestieBOS
-    - westiewaves # ?: WestieWaves
-    - westieweekend # ?: WestieWeekend
-    - westieval # EVENT, multiple events have this in their name
-    - westy nantes # EVENT: Westy Nantes
-    - wicked westie # EVENT: Wicked Westie
-    - windy city westies:
-        - windy city westies # ?: Windy City Westies
+    - westiebos+organization/wcs/usa: # ORG: WestieBOS in Watertown, Massachusetts
+    - westiewaves+event/wcs/unclear: # ?: WestieWaves
+    - westieweekend+event/wcs/unclear: # ?: WestieWeekend
+    - westieval+event/wcs/unclear: # EVENT, multiple events have this in their name
+    - westy nantes+event/wcs/france: # EVENT: Westy Nantes
+    - wicked westie+organization/wcs/usa: # ORG: Wicked Westie in Atlanta
+    - windy city westies+organization/wcs/usa: # ORG: Windy City Westies in Illinois, USA
+        - windy city westies
         - windy city
-    - winnipeg workshop weekend
-    - winter crazy swing # EVENT: Winter Crazy Swing
-    - winter white # EVENT: Winter White
-    - westie on the promenade: # EVENT: Westie on the Promenade
+    - winnipeg workshop weekend+social/various/canada:
+    - winter crazy swing+event/wcs/france: # EVENT: Winter Crazy Swing
+    - winter white+event/wcs/russia: # EVENT: Winter White in St. Petersburg
+    - westie on the promenade+event/wcs/france: # EVENT: Westie on the Promenade
         - westie on the promenade
         - wotp
-    - westies on the water: # EVENT: Westies on the Water
+    - westies on the water+event/wcs/usa: # EVENT: Westies on the Water in Alabama, USA
         - westies on the water
         - wotw # EVENT: WotW
-    - westlv # EVENT?: WesTLV
-    - westy welsh # EVENT: Westy Welsh
+    - westlv+organization/wcs/israel: # EVENT?: WesTLV - WCS School in Tel Aviv, Israel
+    - westy welsh+event/wcs/france: # EVENT: Westy Welsh
     # - win # WIN - probably an event, not sure which one
-    - wny dance: # ORG: WnY Dance in Marin
+    - wny dance+organization/wcs/usa: # ORG: WnY Dance in Marin, California
         - wny # WnY
     - wwwcs # ?: WWWCS
     - xpress # XPRESS seems to be an organization
-    - zouksea: # EVENT: Zouksea
+    - zouk sea+event/zouk/malaysia: # EVENT: Zouk SEA [year] in Malaysia
         - zouk sea
         - zouksea
