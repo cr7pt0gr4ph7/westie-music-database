@@ -189,6 +189,7 @@ keywords:
     - chinese
     - english
     - french:
+        - francophones
         - french
         - francais
         - français
@@ -199,10 +200,13 @@ keywords:
     - german:
         - german
         - deutsch
+        - deutschhiphop
     - german-:
         - german open
     - korean
-    - spanish
+    - spanish:
+        - spanish
+        - espanol
   dance:
     # West Coast Swing
     - wcs:
@@ -225,6 +229,7 @@ keywords:
         - west coast swing
         - west cost swing
         - westcoast
+        - westcoast swing
         - westcoastswing
         - westie
         - westiepracticesongs
@@ -232,6 +237,7 @@ keywords:
         - westcoastradio
         - westy
         - best coast swing
+        - flavio.marinewcs
         - mediumwestie
         - slowwcs
         - swouk
@@ -281,14 +287,15 @@ keywords:
             # More ballroom-related keywords
             - ball
             - ballroom
-            - standard/latein
             - chartbreaker
+            - klaus hallen
+            - maiball
             - premierenball
+            - standard/latein
             - tanz
+            - tanz orchester
             - tanzmusik
             - tanzorchester
-            - tanz orchester
-            - klaus hallen
             - tanzparty
             - tanzrunde
 
@@ -298,7 +305,6 @@ keywords:
             - hochzeit
             - hochzeitsgäste
             - silberhochzeit
-
 
         # Unrelated solo dancing
         - ballet
@@ -364,6 +370,7 @@ keywords:
         - all skate
         - all-skate
         - comp
+        - comp_int
         - competition
         - comps
         - contest # unrelated?
@@ -399,6 +406,7 @@ keywords:
         - learn # imprecise
         - lesson
         - lessons
+        - zajęcia # playlista na zajęcia | polish: playlist for classes
         - private:
             - private
             - privates
@@ -448,6 +456,7 @@ keywords:
         - cool down
         - cool-down
         - cool off
+        - étirement relexation # french: stretching and relaxation
 
     # Parties
     - party:
@@ -476,6 +485,7 @@ keywords:
         - träning
         - treino
         - trening
+        - treningsmusikk
         - träningsgruppen # swedish: training group
         - torsdagstrening # translation: thursday training
 
@@ -494,8 +504,12 @@ keywords:
     - phase:
         - awards
         - background:
+            - ambient
             - background
-            - pausen musik comp
+            - hintergrund
+            - hintergrundmusik
+            - lounge
+            - loungemusik
         - bumper
         - ceremony
         - dinner
@@ -526,16 +540,17 @@ keywords:
         - beginners
         - friendly
         - débutant # french: beginner
+        - débutants # french: beginners
         - iniciante # portugese (brazilian): beginner
         - kezdő # hungarian: beginner
     - champions:
         - champs
         - champions
     - intermediate:
+        - comp_int
         - int
         - inter
         - intermediate
-    - master
     - newbies
     - newcomer
     - novice:
@@ -565,12 +580,16 @@ keywords:
         - no blues
         - not blues
     - bluesy
-    - country
+    - country:
+        - country
+        - contry # misspelling of 'country'
     - drum & bass:
         - drum&bass
         - drum & bass
         - drum ‘n base
     - funk
+    - funk-:
+        - funk/rhythmic
     - hip hop:
         - hip hop
         - hiphop
@@ -595,10 +614,14 @@ keywords:
       # and may need further information to identify WCS playlists
     - classical:
         - classical
+        - klassik
         - orchestra
+        - antonio vivaldi
+        - vivaldi
+        - johann strauss
         - sebastian bach
-        - wagner
         - tannhäuser
+        - wagner
     - kpop:
         - kpop
         - k-pop
@@ -635,7 +658,10 @@ keywords:
     - instrumental:
         - instrumental
         - without lyrics
+        - without vocals
+        - non vocal
     - late night:
+        - ambient
         - ln
         - lns
         - late nigt's
@@ -681,47 +707,65 @@ keywords:
         - 20's
         - 1920s
         - 1920's
+        - 20er
+        - 1920er
+        - golden twenties
     - 1940s:
         - 40s
         - 40's
+        - 1940er
         - 1940s
+        - 40er
         - 1940's
     - 1950s:
         - 50s
         - 50's
         - 1950s
         - 1950's
+        - 50er
+        - 1950er
     - 1960s:
         - 60s
         - 60's
         - 1960s
         - 1960's
+        - 60er
+        - 1960er
     - 1970s:
         - 70s
         - 70's
         - 1970s
         - 1970's
+        - 70er
+        - 1970er
     - 1980s:
         - 80s
         - 80's
         - 1980s
         - 1980's
+        - 80er
+        - 1980er
     - 1990s:
         - 90s
         - 90's
         - 1990s
         - 1990's
+        - 90er
+        - 1990er
     - 2000s:
         - 2000s
         - 2000's
         - 00s
         - 00's
+        - 2000er
     - 2010s:
         - 2010s
         - 2010's
+        - 2010er
     - 2020s:
         - 2020s
         - 2020's
+        - 2020er
     # ----------------
     - contemporary:
         - contemp
@@ -749,8 +793,11 @@ keywords:
         - lugnare # swedish: calmer
         - lugnast # swedish: calmest
     - chill:
+        - ambient
         - chill
         - chillin
+    - chill-:
+        - suspense
     - club:
         - club
         - club wcs
@@ -940,6 +987,8 @@ keywords:
     - fast:
         - fast
         - faster
+        - szybsze # polish: faster
+        - szybsze tempo # polish: faster temp
         - high bpm
         - schnell
         - super high bpm
@@ -1052,6 +1101,7 @@ keywords:
         - body waves
     - breaks:
         - breaks
+        - hit the break
         - hits & breaks
         - stopsnbreaks
         - stops
@@ -1099,6 +1149,7 @@ keywords:
         - musikalität
         - musiklitet
     - phrasing:
+        - fraasit # estonian: phrase
         - level change
         - perfect phasing
         - phase change
@@ -1141,6 +1192,7 @@ keywords:
     - stretching:
         - stretch
         - streching
+        - étirement # french: stretching
     - syncopations:
         - syncopated
         - syncopation
@@ -1194,6 +1246,7 @@ keywords:
   seasonal:
     - birthday:
         - b-day
+        - b'day
         - bday
         - birthday
         - geburtstag
@@ -1255,6 +1308,8 @@ keywords:
         - beach
         - pool
         - summer
+        - sommer
+        - sommar
     - winter: # todo: remove event titles from matches#
         - "☃️"
         - "❄️"
@@ -1310,6 +1365,7 @@ keywords:
         - great songs
         - hit
         - hits
+        - hot tracks
         - picks
         - popular
         - ready
