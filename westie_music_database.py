@@ -1,6 +1,7 @@
 from threading import RLock
 from typing import Final
 
+import altair as alt
 import streamlit as st
 import wordcloud
 import matplotlib.pyplot as plt
@@ -1124,6 +1125,187 @@ if songs_together_toggle:
     st.link_button("Andreas' connected-songs visualization!",
                    'https://loewclan.de/song-galaxy/')
     st.markdown(f"#### ")
+
+
+# Courtesy of Lukas W.
+song_distance_toggle = st.toggle("Song distance")
+
+if song_distance_toggle:
+    st.markdown("What is the average distance between two songs in our playlists?")
+
+    song_combo_col1, song_combo_col2 = st.columns(2)
+    with song_combo_col1:
+        song1_name_input = st.text_input("Song 1 name:", "Josephine")
+        song1_artist_input = st.text_input("Song 1 artist name:", "RITUAL")
+    with song_combo_col2:
+        song2_name_input = st.text_input("Song 2 name:", "Don't")
+        song2_artist_input = st.text_input("Song 2 artist name:", "Ed Sheeran")
+
+    st.markdown("Comparing these two songs:")
+
+    song1_df = search_engine\
+        .find_songs(song_name=song1_name_input,
+                    artist_name=song1_artist_input,
+                    sort_by=Stats.playlist_count,
+                    limit=1)\
+        .collect(engine='streaming')
+
+    song2_df = search_engine\
+        .find_songs(song_name=song2_name_input,
+                    artist_name=song2_artist_input,
+                    sort_by=Stats.playlist_count,
+                    limit=1)\
+        .collect(engine='streaming')
+
+    song_1_and_2_df =\
+        pl.concat([song1_df, song2_df])\
+          .select(Track.name,
+                  Track.artists,
+                  Track.url,
+                  Stats.playlist_count,
+                  Stats.dj_count)
+
+    st.dataframe(song_1_and_2_df, column_config={
+                 Track.url: st.column_config.LinkColumn()})
+
+    if len(song1_df) == 1 and len(song2_df) == 1:
+        song1_data = song1_df.to_dicts()[0]
+        song2_data = song2_df.to_dicts()[0]
+
+        song1_id = song1_data[Track.id]
+        song2_id = song2_data[Track.id]
+
+        song1_playlist_tracks = search_engine.data.playlist_tracks\
+            .join(pl.LazyFrame({Track.id: [song1_id]}),
+                  how='semi', on=Track.id)
+
+        song2_playlist_tracks = search_engine.data.playlist_tracks\
+            .join(pl.LazyFrame({Track.id: [song2_id]}),
+                  how='semi', on=Track.id)
+
+        common_playlists_df = song1_playlist_tracks.select(Playlist.id().unique().sort())\
+            .join(song2_playlist_tracks.select(Playlist.id().unique().sort()), how='semi', on=Playlist.id)
+
+        st.markdown("How many playlists contain both songs?")
+
+        common_playlists_count = common_playlists_df\
+            .select(Playlist.id().n_unique().alias(Stats.playlist_count))\
+            .collect(engine='streaming')[Stats.playlist_count][0]
+
+        chart_data = pl.DataFrame({
+            'index': [
+                1,
+                2,
+                3,
+            ],
+            'track_id': [
+                song1_id,
+                song2_id,
+                f"{song1_id}+{song2_id}",
+            ],
+            'track_name': [
+                song1_data[Track.name],
+                song2_data[Track.name],
+                song1_data[Track.name] + " / " + song2_data[Track.name],
+            ],
+            'track_artists': [
+                song1_data[Track.artist_names],
+                song2_data[Track.artist_names],
+                song1_data[Track.artist_names] + " / " + song2_data[Track.artist_names],
+            ],
+            'track_title': [
+                song1_data[Track.name] + " \u2013 " + song1_data[Track.artist_names],
+                song2_data[Track.name] + " \u2013 " + song2_data[Track.artist_names],
+                'Both',
+            ],
+            'playlist_count': [
+                song1_data[Stats.playlist_count] - common_playlists_count,
+                song2_data[Stats.playlist_count] - common_playlists_count,
+                common_playlists_count,
+            ],
+        })
+
+        chart = alt.Chart(chart_data).transform_joinaggregate(
+            total_playlist_count='sum(playlist_count)',
+        ).transform_calculate(
+            playlist_percent="datum.playlist_count / datum.total_playlist_count"
+        ).mark_arc().encode(
+            theta=alt.Theta('playlist_count').title("# of Playlists"),
+            color=alt.Color('track_title:N').title("Track Title"),
+            tooltip=[
+                alt.Tooltip('track_name:N').title("Track Name"),
+                alt.Tooltip('track_artists:N').title("Track Artists"),
+                alt.Tooltip('playlist_count:Q').title("# of Playlists"),
+                alt.Tooltip('playlist_percent:Q', format='.0%').title("Relative Percentage"),
+            ],
+        )
+
+        st.altair_chart(chart)
+
+        st.markdown("What is the average distance between these two tracks in playlists that contain both?")
+
+        song1_playlist_tracks = search_engine.data.playlist_tracks\
+            .join(common_playlists_df, how='semi', on=Playlist.id)\
+            .filter(Track.id().eq(song1_id))\
+            .select(Playlist.id, Track.id, PlaylistTrack.number)\
+            .sort(Playlist.id, PlaylistTrack.number)
+
+        song2_playlist_tracks = search_engine.data.playlist_tracks\
+            .join(common_playlists_df, how='semi', on=Playlist.id)\
+            .filter(Track.id().eq(song2_id))\
+            .select(Playlist.id, Track.id, PlaylistTrack.number)\
+            .sort(Playlist.id, PlaylistTrack.number)
+
+        song1_indices = song1_playlist_tracks\
+            .group_by(Playlist.id)\
+            .agg(PlaylistTrack.number().sort().alias('song1.indices'))
+
+        song2_indices = song2_playlist_tracks\
+            .group_by(Playlist.id)\
+            .agg(PlaylistTrack.number().sort().alias('song2.indices'))
+
+        common_playlist_indices = song1_indices\
+            .join(song2_indices, how='inner', on=Playlist.id)\
+            .join(search_engine.data.playlists, how='inner', on=Playlist.id)
+
+        common_playlist_distances = song1_playlist_tracks\
+            .join_asof(song2_playlist_tracks, strategy='nearest',
+                       coalesce=False, check_sortedness=False,
+                       on=PlaylistTrack.number, by=Playlist.id)\
+            .group_by(Playlist.id)\
+            .agg((PlaylistTrack.number().cast(pl.Int16) - pl.col(f"{PlaylistTrack.number}_right").cast(pl.Int16)).abs().min().alias('min_distance'))
+
+        st.dataframe(common_playlist_indices
+                     .join(common_playlist_distances, how='inner', on=Playlist.id)
+                     .select(Playlist.name, 'min_distance', 'song1.indices', 'song2.indices'))
+
+        chart_data = common_playlist_distances\
+            .join(search_engine.data.playlists, how='inner', on=Playlist.id)\
+            .select(Playlist.id,
+                    Playlist.name().alias('playlist_name'),
+                    Stats.song_count().alias('playlist_size'),
+                    'min_distance')\
+            .collect(engine='streaming')
+
+        slider = alt.binding_range(min=0, max=5000, step=100, name='Maximum Distance')
+        max_distance = alt.param(name='max_distance', value=5000, bind=slider)
+
+        slider = alt.binding_range(min=0, max=5000, step=100, name='Maximum Size')
+        max_playlist_size = alt.param(name='max_playlist_size', value=5000, bind=slider)
+
+        chart = alt.Chart(chart_data).mark_point().encode(
+            y='min_distance:Q',
+            x='playlist_size:Q',
+            tooltip=['playlist_name', 'playlist_size', 'min_distance']
+        ).add_params(
+            max_distance,
+            max_playlist_size,
+        ).transform_filter(
+            (alt.datum.min_distance <= max_distance),
+            (alt.datum.playlist_size <= max_playlist_size),
+        )
+
+        st.altair_chart(chart)
 
 
 @st.cache_data
