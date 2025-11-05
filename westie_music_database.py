@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from threading import RLock
 from typing import Final
 
@@ -1127,6 +1128,137 @@ if songs_together_toggle:
     st.markdown(f"#### ")
 
 
+class SongData:
+    @property
+    def data(self):
+        raise NotImplementedError()
+
+    @property
+    def id(self) -> str:
+        return self.data[Track.id]
+
+    @property
+    def track_name(self) -> str:
+        return self.data[Track.name]
+
+    @property
+    def artist_names(self) -> str:
+        return self.data[Track.artist_names]
+
+    @property
+    def track_title(self) -> str:
+        return f"{self.track_name} \u2013 {self.artist_names}"
+
+    @property
+    def playlist_count(self) -> int:
+        return self.data[Stats.playlist_count]
+
+
+@dataclass
+class SongSearcher(SongData):
+    song_name: str
+    artist_name: str
+
+    def __post_init__(self):
+        self.song_df = search_engine\
+            .find_songs(song_name=self.song_name,
+                        artist_name=self.artist_name,
+                        sort_by=Stats.playlist_count,
+                        limit=1)\
+            .collect(engine='streaming')
+
+    @property
+    def found(self):
+        return len(self.song_df) == 1
+
+    @property
+    def data(self):
+        return self.song_df.to_dicts()[0]
+
+    def find_playlist_tracks(self):
+        return search_engine.data.playlist_tracks\
+            .filter(Track.id().eq(self.id))\
+            .select(Playlist.id, Track.id, PlaylistTrack.number)
+
+    def find_playlist_tracks_in(self, playlists: pl.LazyFrame):
+        return search_engine.data.playlist_tracks\
+            .join(playlists, how='semi', on=Playlist.id)\
+            .filter(Track.id().eq(self.id))\
+            .select(Playlist.id, Track.id, PlaylistTrack.number)\
+            .sort(Playlist.id, PlaylistTrack.number)
+
+    def find_indices(self, name: str, in_playlists: pl.LazyFrame):
+        return self.find_playlist_tracks_in(in_playlists)\
+            .group_by(Playlist.id)\
+            .agg(PlaylistTrack.number().sort().alias(f'{name}.indices'))
+
+    def find_playlists(self):
+        return self.find_playlist_tracks()\
+            .select(Playlist.id().unique().sort())
+
+    @staticmethod
+    def find_playlists_with(all_of: list["SongSearcher"]) -> pl.LazyFrame | None:
+        """Get all playlists that contain all of the specified songs."""
+        playlists = None
+        for song in all_of:
+            playlists = (song.find_playlists() if playlists is None
+                         else playlists.join(song.find_playlists(), how='semi', on=Playlist.id))
+        return playlists
+
+
+@dataclass
+class SongComparison:
+    song1: SongSearcher
+    song2: SongSearcher
+
+    def total_playlist_count(self) -> int:
+        """Count all playlists that contain one or both songs."""
+        return self.song1.playlist_count + self.song2.playlist_count - self.shared_playlist_count()
+
+    def shared_playlist_count(self) -> int:
+        """Count all playlists that contain both songs."""
+        return SongSearcher.find_playlists_with(all_of=[self.song1, self.song2])\
+            .select(Playlist.id().n_unique().alias(Stats.playlist_count))\
+            .collect(engine='streaming')[Stats.playlist_count][0]
+
+    def find_shared_playlists(
+        self,
+        *,
+        playlist_in_result: bool = False,
+        indices_in_result: bool = False,
+        min_distance_in_result: bool = False
+    ) -> pl.LazyFrame:
+        """Get playlists that contain both songs."""
+        playlists = SongSearcher.find_playlists_with(all_of=[self.song1, self.song2])
+
+        if playlist_in_result:
+            playlists = playlists\
+                .join(search_engine.data.playlists, how='inner', on=Playlist.id)
+
+        if indices_in_result:
+            song1_indices = self.song1.find_indices('song1', in_playlists=playlists)
+            song2_indices = self.song2.find_indices('song2', in_playlists=playlists)
+            indices = song1_indices.join(song2_indices, how='inner', on=Playlist.id)
+
+            playlists = playlists\
+                .join(indices, how='inner', on=Playlist.id)
+
+        if min_distance_in_result:
+            song1_playlist_tracks = self.song1.find_playlist_tracks_in(playlists)
+            song2_playlist_tracks = self.song2.find_playlist_tracks_in(playlists)
+            min_distances = song1_playlist_tracks\
+                .join_asof(song2_playlist_tracks, strategy='nearest',
+                           coalesce=False, check_sortedness=False,
+                           on=PlaylistTrack.number, by=Playlist.id)\
+                .group_by(Playlist.id)\
+                .agg((PlaylistTrack.number().cast(pl.Int16) - pl.col(f"{PlaylistTrack.number}_right").cast(pl.Int16)).abs().min().alias('min_distance'))
+
+            playlists = playlists\
+                .join(min_distances, how='inner', on=Playlist.id)
+
+        return playlists
+
+
 # Courtesy of Lukas W.
 song_distance_toggle = st.toggle("Song distance")
 
@@ -1143,22 +1275,14 @@ if song_distance_toggle:
 
     st.markdown("Comparing these two songs:")
 
-    song1_df = search_engine\
-        .find_songs(song_name=song1_name_input,
-                    artist_name=song1_artist_input,
-                    sort_by=Stats.playlist_count,
-                    limit=1)\
-        .collect(engine='streaming')
+    song1 = SongSearcher(song_name=song1_name_input,
+                         artist_name=song1_artist_input)
 
-    song2_df = search_engine\
-        .find_songs(song_name=song2_name_input,
-                    artist_name=song2_artist_input,
-                    sort_by=Stats.playlist_count,
-                    limit=1)\
-        .collect(engine='streaming')
+    song2 = SongSearcher(song_name=song2_name_input,
+                         artist_name=song2_artist_input)
 
     song_1_and_2_df =\
-        pl.concat([song1_df, song2_df])\
+        pl.concat([song1.song_df, song2.song_df])\
           .select(Track.name,
                   Track.artists,
                   Track.url,
@@ -1168,29 +1292,13 @@ if song_distance_toggle:
     st.dataframe(song_1_and_2_df, column_config={
                  Track.url: st.column_config.LinkColumn()})
 
-    if len(song1_df) == 1 and len(song2_df) == 1:
-        song1_data = song1_df.to_dicts()[0]
-        song2_data = song2_df.to_dicts()[0]
-
-        song1_id = song1_data[Track.id]
-        song2_id = song2_data[Track.id]
-
-        song1_playlist_tracks = search_engine.data.playlist_tracks\
-            .join(pl.LazyFrame({Track.id: [song1_id]}),
-                  how='semi', on=Track.id)
-
-        song2_playlist_tracks = search_engine.data.playlist_tracks\
-            .join(pl.LazyFrame({Track.id: [song2_id]}),
-                  how='semi', on=Track.id)
-
-        common_playlists_df = song1_playlist_tracks.select(Playlist.id().unique().sort())\
-            .join(song2_playlist_tracks.select(Playlist.id().unique().sort()), how='semi', on=Playlist.id)
+    if song1.found and song2.found:
+        song_comparison = SongComparison(song1, song2)
+        common_playlists_df = song_comparison.find_shared_playlists()
 
         st.markdown("How many playlists contain both songs?")
 
-        common_playlists_count = common_playlists_df\
-            .select(Playlist.id().n_unique().alias(Stats.playlist_count))\
-            .collect(engine='streaming')[Stats.playlist_count][0]
+        common_playlists_count = song_comparison.shared_playlist_count()
 
         chart_data = pl.DataFrame({
             'index': [
@@ -1199,28 +1307,28 @@ if song_distance_toggle:
                 3,
             ],
             'track_id': [
-                song1_id,
-                song2_id,
-                f"{song1_id}+{song2_id}",
+                song1.id,
+                song2.id,
+                f"{song1.id}+{song2.id}",
             ],
             'track_name': [
-                song1_data[Track.name],
-                song2_data[Track.name],
-                song1_data[Track.name] + " / " + song2_data[Track.name],
+                song1.track_name,
+                song2.track_name,
+                " / ".join([song1.track_name, song2.track_name]),
             ],
             'track_artists': [
-                song1_data[Track.artist_names],
-                song2_data[Track.artist_names],
-                song1_data[Track.artist_names] + " / " + song2_data[Track.artist_names],
+                song1.artist_names,
+                song2.artist_names,
+                " / ".join([song1.artist_names, song2.artist_names]),
             ],
             'track_title': [
-                song1_data[Track.name] + " \u2013 " + song1_data[Track.artist_names],
-                song2_data[Track.name] + " \u2013 " + song2_data[Track.artist_names],
+                song1.track_title,
+                song2.track_title,
                 'Both',
             ],
             'playlist_count': [
-                song1_data[Stats.playlist_count] - common_playlists_count,
-                song2_data[Stats.playlist_count] - common_playlists_count,
+                song1.playlist_count - common_playlists_count,
+                song2.playlist_count - common_playlists_count,
                 common_playlists_count,
             ],
         })
@@ -1244,43 +1352,15 @@ if song_distance_toggle:
 
         st.markdown("What is the average distance between these two tracks in playlists that contain both?")
 
-        song1_playlist_tracks = search_engine.data.playlist_tracks\
-            .join(common_playlists_df, how='semi', on=Playlist.id)\
-            .filter(Track.id().eq(song1_id))\
-            .select(Playlist.id, Track.id, PlaylistTrack.number)\
-            .sort(Playlist.id, PlaylistTrack.number)
-
-        song2_playlist_tracks = search_engine.data.playlist_tracks\
-            .join(common_playlists_df, how='semi', on=Playlist.id)\
-            .filter(Track.id().eq(song2_id))\
-            .select(Playlist.id, Track.id, PlaylistTrack.number)\
-            .sort(Playlist.id, PlaylistTrack.number)
-
-        song1_indices = song1_playlist_tracks\
-            .group_by(Playlist.id)\
-            .agg(PlaylistTrack.number().sort().alias('song1.indices'))
-
-        song2_indices = song2_playlist_tracks\
-            .group_by(Playlist.id)\
-            .agg(PlaylistTrack.number().sort().alias('song2.indices'))
-
-        common_playlist_indices = song1_indices\
-            .join(song2_indices, how='inner', on=Playlist.id)\
-            .join(search_engine.data.playlists, how='inner', on=Playlist.id)
-
-        common_playlist_distances = song1_playlist_tracks\
-            .join_asof(song2_playlist_tracks, strategy='nearest',
-                       coalesce=False, check_sortedness=False,
-                       on=PlaylistTrack.number, by=Playlist.id)\
-            .group_by(Playlist.id)\
-            .agg((PlaylistTrack.number().cast(pl.Int16) - pl.col(f"{PlaylistTrack.number}_right").cast(pl.Int16)).abs().min().alias('min_distance'))
-
-        st.dataframe(common_playlist_indices
-                     .join(common_playlist_distances, how='inner', on=Playlist.id)
+        st.dataframe(song_comparison.find_shared_playlists(playlist_in_result=True,
+                                                           indices_in_result=True,
+                                                           min_distance_in_result=True)
                      .select(Playlist.name, 'min_distance', 'song1.indices', 'song2.indices'))
 
-        chart_data = common_playlist_distances\
-            .join(search_engine.data.playlists, how='inner', on=Playlist.id)\
+        chart_data = song_comparison\
+            .find_shared_playlists(playlist_in_result=True,
+                                   indices_in_result=True,
+                                   min_distance_in_result=True)\
             .select(Playlist.id,
                     Playlist.name().alias('playlist_name'),
                     Stats.song_count().alias('playlist_size'),
