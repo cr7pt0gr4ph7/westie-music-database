@@ -136,6 +136,9 @@ keywords:
         - elderbrook
         - eliza doolittle
         - ellie goulding
+        - elton john*:
+            - elton john
+            - eton john
         - eminem
         - eric heatherly
         - erykah badu
@@ -144,6 +147,7 @@ keywords:
         - exenia
         - far east movement
         - fever ray
+        - florence + the machine
         - foo fighters
         - forte
         - frank ocean
@@ -222,6 +226,7 @@ keywords:
         - linkin park
         - lil wayne
         - lily allen
+        - lizzo
         - lmfao
         - lonestar
         - luke bryan
@@ -281,6 +286,7 @@ keywords:
         - pete fountain
         - peter kater
         - pharrell williams
+        - phillip phillips
         - pink sweat$
         - pierre garnier
         - pitbull
@@ -327,6 +333,7 @@ keywords:
         - steve lukather
         - sting
         - streets of gold
+        - system of a down
         - takida
         - taylor swift
         - tenacious d
@@ -631,14 +638,16 @@ keywords:
             - tanzrunde
 
             # Wedding-related keywords
-            - esküvő # hungarian: wedding
-            - esküvő buli # hungarian: wedding party
-            - hochzeit
-            - hochzeits
-            - hochzeits-songs
-            - hochzeitsgäste
-            - hochzeitstanz
-            - silberhochzeit
+            - wedding*:
+                - esküvő # hungarian: wedding
+                - esküvő buli # hungarian: wedding party
+                - guest arrival music
+                - hochzeit
+                - hochzeits
+                - hochzeits-songs
+                - hochzeitsgäste
+                - hochzeitstanz
+                - silberhochzeit
 
         # Unrelated solo dancing
         - ballet*:
@@ -647,12 +656,14 @@ keywords:
         - bollywood
         - fitness*:
             - crossfit
+            - fitdance
             - fitness
             - strong(her)
             - zumba
         - hardstyle
         - jumpstyle
         - kids*:
+            - "+playlist:unrelated"
             - hh # hh kids = hip hop kids
             - kita
             - kids
@@ -665,6 +676,7 @@ keywords:
         - pole dance:
             - pole dance
             - pole dancing
+            - poledance
             - polefest
         - poplock # hip hop term
         - danses solo
@@ -1068,6 +1080,7 @@ keywords:
         - movie ost
         - movie score
         - ost drama
+        - tv themes
     - vaporwave # there is a single large playlist with over 2000 tracks
 
     # These aren't exactly music genres, but have a very
@@ -1695,9 +1708,10 @@ keywords:
     - phrasing:
         - qualities*:
             - energy changes # review
-            - level change # review
             - feeling/intensity changes
             - intensity changes
+            - level change # review
+            - style change
         - fraasit # estonian: phrase
         - perfect phasing
         - phase change
@@ -1848,6 +1862,7 @@ keywords:
     - autumn: # todo: remove event titles from matches
         - "🍂"
         - autumn
+        - autumnal
         - fall
     - autumn-:
         - fall at
@@ -1976,6 +1991,8 @@ keywords:
         - bops
         - crowd pleaser
         - floor fillers
+        - floor saver
+        - floor savers
         - great songs
         - hit
         - hits
@@ -2072,13 +2089,20 @@ keywords:
 
     # Playlists that should maybe be stripped from the data
     - unrelated:
-        - fasching partymusik # carneval
-        - hörspiele
         - kids
         - kinder
+        - toddler
+        #
+        - hörspiele
         - podcasts
         - schlaflieder
-        - toddler
+        #
+        - fasching partymusik # carneval
+        - bobfahrerlied
+        - horror game music
+        - tiktok*:
+            - tik tok
+            - tiktok
         - dog walk
         - hip hop kids
         - hip hop choreos
@@ -2485,6 +2509,8 @@ keywords:
         - mission city
         - mission city swing
     - monterey swingfest+event/wcs/usa: # EVENT: Monterey SwingFest
+        - monterey swingfest
+        - monterey swing fest
     - mountain magic dance convention+event/various/usa: # EVENT: Mountain Magic Dance Convention [year] - WCS, Country 2-Step, Hustle, Nightclub 2-Step, Line Dance
         - mountain magic
         - mountain magic dance convention
@@ -2622,6 +2648,8 @@ keywords:
         - so2025 # could also be scandinavian open
         - so25
     - sofiensäle+location/various/vienna: # LOCATION: Sofiensäle in Vienna, Austria
+        - sofiensäle
+        - sofensäle
     - spacecoastdc+event/wcs/usa: # EVENT: SpaceCoastDC
     - spring time swing+event/wcs/germany: # EVENT: Spring Time Swing in Freiburg, Germany
         - spring time swing
