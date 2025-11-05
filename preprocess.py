@@ -907,24 +907,24 @@ def process_adjacent_song_tags(temp_files: TempFileTracker):
         #       propagates the confidence scores computed in the previous round
         #       to the adjacent tracks. We have to try it to see if that actually
         #       has a positive effect on the correctness of the tags.
-        x = playlist_tracks_batch\
+        return playlist_tracks_batch\
             .join(track_tags.select(Track.id, TrackTags.extract_tags()),
                   how='inner', on=Track.id)\
             .sort(Playlist.id, PlaylistTrack.number)\
-            .rolling(index_column=PlaylistTrack.number, period=f'{window_size}i', group_by=Playlist.id)\
+            .rolling(index_column=PlaylistTrack.number().cast(pl.UInt32), period=f'{window_size}i', group_by=Playlist.id)\
             .agg(Track.id().get(prev_size),
                  Track.id().count().alias('window_size'),
-                 pl.when(Track.id().count().eq(window_size))
-                   .then(pl.reduce(exprs=pl.concat([TrackTags.tags().head(prev_size),
-                                                    TrackTags.tags().tail(next_size)])
-                                   .list.to_array(prev_size + next_size)
-                                   .arr.to_struct(lambda idx: f'context.{idx}.tags')
-                                   .struct.unnest(),
-                                   function=lambda acc, x: acc.list.set_intersection(x)).alias(TrackTags.tags)))\
+                 pl.concat([TrackTags.tags().head(prev_size),
+                            TrackTags.tags().tail(next_size)],
+                           how='horizontal'))\
             .filter(pl.col('window_size').eq(window_size))\
+            .with_columns(
+                pl.reduce(exprs=TrackTags.tags()
+                          .list.to_struct(fields=lambda idx: f'context.{idx}.tags',
+                                          upper_bound=prev_size + next_size)
+                          .struct.unnest(),
+                          function=lambda acc, x: acc.list.set_intersection(x)).alias(TrackTags.tags))\
             .drop('window_size')
-        x.show_graph(engine='streaming', plan_stage='physical', optimized=True, output_path='plan.png')
-        return x
 
     temp_file = temp_files.register_for_deletion(TEMP_DATA_DIR + 'temp_adjacent_track_tags.parquet')
     process_in_batches(
@@ -933,7 +933,7 @@ def process_adjacent_song_tags(temp_files: TempFileTracker):
         batch_by=Playlist.id,
         batch_values=social_playlists,
         batch_name="adjacent_tags_raw",
-        batch_size=5000,  # Higher batch sizes are faster but have a righer OOM risk
+        batch_size=2000,  # Higher batch sizes are faster but have a righer OOM risk
         output_name=temp_file,
         sort_by=None,
         merge_type='unsorted',
