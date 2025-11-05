@@ -23,11 +23,24 @@ strip_from_tracks:
   artist: true
   month: true
   weekday: true
+  time-of-day: true
+  city: true
+  country: true
   events: true
   playlist:
     - ordered
-  city: true
-  country: true
+    - ordered by bpm
+    - ordered by danceability
+    - ordered by duration
+    - ordered by energy
+    ###
+    - spotify stuff
+    - default name
+    - playlist in a bottle
+    - specific
+    - backup
+    - mondaymix
+    - setlist
 relations:
   - opposites:
       - "tempo:fast"
