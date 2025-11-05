@@ -868,6 +868,15 @@ def process_tag_stats():
     )
 
 
+min_playlist_size: Final = 10
+prev_window_size: Final = 2
+next_window_size: Final = 2
+window_size: Final = prev_window_size + 1 + next_window_size
+
+adjacent_tags_file: Final = DATA_DIR +\
+    f"data_song_adjacent_tags[min_size_{min_playlist_size}][-{prev_window_size},+{next_window_size}].parquet"
+
+
 @with_temp_files
 def process_adjacent_song_tags(temp_files: TempFileTracker):
     """
@@ -881,11 +890,6 @@ def process_adjacent_song_tags(temp_files: TempFileTracker):
     tagged with `genre:late night`, it is more likely that it should also
     be tagged with `genre:late night` as well.
     """
-    min_playlist_size = 10
-    prev_size = 2
-    next_size = 2
-    window_size = prev_size + 1 + next_size
-
     tracks = scan_parquet_file(TRACK_DATA_FILE)
     track_tags = scan_parquet_file(TRACK_TAGS_DATA_FILE)\
         .with_columns(TrackTags.tags_data()
@@ -912,16 +916,16 @@ def process_adjacent_song_tags(temp_files: TempFileTracker):
                   how='inner', on=Track.id)\
             .sort(Playlist.id, PlaylistTrack.number)\
             .rolling(index_column=PlaylistTrack.number().cast(pl.UInt32), period=f'{window_size}i', group_by=Playlist.id)\
-            .agg(Track.id().get(prev_size),
+            .agg(Track.id().get(prev_window_size),
                  Track.id().count().alias('window_size'),
-                 pl.concat([TrackTags.tags().head(prev_size),
-                            TrackTags.tags().tail(next_size)],
+                 pl.concat([TrackTags.tags().head(prev_window_size),
+                            TrackTags.tags().tail(next_window_size)],
                            how='horizontal'))\
             .filter(pl.col('window_size').eq(window_size))\
             .with_columns(
                 pl.reduce(exprs=TrackTags.tags()
                           .list.to_struct(fields=lambda idx: f'context.{idx}.tags',
-                                          upper_bound=prev_size + next_size)
+                                          upper_bound=prev_window_size + next_window_size)
                           .struct.unnest(),
                           function=lambda acc, x: acc.list.set_intersection(x)).alias(TrackTags.tags))\
             .drop('window_size')
@@ -964,8 +968,7 @@ def process_adjacent_song_tags(temp_files: TempFileTracker):
         batch_values=tracks,
         batch_name="adjacent_tags",
         batch_size=10000,  # Higher batch sizes are faster but have a righer OOM risk
-        output_name=DATA_DIR +
-        f"data_song_adjacent_tags[min_size_{min_playlist_size}][-{prev_size},+{next_size}].parquet",
+        output_name=adjacent_tags_file,
     )
 
 
@@ -989,7 +992,7 @@ def merge_song_tags_into_metadata():
 
     tracks = scan_parquet_file(UNTAGGED_TRACKS_DATA_FILE)
     track_tags = scan_parquet_file(TRACK_TAGS_DATA_FILE)
-    adjacent_track_tags = scan_parquet_file(DATA_DIR + "data_song_adjacent_tags.parquet")
+    adjacent_track_tags = scan_parquet_file(adjacent_tags_file)
     tracks_with_tags = tracks\
         .select(pl.exclude(TrackTags.tags,
                            TrackTags.tags_data,
