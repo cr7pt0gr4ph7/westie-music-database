@@ -30,7 +30,8 @@ def _create_regex_for_term(term: str) -> str:
 def _extract_tags(expr: pl.Expr, tags_to_extract: dict[str, list[str]]) -> pl.Expr:
     all_keywords_alts = '|'.join([_create_regex_for_term(term) for term in tags_to_extract])
     optional_year_suffix = r'(?:[0-9]{4})?'
-    all_keywords_regex = f'(?i)\\b(?:{all_keywords_alts}){optional_year_suffix}\\b'
+    typographic_dash = '[\u2012\u2013\u2014\u2e3a]'  # used by spotify in auto-generated playlist names
+    all_keywords_regex = f'(?i)(?:{typographic_dash}|\\b(?:{all_keywords_alts}){optional_year_suffix}\\b)'
 
     # Use regexes to extract the keywords, then match the
     # extracted strings against our dictionary to check
