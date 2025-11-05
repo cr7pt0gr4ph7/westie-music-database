@@ -19,6 +19,31 @@ strip_from_tracks:
     - ordered
   city: true
   country: true
+relations:
+  - opposites:
+      - "tempo:fast"
+      - "tempo:slow"
+  - opposites:
+      - "genre:late night"
+      - "genre:club"
+  - opposites:
+      - "genre:late night"
+      - "genre:funk"
+  - opposites:
+      - "genre:late night"
+      - "genre:blues"
+  - opposites:
+      - "mood:high energy"
+      - "mood:low energy"
+  - related:
+      - "genre:club"
+      - "genre:high energy"
+  - related:
+      - "mood:calm"
+      - "mood:chill"
+      - "mood:low energy"
+      - "genre:acoustic"
+      - "genre:late night"
 keywords:
   # Playlists that have an artist name in them should likely be ignored,
   # except when they also have "WCS" in the name
