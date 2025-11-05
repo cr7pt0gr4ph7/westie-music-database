@@ -140,6 +140,9 @@ st.link_button("Help fill in country info!",
 # Feature flag to enable the "Random Song" section
 enable_random_song = False
 
+# Feature flag to enable the "Song distance" section
+enable_song_distance = False
+
 if enable_random_song:
     st.markdown(f"#### ")
     st.markdown(f"#### Random Song")
@@ -1260,7 +1263,7 @@ class SongComparison:
 
 
 # Courtesy of Lukas W.
-song_distance_toggle = st.toggle("Song distance")
+song_distance_toggle = enable_song_distance and st.toggle("Song distance")
 
 if song_distance_toggle:
     st.markdown("What is the average distance between two songs in our playlists?")
