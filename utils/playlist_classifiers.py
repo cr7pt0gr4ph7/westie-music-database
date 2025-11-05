@@ -165,15 +165,19 @@ class BpmPattern(NamedTuple):
     pattern: str
 
 
-pattern_bpm_range = BpmPattern('range', '70 – 79bpm', r'(\d{2,3})\s*[-–]\s*(\d{2,3})\s*(?:bpm|BPM)?')
-pattern_bpm_appx = BpmPattern('approximate', '~100bpm', r'[~≈]\s*(\d{2,3})\s*(?:bpm|BPM)?')
-pattern_bpm_relational = BpmPattern('relational', '>120 BPM', r'[<>]=?\s*(\d{2,3})\s*(?:bpm|BPM)?')
-pattern_bpm_mention = BpmPattern('mention', 'bpm 105', r'(?:bpm|BPM)[^\d]{0,5}(\d{2,3})')
-pattern_bpm_loose_fallback = BpmPattern('loose', '117 BPM”', r'\b(\d{2,3})(-|\s*)(?:bpm|BPM)\b')
+pattern_bpm_range = BpmPattern(
+    'range', '70 – 79bpm', r'(\d{2,3})\s*([-–]|[aá]|bis|to)\s*(\d{2,3})\s*(?:bpm|Bpm|BPM|beats per minute)?')
+pattern_bpm_appx_1 = BpmPattern('approximate', '~100bpm', r'[~≈]\s*(\d{2,3})\s*(?:bpm|Bpm|BPM|beats per minute)?')
+pattern_bpm_appx_2 = BpmPattern('approximate', '~100bpm', r'(\d{2,3})-?ish\s*(?:bpm|Bpm|BPM|beats per minute)?')
+pattern_bpm_relational = BpmPattern('relational', '>120 BPM', r'[<>]=?\s*(\d{2,3})\s*(?:bpm|Bpm|BPM|beats per minute)?')
+pattern_bpm_plus = BpmPattern('plus', '120+ BPM', r'(\d{2,3})(\+|\s+or\s+more\s)\s*(?:bpm|Bpm|BPM|beats per minute)?')
+pattern_bpm_mention = BpmPattern('mention', 'bpm 105', r'(?:bpm|Bpm|BPM|beats per minute)[^\d]{0,5}(\d{2,3})')
+pattern_bpm_loose_fallback = BpmPattern('loose', '117 BPM”', r'\b(\d{2,3})(-|\s*)(?:bpm|Bpm|BPM|beats per minute)\b')
 
 patterns_bpm = [
     pattern_bpm_range,
-    pattern_bpm_appx,
+    pattern_bpm_appx_1,
+    pattern_bpm_appx_2,
     pattern_bpm_relational,
     pattern_bpm_mention,
     pattern_bpm_loose_fallback,
