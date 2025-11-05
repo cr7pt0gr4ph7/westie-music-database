@@ -1,6 +1,11 @@
 from typing import Iterable
 
 
+def append_to_entries[Key, Value](mapping: dict[Key, set[Value]], keys: Iterable[Key], values: list[Value]):
+    for key in keys:
+        append_to_entry(mapping, key, values)
+
+
 def append_to_entry[Key, Value](mapping: dict[Key, set[Value]], key: Key, values: list[Value]):
     if key in mapping:
         mapping[key].update(values)
