@@ -788,12 +788,19 @@ if keyword_insights_toggle:
 
     col1, col2 = st.columns(2)
     with col1:
+        show_all_tags = st.toggle("Show hidden tags",
+                                  help=("Show all tags in the tag selection dropdown, "
+                                        "even the ones that aren't normally useful for filtering "
+                                        "(but are present in the data because they're used by our data pipeline)."))
+
+    col1, col2 = st.columns(2)
+    with col1:
         tag_input = st.selectbox("Show playlists & songs with tag:",
-                                 options=tag_manager.get_tag_options(or_untagged=True),
+                                 options=tag_manager.get_tag_options(or_untagged=True, all_tags=show_all_tags),
                                  format_func=tag_manager.format_tag)
     with col2:
         anti_tag_input = st.selectbox("That are not also tagged with:",
-                                      options=tag_manager.get_tag_options(or_empty=True),
+                                      options=tag_manager.get_tag_options(or_empty=True, all_tags=show_all_tags),
                                       format_func=tag_manager.format_tag)
 
     if tag_input:

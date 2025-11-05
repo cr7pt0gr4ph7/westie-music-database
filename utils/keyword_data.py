@@ -78,6 +78,7 @@ class _KeywordsFile(TypedDict, total=False):
     """Defines the YAML schema for the `keyword_data.yaml` file."""
     colors: dict[CategoryName, HexColor]
     limits: dict[CategoryName, dict[ShortTagName, TagLimits]]
+    hide_from_ui: TagFilterSpec
     strip_from_tracks: TagFilterSpec
     keywords: dict[CategoryName, list[KeywordOrTagSpec]]
 
@@ -311,8 +312,8 @@ class TagNameMatcher(NamedTuple):
         )
 
 
-def load_filters(keywords_file: _KeywordsFile) -> TagNameMatcher:
-    return _parse_filter(keywords_file.get('strip_from_tracks') or {})
+def load_filters(keywords_file: _KeywordsFile, field_name: str) -> TagNameMatcher:
+    return _parse_filter(keywords_file.get(field_name) or {})
 
 
 def _parse_filter(spec: TagFilterSpec) -> TagNameMatcher:
@@ -337,6 +338,7 @@ class KeywordData:
     """Contains all keyword-related settings."""
     colors_by_category: dict[CategoryName, HexColor]
     limits_by_tag: TagLimitsMatcher
+    hide_from_ui: TagNameMatcher
     strip_from_tracks: TagNameMatcher
     keywords_to_tags: dict[KeywordString, set[TagName]]
     keywords_to_excluded_tags: dict[KeywordString, set[TagName]]
@@ -353,10 +355,12 @@ class KeywordData:
         """Load keyword data from a parsed YAML file."""
         colors = load_colors(keywords_file)
         limits = load_limits(keywords_file)
-        strip_from_tracks = load_filters(keywords_file)
+        hide_from_ui = load_filters(keywords_file, 'hide_from_ui')
+        strip_from_tracks = load_filters(keywords_file, 'strip_from_tracks')
         alias_to_tags, alias_to_negated_tags = load_aliases(keywords_file, category_as_tag=False)
         return cls(colors_by_category=colors,
                    limits_by_tag=limits,
+                   hide_from_ui=hide_from_ui,
                    strip_from_tracks=strip_from_tracks,
                    keywords_to_tags=alias_to_tags,
                    keywords_to_excluded_tags=alias_to_negated_tags)

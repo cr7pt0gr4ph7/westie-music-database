@@ -10,6 +10,15 @@ limits:
     christmas:
       min_playlist_count: 1
       min_playlist_percent: 20.0
+hide_from_ui:
+  artist: true
+  month: true
+  weekday: true
+  time-of-day: true
+  city: true
+  country: true
+  events: true
+  events-misc: true
 strip_from_tracks:
   artist: true
   month: true
