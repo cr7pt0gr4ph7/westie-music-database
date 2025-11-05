@@ -39,6 +39,11 @@ def format_tag(category: CategoryName, short_name: ShortTagName) -> TagName:
     return f'{category}:{short_name}'
 
 
+def format_tag_if_needed(category: CategoryName, short_name: ShortTagName) -> TagName:
+    return (short_name if ':' in short_name
+            else format_tag(category, short_name))
+
+
 def split_tag(name: TagName) -> tuple[CategoryName, ShortTagName | None]:
     parts = name.split(':', 2)
     return (parts[0], parts[1] if len(parts) >= 2
@@ -90,6 +95,7 @@ def load_aliases(keywords_file: _KeywordsFile, category_as_tag: bool = False):
         for entry in keywords_file['keywords'][category]:
             _traverse_tag_or_keyword(entry, category,
                                      {category} if category_as_tag else set(),
+                                     set(),
                                      alias_to_tags=_aliases,
                                      alias_to_negated_tags=_negated_aliases,
                                      is_negated=False,
@@ -122,6 +128,7 @@ def _traverse_tag_or_keyword(
     tag_or_keyword: KeywordOrTagSpec,
     parent_category: CategoryName,
     parent_tags: set[TagName],
+    parent_negated_tags: set[TagName],
     is_negated: bool,
     alias_to_tags: dict[KeywordString, set[TagName]],
     alias_to_negated_tags: dict[KeywordString, set[TagName]],
@@ -136,16 +143,31 @@ def _traverse_tag_or_keyword(
             #         - +contemporary # <--
             for part in tag_or_keyword[1:].split('+'):
                 for tag in part.split('/'):
-                    parent_tags.add(format_tag(parent_category, tag))
+                    parent_tags.add(format_tag_if_needed(parent_category, tag))
+
+        elif tag_or_keyword.startswith('-'):
+            # keywords:
+            #   genre:
+            #     - pop:
+            #         - +contemporary # <--
+            for part in tag_or_keyword[1:].split('+'):
+                for tag in part.split('/'):
+                    parent_negated_tags.add(format_tag_if_needed(parent_category, tag))
+
         else:
             # keywords:
             #   genre:
             #     - pop # <--
             append_to_entry(alias_to_negated_tags if is_negated else alias_to_tags,
-                            tag_or_keyword, parent_tags if not use_as_tag else
+                            tag_or_keyword.lower(), parent_tags if not use_as_tag else
                             [*parent_tags, format_tag(parent_category, tag_or_keyword)])
 
+            if not is_negated:
+                append_to_entry(alias_to_negated_tags, tag_or_keyword.lower(), parent_negated_tags)
+
     elif isinstance(tag_or_keyword, dict):
+        negated_tags = parent_negated_tags.copy()
+
         # keywords:
         #   genre:
         #     - acoustic: # <--
@@ -177,7 +199,7 @@ def _traverse_tag_or_keyword(
             child_tags = (parent_tags.copy() if is_unnamed else
                           {*parent_tags,
                            format_tag(parent_category, tag),
-                           *[format_tag(parent_category, t) for t in more_tags]})
+                           *[format_tag_if_needed(parent_category, t) for t in more_tags]})
             target = alias_to_negated_tags if is_negated else alias_to_tags
 
             if children is None:
@@ -186,7 +208,10 @@ def _traverse_tag_or_keyword(
                 # keywords:
                 #   genre:
                 #     - acoustic:
-                append_to_entry(target, tag, child_tags)
+                append_to_entry(target, tag.lower(), child_tags)
+
+                if not is_negated:
+                    append_to_entry(alias_to_negated_tags, tag.lower(), negated_tags)
 
             elif isinstance(children, str):
                 # (3) tag name with single keyword
@@ -194,7 +219,10 @@ def _traverse_tag_or_keyword(
                 # keywords:
                 #   genre:
                 #     - poprock: pop-rock
-                append_to_entry(target, children, child_tags)
+                append_to_entry(target, children.lower(), child_tags)
+
+                if not is_negated:
+                    append_to_entry(alias_to_negated_tags, children.lower(), negated_tags)
 
             elif isinstance(children, list):
                 # (4) tag name with multiple keywords and/or child tags
@@ -205,7 +233,7 @@ def _traverse_tag_or_keyword(
                 #         - acoustic
                 #         - acoustics
                 for child in children:
-                    _traverse_tag_or_keyword(child, parent_category, child_tags,
+                    _traverse_tag_or_keyword(child, parent_category, child_tags, negated_tags,
                                              alias_to_tags=alias_to_tags,
                                              alias_to_negated_tags=alias_to_negated_tags,
                                              is_negated=is_negated)
