@@ -1,8 +1,9 @@
 """Utilities for extracting calendar dates and BPM ranges from playlist names."""
 
-from typing import NamedTuple
+from typing import Final, NamedTuple
 
 import polars as pl
+import regex
 
 from utils.keyword_data import load_keyword_data
 
@@ -11,10 +12,18 @@ from utils.keyword_data import load_keyword_data
 ###################
 
 
+treat_like_whitespace: Final = f'[ \-_.]+'
+
 def _create_regex_for_term(term: str) -> str:
     escaped_term = pl.escape_regex(term)
+
+    # Apply normalization to keywords so the dictionary lookup works afterwards
+    escaped_term = regex.sub(treat_like_whitespace, ' ', escaped_term)
+
     # Ignore additional whitespaces (e.g. "a b" should also match "a  b")
-    escaped_term = escaped_term.replace(' ', r'[ \-_.]+')
+    # Not necessary, as we normalize the input string before matching.
+    # escaped_term = escaped_term.replace(' ', r'[ \-_.]+')
+
     return escaped_term
 
 
@@ -27,6 +36,7 @@ def _extract_tags(expr: pl.Expr, tags_to_extract: dict[str, list[str]]) -> pl.Ex
     # extracted strings against our dictionary to check
     # if the matched keyword should be aliased to something else
     return expr\
+        .str.replace_all(treat_like_whitespace, ' ')\
         .str.extract_all(all_keywords_regex)\
         .list.eval(pl.element()
                    .str.to_lowercase()
