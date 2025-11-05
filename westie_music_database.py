@@ -1379,6 +1379,82 @@ if song_distance_toggle:
         st.altair_chart(chart)
 
 
+if enable_song_distance and st.toggle("Compare multiple songs"):
+
+    @st.cache_data(persist=True)
+    def get_data(song_one: SongSearcher, song_two: SongSearcher) -> pl.DataFrame:
+        return SongComparison(song_one, song_two)\
+            .find_shared_playlists(playlist_in_result=True,
+                                   min_distance_in_result=True)\
+            .select(Playlist.id().alias('playlist_id'),
+                    Playlist.name().alias('playlist_name'),
+                    Stats.song_count().alias('playlist_size'),
+                    'min_distance')\
+            .with_columns(pl.lit(" / ".join([song_one.track_title, song_two.track_title])).alias('track_title'),
+                          pl.lit(" / ".join([song_one.track_name, song_two.track_name])).alias('track_name'),
+                          pl.lit(song_one.track_name).alias("song1_track_name"),
+                          pl.lit(song_two.track_name).alias("song2_track_name"),
+                          pl.lit(song_one.track_title).alias("song1_track_title"),
+                          pl.lit(song_two.track_title).alias("song2_track_title"))\
+            .collect(engine='streaming')
+
+    def show_chart(chart_data):
+        track_selection = alt.selection_point(fields=['track_title'])
+        playlist_selection = alt.selection_point(fields=['playlist_id'])
+
+        color = (
+            alt.when(playlist_selection & track_selection)
+            .then(alt.Color('track_name:N').scale(scheme='category10').legend(None))
+            .otherwise(alt.value("lightgray"))
+        )
+        zindex = (
+            alt.when(track_selection)
+            .then(alt.value(1))
+            .otherwise(alt.value(0))
+        )
+
+        legend = alt.Chart(chart_data).mark_point().encode(
+            alt.Y('track_name:N').axis(orient='right'),
+            color=color,
+        ).add_params(
+            track_selection,
+        )
+
+        chart = alt.Chart(chart_data).mark_point().encode(
+            y=alt.Y('min_distance:Q').scale(domainMin=0),
+            x=alt.X('playlist_size:Q').scale(domainMin=0),
+            color=color,
+            order=zindex,
+            tooltip=['song1_track_title', 'song2_track_title', 'playlist_name', 'playlist_size', 'min_distance'],
+        ).transform_calculate(
+            min_distance_divided_by_playlist_size=alt.datum.min_distance / alt.datum.playlist_size
+        ).transform_filter(
+            alt.datum.playlist_size < 240
+        ).add_params(
+            playlist_selection,
+        ).interactive()
+
+        st.altair_chart(chart | legend)
+
+    @st.cache_data(persist=True)
+    def get_chart_data():
+        song1 = SongSearcher(song_name="Josephine", artist_name="RITUAL")
+        song2 = SongSearcher(song_name="Redbone (Stay Woke)", artist_name="Nath Brooks")
+        song3 = SongSearcher(song_name="Don't", artist_name="Ed Sheeran")
+        song4 = SongSearcher(song_name="Galway Girl", artist_name="Ed Sheeran")
+
+        return pl.concat([
+            get_data(song1, song2),
+            get_data(song3, song4),
+            get_data(song1, song3),
+            get_data(song2, song3),
+            get_data(song1, song4),
+            get_data(song2, song4),
+        ])
+
+    show_chart(get_chart_data())
+
+
 @st.cache_data
 def songs_by_year():
     current_year: Final = time.localtime().tm_year
