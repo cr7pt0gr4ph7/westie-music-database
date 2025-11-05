@@ -1367,23 +1367,11 @@ if song_distance_toggle:
                     'min_distance')\
             .collect(engine='streaming')
 
-        slider = alt.binding_range(min=0, max=5000, step=100, name='Maximum Distance')
-        max_distance = alt.param(name='max_distance', value=5000, bind=slider)
-
-        slider = alt.binding_range(min=0, max=5000, step=100, name='Maximum Size')
-        max_playlist_size = alt.param(name='max_playlist_size', value=5000, bind=slider)
-
         chart = alt.Chart(chart_data).mark_point().encode(
             y='min_distance:Q',
             x='playlist_size:Q',
             tooltip=['playlist_name', 'playlist_size', 'min_distance']
-        ).add_params(
-            max_distance,
-            max_playlist_size,
-        ).transform_filter(
-            (alt.datum.min_distance <= max_distance),
-            (alt.datum.playlist_size <= max_playlist_size),
-        )
+        ).interactive()
 
         st.altair_chart(chart)
 
