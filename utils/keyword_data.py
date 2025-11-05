@@ -89,7 +89,7 @@ def load_aliases(keywords_file: _KeywordsFile, category_as_tag: bool = False):
     for category in keywords_file.get('keywords', None) or {}:
         for entry in keywords_file['keywords'][category]:
             _traverse_tag_or_keyword(entry, category,
-                                     [category] if category_as_tag else [],
+                                     {category} if category_as_tag else set(),
                                      alias_to_tags=_aliases,
                                      alias_to_negated_tags=_negated_aliases,
                                      is_negated=False,
@@ -155,7 +155,6 @@ def _traverse_tag_or_keyword(
             tag = tag_spec
             is_unnamed = False
             is_lower_weight = False
-            is_negated = False
             more_tags = []
 
             # Adding a question mark "?" to the end of a tag indicates
@@ -176,9 +175,9 @@ def _traverse_tag_or_keyword(
 
             children = tag_or_keyword[tag_spec]
             child_tags = (parent_tags.copy() if is_unnamed else
-                          [*parent_tags,
+                          {*parent_tags,
                            format_tag(parent_category, tag),
-                           *[format_tag(parent_category, t) for t in more_tags]])
+                           *[format_tag(parent_category, t) for t in more_tags]})
             target = alias_to_negated_tags if is_negated else alias_to_tags
 
             if children is None:
