@@ -2,80 +2,386 @@ keywords:
   # Playlists that have an artist name in them should likely be ignored,
   # except when they also have "WCS" in the name
   artist:
-    - adam cohen
-    - adam lambert
-    - alicia keys
-    - amy mcdonald
-    - amy macdonald
-    - animal collective
-    - anne-marie
-    - anne-marie
-    - beatles
-    - betty who
-    - billie eilish
-    - boyce avenue
-    - britney spears
-    - bruno mars
-    - bryan jordan
-    - charlie puth
-    - chris brown
-    - coldplay
-    - dua lipa
-    - ed sheeran
-    - far east movement
-    - greatest showman
-    - imagine dragons
-    - jason mraz
-    - john mayer
-    - jason derulo
-    - justin bieber
-    - justin timberlake
-    - kanye west
-    - kane brown
-    - zac brown band
-    - katy perry
-    - ke$ha
-    - kesha
-    - kid cudi
-    - lady gaga
-    - leo stannard
-    - linkin park
-    - kiiara
-    - maggie rogers
-    - marian hill
-    - maroon 5
-    - michael jackson
-    - miley cyrus
-    - mumford sons
-    - nat king cole
-    - pentatonix
-    - pentatonix
-    - pitbull
-    - pitbull
-    - red hot chili peppers
-    - rogue wave
-    - rudimental
-    - sam smith
-    - sara bareilles
-    - shawn mendes
-    - taylor swift
-    - usher
+    - likely:
+        - "\u2012" # figure dash
+        - "\u2013" # en dash
+        - "\u2140" # em dash
+        - "\u2e3a" # double em dash
+    - any:
+        - 3oh!3
+        - 50 cent
+        - aaron kamm
+        - adam cohen
+        - adam lambert
+        - adele
+        - adorn
+        - aerosmith
+        - affiniti
+        - after the fire
+        - ajeet kaur
+        - akalex
+        - al basile
+        - alabama shakes
+        - alain pérez
+        - alan silvestri
+        - albert hammond
+        - alegra
+        - alex & sierra
+        - alex clare
+        - alex goot
+        - alex somers
+        - alfredo de angelis
+        - ali gatie
+        - alicia keys
+        - alina baraz
+        - alizée
+        - allee allee
+        - allison iraheta
+        - allow us to be frank
+        - aloe blacc
+        - alt-j
+        - alysha brilla
+        - american woman
+        - amy macdonald*:
+            - amy macdonald
+            - amy mcdonald
+        - ana tijoux
+        - anderson east
+        - andre rieu*:
+            - andre rieu
+            - andré rieu
+        - andrew bird
+        - andrew w.k.
+        - andy grammer
+        - andy timmons
+        - angaleena presley
+        - angel haze
+        - animal collective
+        - anne-marie
+        - anthony ramos
+        - anton karas
+        - aphex twin
+        - ariana grande
+        - armando manzanero
+        - art blakey quintet
+        - artic monkeys
+        - arturo o'farrill
+        - asaf avidan
+        - avicii
+        - barbra streisand
+        - bastille
+        - beatles
+        - bethel music
+        - betty who
+        - beyonce*:
+            - beyonce
+            - beyoncé
+        - big bad voodoo daddy
+        - billie eilish
+        - billy idol
+        - billy joel
+        - billy raffoul
+        - bjørn eidsvåg
+        - black panther
+        - black pumas
+        - blair
+        - bob crosby
+        - bob dylan
+        - bokka
+        - boyce avenue
+        - brad paisley
+        - britney spears
+        - bruno mars
+        - bryan jordan
+        - california dreamin'
+        - camila cabello
+        - cas haley
+        - catherine russell
+        - cee loo green
+        - celestial aeon project
+        - celine dion*:
+            - celine dion
+            - céline dion
+        - chanée & n'evergreen
+        - charlie puth
+        - childish gambino
+        - chris brown
+        - chris mcclarney
+        - chris stapleton
+        - chris tomlin
+        - claude debussy
+        - coldplay
+        - craig david
+        - cro
+        - da vinci's notebook
+        - dances with white girls
+        - darius rucker
+        - daughtry
+        - david guetta
+        - deepening blue
+        - delta goodrem
+        - demi lovato
+        - destiny's child
+        - diplo
+        - dnce
+        - dolly parton
+        - domowe melodie
+        - don mclean
+        - dua lipa
+        - dustin o'halloran
+        - pretty sister
+        - eagles
+        - ed sheeran
+        - edith piaf
+        - elderbrook
+        - eliza doolittle
+        - ellie goulding
+        - eminem
+        - eric heatherly
+        - erykah badu
+        - etta james
+        - eurythmics
+        - exenia
+        - far east movement
+        - fever ray
+        - foo fighters
+        - forte
+        - frank ocean
+        - fred pellerin
+        - gary numan
+        - george thorogood
+        - gil scott-heron
+        - gipsy kings
+        - glass animals
+        - graham brown
+        - greatest showman
+        - h.e.r.
+        - harlem river drive
+        - helge schneider
+        - herbert grönemeyer
+        - hillsong
+        - hot club of belgrade
+        - ibeyi
+        - il divo
+        - imagine dragons
+        - indila
+        - irving berlin
+        - ivan jack
+        - jack johnson
+        - jacques loussier
+        - janet jackson
+        - jason aldean
+        - jason derulo
+        - jason mraz
+        - jay smith
+        - jennifer hudson
+        - jennifer lopez
+        - jessica mauboy
+        - ji chang wook
+        - joe satriani
+        - john legend
+        - john lindberg trio
+        - john mayer
+        - john williams
+        - journey
+        - juan formel
+        - juice wrld
+        - justin bieber
+        - justin timberlake
+        - kacey musgraves
+        - kane brown
+        - kanye west
+        - katy perry
+        - kesha*:
+            - kesha
+            - ke$ha
+        - keep reachin' (feat. chaka khan)
+        - kelsea ballerini
+        - kendrick lamar
+        - kesha
+        - kevin hart
+        - khalid
+        - kid cudi
+        - kiddo
+        - kiiara
+        - king melrose
+        - kutless
+        - lana del rey
+        - l.a. guns
+        - la roux
+        - lady antebellum
+        - lady gaga
+        - lake street dive
+        - lany
+        - lauv
+        - leikeli47
+        - leo stannard
+        - leon thomas
+        - lieutenant pigeon
+        - linda gail lewis
+        - linkin park
+        - lil wayne
+        - lily allen
+        - lmfao
+        - lonestar
+        - luke bryan
+        - machine gun kelly
+        - maggie rogers
+        - mali music
+        - marconi union
+        - margo price
+        - maria gadú
+        - marian hill
+        - marina and the diamonds
+        - marit larsen
+        - maroon 5
+        - marvin gaye
+        - mary j. blige
+        - mary mary
+        - medialuna
+        - meghan trainor
+        - michael bublé
+        - michael jackson
+        - michael ray
+        - micheal buble
+        - mike birbiglia
+        - mike posner
+        - miley cyrus
+        - milow
+        - missy eliott
+        - missy higgins
+        - mndsgn
+        - montaigne
+        - mr. mister
+        - mumford sons
+        - muse
+        - nat king cole
+        - nathan east
+        - neal schon
+        - new york dolls
+        - nickelback
+        - nicki minaj
+        - nico santos
+        - nina nesbitt
+        - noice
+        - noriel vilela
+        - nsync
+        - ofenbach
+        - oh wonder
+        - olivia ong
+        - onerepublic*:
+            - one republic
+            - onerepulic
+        - orianthi
+        - orishas
+        - owl city
+        - parov stelar
+        - passion
+        - pentatonix
+        - pete fountain
+        - peter kater
+        - pharrell williams
+        - pink sweat$
+        - pierre garnier
+        - pitbull
+        - planetshakers
+        - portugal. the man
+        - ramin djawadi
+        - ramones
+        - rascal flatts
+        - ratt
+        - ray charles
+        - red hot chili peppers
+        - river
+        - robbie williams
+        - robin schulz
+        - robin thicke
+        - robyn
+        - rogue wave
+        - ronan keating
+        - royal canoe
+        - royal tailor
+        - sam cooke
+        - sam hunt
+        - sam smith
+        - sandra mccracken
+        - sara bareilles
+        - satin jackets
+        - scooter lee
+        - scott bradlee's postmodern jukebox
+        - sean paul
+        - secret lovers
+        - selena gomez
+        - shaed
+        - shawn mendes
+        - sia # review whether this excludes valid playlists
+        - silver maple
+        - simon & garfunkel
+        - sini yasemin
+        - snakehips
+        - sonic youth
+        - steve lukather
+        - st. paul & the broken bones
+        - stan walker
+        - starboy
+        - steve lukather
+        - sting
+        - streets of gold
+        - takida
+        - taylor swift
+        - tenacious d
+        - the 1975
+        - the avener
+        - the brothers johnson
+        - the city harmonic
+        - the civil wars
+        - the fray
+        - the lonely island
+        - the lumineers
+        - the mowgli's
+        - the muppets
+        - the o.c. vol. 2
+        - the olympians
+        - the polish ambassador
+        - the script
+        - the shitheadz
+        - the weeknd
+        - the who
+        - tiësto
+        - tim mcgraw
+        - trampoline
+        - travis scott
+        - twenty one pilots:
+            - twenty one pilots
+            - twenty one pilots setlist
+        - usher
+        - vince gill
+        - vision fiberoptics
+        - volbeat
+        - westlife
+        - whitney houston
+        - wolfmother
+        - yiruma
+        - yosvany terry
+        - young thug
+        - zac brown band
   month:
     - january:
         - jan
         - january
-        - januar
-        - janvier
+        - januar # german
+        - janvier # french
     - february:
         - feb
         - february
-        - februar
-        - février
+        - februar # german
+        - feburary # misspelling
+        - février # french
     - march:
         - mar
         - march
-        - märz
-        - mars
+        - märz # german
+        - mars # french
     - march-:
         - bruno mars
     - april:
@@ -91,6 +397,7 @@ keywords:
         - june
         - juni # german
         - juin # french
+        - junio # spanish
     - july:
         - jul
         - july
@@ -105,6 +412,7 @@ keywords:
         - sept
         - september # german / english
         - septembre # french
+        - setembro # portugese (brasilian)
     - october:
         - oct
         - october
@@ -117,6 +425,7 @@ keywords:
     - december:
         - dec
         - december
+        - decembre # french
         - dez # german
         - dezember # german
   time-of-day:
@@ -170,6 +479,7 @@ keywords:
         - piatku # slowakian: friday('s)
         - piątkowe # polish: friday's
         - piątkowy # polish: friday
+        - piątek # polish: friday
     - saturday:
         - sat
         - saturday
@@ -190,6 +500,7 @@ keywords:
     - english
     - french:
         - francophones
+        - französische
         - french
         - francais
         - français
@@ -199,10 +510,16 @@ keywords:
         - french open
     - german:
         - german
+        - germanmusic
         - deutsch
         - deutschhiphop
     - german-:
         - german open
+    - italian:
+        - italian
+        - italiane
+    - italian-:
+        - italian open
     - korean
     - spanish:
         - spanish
@@ -236,12 +553,23 @@ keywords:
         - westies
         - westcoastradio
         - westy
+
+        - "(W)est coast swing"
         - best coast swing
         - flavio.marinewcs
         - mediumwestie
+        - santa swing
         - slowwcs
+        - swingmas
+        - wcslow
+        - wcswung
+        - wcscontemporary
+
+        # TODO: Maybe exclude these
+        - swango
         - swouk
         - swoukable
+        - zwouk
 
     - not west coast swing:
         - east coast swing:
@@ -255,6 +583,7 @@ keywords:
             - boogie
             - ccc
             - cha cha
+            - cha-cha
             - cha cha cha
             - cha-cha-cha
             - df
@@ -277,6 +606,7 @@ keywords:
             - salsa
             - sf
             - slowfox
+            - swango
             - tango
             - argentino
             - milonga
@@ -285,6 +615,7 @@ keywords:
             - walzer
 
             # More ballroom-related keywords
+            - abiball
             - ball
             - ballroom
             - chartbreaker
@@ -303,31 +634,48 @@ keywords:
             - esküvő # hungarian: wedding
             - esküvő buli # hungarian: wedding party
             - hochzeit
+            - hochzeits
+            - hochzeits-songs
             - hochzeitsgäste
+            - hochzeitstanz
             - silberhochzeit
 
         # Unrelated solo dancing
-        - ballet
-        - ballett
+        - ballet*:
+            - ballet
+            - ballett
         - bollywood
-        - crossfit
-        - fitness
+        - fitness*:
+            - crossfit
+            - fitness
+            - strong(her)
+            - zumba
         - hardstyle
-        - hh
         - jumpstyle
-        - kita
-        - kids
-        - kinder
-        - kindertanz
-        - "#Tanz-Minis"
-        - 7-9 jahre
+        - kids*:
+            - hh # hh kids = hip hop kids
+            - kita
+            - kids
+            - kinder
+            - kindertanz
+            - "#Tanz-Minis"
+            - 7-9 jahre
         - line dance:
             - line dance
         - pole dance:
             - pole dance
             - pole dancing
             - polefest
+        - poplock # hip hop term
+        - danses solo
+        - solo dance
+        - solo dancing
         - solodance
+        - solodancing
+
+        # More unrelated stuff
+        - yoga
+        - capoeira
 
         # Other dance styles
         - bachata:
@@ -336,9 +684,18 @@ keywords:
             - batchata
             - bachazouk
         - crossover
+        - country twostep:
+            - c2s
+            - c2step
+            - country twostep
+            - country two-step
+        - forro:
+            - forro
+            - forró
         - kizomba:
             - kiz
             - kizomba
+            - kizombeadas
             - urban kiz
         - nightclub twostep:
             - nc2
@@ -346,6 +703,7 @@ keywords:
             - nc 2s
             - two-step
             - nightclub twostep
+            - nightclub twos-tep
             - twostep
         - reggaeton:
             - reggaeton
@@ -357,13 +715,16 @@ keywords:
             - soltinho
         - swouk: # Term used for combined West Coast Swing + Zouk socials
             - swouk
+            - zwouk
         - zouk:
             - bachazouk
+            - lambazouk
             - zouk
             - zouksea
             - zoukable
             - swouk
             - swoukable
+            - zwouk
   context:
     # Competitions
     - competition:
@@ -373,12 +734,14 @@ keywords:
         - comp_int
         - competition
         - comps
+        - compsongs
         - contest # unrelated?
         - final
         - finals
         - heat # "heat 1"
         - invitational
         - j&j
+        - j&js
         - jack and jill
         - jill
         - jnj
@@ -388,11 +751,13 @@ keywords:
         - spotlight
         - spotlights
         - strictly
+        - wsdc
     # Classes
     - class:
         - bootcamp:
             - bootcamp
             - schnupperworkshop
+        - clase # spanish: class
         - class
         - classes
         - cours
@@ -400,20 +765,52 @@ keywords:
         - group # "group class"
         - group class
         - kurs
+        - kursussocial
         - l1
         - l2
         - l3
+        - l4
+        - l5
+        - l6
+        - l7
+        - l8
+        - l9
+        - level 1
+        - level 2
+        - level 3
+        - level 4
+        - level 5
+        - level 6
+        - level 7
+        - level 8
+        - level 9
+        - stufe 1
+        - stufe 2
+        - stufe 3
+        - stufe 4
+        - stufe 5
+        - stufe 6
+        - stufe 7
+        - stufe 8
+        - stufe 9
         - learn # imprecise
         - lesson
         - lessons
         - zajęcia # playlista na zajęcia | polish: playlist for classes
         - private:
             - private
+            - private lesson
+            - private lessons
             - privates
+            - privatlektion
+            - privatstunde # german
+            - privatstunden # german
+            - csoportos magánóra # hungarian: private group lesson
         - teach # imprecise
         - teaching # imprecise
         - teachin # imprecise
         - teachin' # imprecise
+        - undervisningsmusik # danish: teaching music
         - unterricht
         - workshop:
             - intensive:
@@ -421,6 +818,8 @@ keywords:
                 - intensivdag
                 - intensive
                 - intensivos
+            - all level
+            - open level
             - workshop
             - workshops
             - ws
@@ -429,6 +828,7 @@ keywords:
     - routine:
         - proam:
             - proam
+            - pro/am
             - pro-am
             - pro am
         - rising
@@ -441,6 +841,8 @@ keywords:
     - show:
         - demo
         - show
+        - pokaż # polish: show
+        - uppvisning # swedish: show
 
     # Warmup
     - warm up:
@@ -478,6 +880,7 @@ keywords:
         - soirée
         - sosialdans
         - stuggi
+        - swięta towarzyski # polish: social holiday
 
     # Training?
     - training:
@@ -574,6 +977,7 @@ keywords:
         - bluesy
         - blues-y
         - b l u e s
+        - soulfunkblues
     - blues-:
         - blues dance
         - fusion
@@ -587,7 +991,9 @@ keywords:
         - drum&bass
         - drum & bass
         - drum ‘n base
-    - funk
+    - funk:
+        - funk
+        - soulfunkblues
     - funk-:
         - funk/rhythmic
     - hip hop:
@@ -608,20 +1014,28 @@ keywords:
         - rnb
         - r&b
     - rock # "soft rock", "alternative rock", "pop rock",
-    - soul
+    - soul:
+        - soul
+        - soulfunkblues
 
       # The following genres may require more detailed examination,
       # and may need further information to identify WCS playlists
     - classical:
         - classical
+        - classique # french: classic/classical
         - klassik
+        - klassisk
         - orchestra
+        - orchestral works
+        - orcehstral works
         - antonio vivaldi
         - vivaldi
         - johann strauss
         - sebastian bach
         - tannhäuser
         - wagner
+    - dancehall
+    - italo
     - kpop:
         - kpop
         - k-pop
@@ -636,24 +1050,40 @@ keywords:
     - trance
 
     # Review these
+    - bossa nova
     - indie
+    - lo-fi:
+        - lo-fi
+        - lofi
+        - low-fi
+        - lowfi
+    - remixes
+    - techno:
+        - techno
+        - täkkno
     - soundtrack:
         - soundtrack
         - motion picture
         - movie music
         - movie ost
         - movie score
+        - ost drama
+    - vaporwave # there is a single large playlist with over 2000 tracks
 
     # These aren't exactly music genres, but have a very
     # similar meaning in the context of West Coast Swing
     - acoustic:
         - acoustic
         - acoustics
+        - accoustics
         - accoustic
         - unplugged
     - covers:
         - cover
         - covers
+    - duets:
+        - duet
+        - duets
     - guitar
     - instrumental:
         - instrumental
@@ -666,6 +1096,7 @@ keywords:
         - lns
         - late nigt's
         - late night
+        - late-night
         - late nights
         - late nite
         - latenight
@@ -695,7 +1126,9 @@ keywords:
         - 5am
         - 6am
         - 7am
-    - piano
+    - piano:
+        - piano
+        - pianino # uzbek: piano
 
       # The following terms probably need further investigation.
       # Some of them seem to define "musical feels".
@@ -769,7 +1202,13 @@ keywords:
     # ----------------
     - contemporary:
         - contemp
+        - contempo
+        - contemporo
         - contemporary # slow contemorary
+        - contemporanee
+        - contemporain # french
+        - contemporaneo # italian
+        - wcscontemporary
     - modern: modern # imprecise
     # "now",  # imprecise
     # ----------------
@@ -790,11 +1229,13 @@ keywords:
         - calme # french: calm
         - calmer
         - lugna # swedish: calm
+        - lugnt # swedish: calm
         - lugnare # swedish: calmer
         - lugnast # swedish: calmest
     - chill:
         - ambient
         - chill
+        - chillest
         - chillin
     - chill-:
         - suspense
@@ -850,24 +1291,24 @@ keywords:
     - energy:
         - energy
         - energy2
-    - high energy:
+    - possibly energetic:
         - "💥"
         - "🔥"
         - crowd pump up
+        - dope
         - eskalation
         - fast & high
         - fast and funky
         - fat beat
         - fire playlist starter
         - funky
-        - high energy
-        - high energy
         - hype
         - hyped
         - overdrive
         - partayyy
         - parteeeeey
         - pump up
+        - pump it up
         - pumped up
         - turn up
         - turn uppp
@@ -876,6 +1317,21 @@ keywords:
         - uptempo pop
         - very energetic
         - wcs up
+        - high energy:
+            - very energetic
+            - high energy
+            - fast and high energy:
+                - "+tempo:fast"
+                - fast high energy
+                - fast - high energy
+                - high energy, fast
+        - slow but high energy:
+            - slow high energy
+            - high energy/low bpm
+            - high energy / slow
+            - low bpm, high energy
+            - slow tempo high energy
+            - high energy, slow
     - medium energy:
         - medium energy
         - medium - low energy
@@ -990,22 +1446,50 @@ keywords:
         - szybsze # polish: faster
         - szybsze tempo # polish: faster temp
         - high bpm
+        - high tempo
         - schnell
         - super high bpm
+        - uptempo
+        - up tempo
     - slow:
+        - down tempo
+        - downtempo
         - langsam
         - lassú # hungarian: slow
+        - s l o w
+        - slooooooooow
+        - slooooooooower
+        - sloooooooow
+        - sloooooooower
+        - slooooooow
+        - slooooooower
+        - sloooooooww
+        - sloooooow
+        - sloooooower
         - slooooow
+        - slooooower
+        - slooooowwww
         - sloooow
+        - sloooower
+        - sloooowww
+        - sloooowwwowwwe
         - slooow
+        - slooower
         - sloow
+        - sloower
         - slow
         - slower
         - slowish
         - slowwcs
+        - wcslow
+        - wcs_extra_slow
     - medium:
         - medium speed
         - medium tempo
+        - medeltempo
+        - mid tempo
+        - midtempo
+        - mittel tempo
     - slow?: # imprecise
         - slow/medium
         - medium/slow
@@ -1058,6 +1542,22 @@ keywords:
     - 12 bar:
         - 12 bar
         - 6x8 blues
+    - 8 counts:
+        - 8 bar
+        - 8 count
+        - 8 counts
+        - 8 ct
+        - 8 beat
+        - 8 beats
+        - 8er
+    - 16 counts:
+        - 16 bar
+        - 16 count
+        - 16 counts
+        - 16 ct
+        - 16 beat
+        - 16 beats
+        - 16er
     - 32 counts:
         - 32 bar
         - 32 count
@@ -1065,6 +1565,7 @@ keywords:
         - 32 ct
         - 32 beat
         - 32 beats
+        - 32 hit 1
         - 2x32 phrase
         - 32 phrase
         - 32er
@@ -1110,17 +1611,36 @@ keywords:
         - response
         - call & response
         - call and response
+    - closed position:
+        - close position
+        - closed position
+    - contrast:
+        - contrast
+        - contrasting
+    - dancing fast n slow
     - drills:
         - drill
         - drills
-        - spin drills:
-            - spin drill
-            - spin drills
         - footwork drills:
             - footwork drill
             - footwork drills
+        - lyrical drills:
+        - spin drills:
+            - spin drill
+            - spin drills
+        - walking drills:
+            - walking drill
+            - walking drills
+    - footwork:
+        - footwork
+        - fun w feet
+        - fun with feet
     - groove
     - groove your swing
+    - half time:
+        - half time
+        - half-time
+        - half~full time
     - improvisation:
         - impro
         - improv
@@ -1131,6 +1651,29 @@ keywords:
     - intro:
         - 16 count intro
         - 32 count intro
+        - long intro
+        - with intro
+        - intro musicality # review
+        - musicality intro # review
+        - slow start
+        - long intro:
+            - long intro
+            - long intros
+            - intro long
+            - intro longue
+        - long intro-:
+          - long intro workshop # review
+    - intro-:
+        - cours d'intro
+        - intro ride
+    - lyrical:
+        - lyrical
+        - lyrcical
+        - lyrique # french: lyrical
+    - lyrics
+    - vocals
+    - lyrics-:
+        - without lyrics
     - micromusciality:
         - micro musciality
         - micromusciality
@@ -1140,6 +1683,7 @@ keywords:
     - movement-:
         - far east movement
     - musicality:
+        - changement musical # changement musical (tempo, instrument...)
         - muscality
         - music theory
         - musical mastery
@@ -1149,8 +1693,12 @@ keywords:
         - musikalität
         - musiklitet
     - phrasing:
+        - qualities*:
+            - energy changes # review
+            - level change # review
+            - feeling/intensity changes
+            - intensity changes
         - fraasit # estonian: phrase
-        - level change
         - perfect phasing
         - phase change
         - phase changes
@@ -1166,29 +1714,18 @@ keywords:
         - phrases
         - phrasing
         - songs that build
+    - pulse
     - push the floor
-    - structure # imprecise - discard?
-    - styling:
-        - follower style
-        - leader style
-        - styling
-    - footwork:
-        - footwork
-        - fun w feet
-        - fun with feet
-    - lyrical:
-        - lyrical
-        - lyrcical
-        - lyrique # french: lyrical
-    - lyrics
-    - vocals
-    - lyrics-:
-        - without lyrics
     - rhythm related:
         - rhythm
         - rhythn
         - rhythmn
         - rhythms
+    - structure # imprecise - discard?
+    - styling:
+        - follower style
+        - leader style
+        - styling
     - stretching:
         - stretch
         - streching
@@ -1197,12 +1734,18 @@ keywords:
         - syncopated
         - syncopation
         - syncopations
+    - technique:
+        - technique
+        - technik # german: technique
+        - technika # polish/lituanian/?: technique
+    - tempo changes:
+        - tempo change
+        - tempo changes
+        - tempo changing
+        - songs that change tempo
+        - changeing tempo
+    - transitions
     - timing # further investigation needed
-    # - intro # imprecise
-    # - intros # imprecise
-    - long intro:
-        - long intro
-        - long intros
     - moves # further investication needed
     # - musique # unrelated
     - performance # imprecise
@@ -1250,6 +1793,7 @@ keywords:
         - bday
         - birthday
         - geburtstag
+        - "'s 60th"
     - christmas:
         - "🌲"
         - "🎅"
@@ -1265,11 +1809,17 @@ keywords:
         - holiday spirits
         - holidays
         - jinglebellswing
+        - jullåtar # swedish: christmas songs
         - merry holidays
-        - navidad
-        - noël
+        - mistletoe
+        - mistletoes
+        - navidad # spanish: christmas
+        - noël # french: christmas
+        - santa swing
         - swingmas
-        - weihnachten
+        - weihnachten # german: christmas
+        - weihnachtslieder # german: christmas songs
+        - westiemas
         - westmas
         - x-mas
         - xmas
@@ -1288,6 +1838,9 @@ keywords:
         - new years
         - new year's
         - new year’s
+        - nye
+        - nye ncdc
+        - silvester # german: new year's eve
         - sylvester
         - sylwester # polish: new year's eve
         - sylewester # polish: new year's eve (misspelling)
@@ -1296,6 +1849,18 @@ keywords:
         - "🍂"
         - autumn
         - fall
+    - autumn-:
+        - fall at
+        - fall into
+        - fall into swing
+        - fall off
+        - fall out
+        - fall slowly
+        - let me fall
+        - let them fall
+        - let us fall
+        - rise & fall
+        - rise and fall
     - halloween: # todo: remove event titles from matches
         - haloween
         - halowen
@@ -1308,8 +1873,9 @@ keywords:
         - beach
         - pool
         - summer
-        - sommer
-        - sommar
+        - sommer # german: summer
+        - sommar # ?: summer
+        - sommeren # norwegian: summer
     - winter: # todo: remove event titles from matches#
         - "☃️"
         - "❄️"
@@ -1318,6 +1884,10 @@ keywords:
     - ordered:
         - decreasing
         - increasing
+        - from fast to slow
+        - from fastest to slowest
+        - from slow to fast
+        - from slowest to fastest
         - group by
         - grouped by
         - grouped.by
@@ -1326,6 +1896,48 @@ keywords:
         - sort by
         - sorted by
         - sorted.by
+        - sortiert nach
+        - ordered by duration:
+            - ordered by duration
+            - sorted by duration
+            - incr duration
+            - increasing duration
+            - decr duration
+            - decreasing duration
+        - ordered by bpm:
+            - by bpm
+            - _cleanup_*:
+                - "-tempo:slow"
+                - "-tempo:fast"
+                - fast to slow
+                - slow to fast
+            - high to low BPM
+            - low to high BPM
+            - high-low bpm
+            - low-high bpm
+            - ordered by bpm
+            - sorted by bpm
+            - incr bpm
+            - increasing bpm
+            - decr bpm
+            - decreasing bpm
+            - sortiert nach bpm
+            - "tempo: lugnt - medel" # swedish: tempo: calm/easy - medium
+        - ordered by danceability:
+            - ordered by danceability
+            - sorted by danceability
+            - increasing danceability
+            - decreasing danceability
+        - ordered by energy:
+            - _cleanup_*:
+                - "-mood:high energy"
+                - "-mood:low energy"
+                - high to low energy
+                - low to high energy
+            - ordered by energy
+            - sorted by energy
+            - increasing energy
+            - decreasing energy
 
     - favorites:
         - current bops
@@ -1338,17 +1950,19 @@ keywords:
         - favourite
         - favourites
         - favs
+        - i like
         - lieblings lieder
         - liked
         - mit star bewertet
         - starred
-        - i like
+        - tykätyt # finnish: liked
 
     - dislikes:
         - dislike
         - dislikes
         - exclude
         - excluded
+        - flat songs
         - hate these songs
         - odrzucone # slowakian: rejected
 
@@ -1401,6 +2015,8 @@ keywords:
         - unsorted
         - durch hören
         - durchhören
+        - unorganised
+        - unorganized
 
         # Our keyword parsing scheme doesn't deal with negations yet
         - "but"
@@ -1428,12 +2044,13 @@ keywords:
         - sometimes
 
     # Audience requests
-    - suggestions:
+    - audience requests:
         # - new # but not "new years", "new playlist", "new day"
         - requests
         - suggestions
         - request song
         - request songs
+        - kundenwünsche # region: customer requests
 
     # e.g. "2024 Finds", "Newer finds"
     - discoveries:
@@ -1443,7 +2060,9 @@ keywords:
         - finds
         - incoming
         - inspiration
-        - new wcs
+        - new wcs*:
+            - "+dance:wcs"
+            - new wcs
 
     # Playlists with the following in their name are collections
     # created by users that indicate a very subjective sorting.
@@ -1453,66 +2072,158 @@ keywords:
 
     # Playlists that should maybe be stripped from the data
     - unrelated:
+        - fasching partymusik # carneval
         - hörspiele
         - kids
         - kinder
+        - podcasts
         - schlaflieder
         - toddler
         - dog walk
         - hip hop kids
         - hip hop choreos
+        - meditations*:
+            - meditation
+            - meditations
+            - meditációk # meditations
+        - my peloton music
+        - drinking*:
+            - drinking games
+            - saufen
+            - saufiparty
 
+    - spotify stuff:
+        - "This is:"
+        - recommended for you
+        - obscurify
+        - my top songs
+        - my top songs [year]
+        - deine top-songs
+        - deine top-songs [year]
+        - default name:
+            - my playlist
+            - "my playlist #"
+            - min spellista
+            - min spellista nr
+            - meine playlist
+            - meine playlist nr.
+            - ma playlist
+            - ma playlist n°
+            - LPlaylistul meu
+            - LPlaylistul meu nr.
+        - songs for [name]
+        - lieder für [name] # german: songs for [name]
+        - låtar till [name] # finnish: songs for [name]
+        - playlist in a bottle:
+
+    - specific:
+        - backup: # 41 playlists
+            - backup
+            - sauvegarde # french: backup
+        - mondaymix:
+
+    - setlist:
+        - set list
+        - setlist
+        - master playlist
     - shazam:
         - shazam
         - shazams
         - shazam-titel
         - shazamed
+  city:
+    - avalon # there a cities in multiple countries named avalon
+    - berlin # germany
+    - böblingen # germany
+    - bratislava # slowakia
+    - bristol # uk
+    - calpe # spain (calp)
+    - denver # usa
+    - dunedin # new zealand
+    - edmonton # canada
+    - farnham # uk
+    - garda # italy
+    - lille # france
+    - london # uk
+    - madrid # spain
+    - mainz # germany
+    - malaysia # it's a country, not a city...
+    - munich: # germany
+        - munich
+        - münchen
+    - münster # germany
+    - new york: # usa
+        - new york
+        - new york city
+        - nyc
+    - nantes # france
+    - paris # france
+    - poronin # poland
+    - ratingen # germany
+    - san antonio # usa
+    - san francisco # usa
+    - seabeck # usa
+    - seattle # usa
+    - solec # poland
+    - syracuse # usa
+    - timisoara # romania
+    - ulm # germany
+    - tokyo # japan
+    - vancouver # canada
+    - wichita # usa
+    - wrocław # poland
   events:
-    - buma
-    - calonocna: # Całonocna
+    - aloha+event/wcs/usa: # EVENT: Aloha on Hawaii
+    - andrzejki # 26 playlists # polish: st. andrew's day
+    - buma # 25 playlists
+    - calonocna+social/?/poland: # PARTY / polish: all-nighter # Seems to represent one or more party series
         - całonocna
         - calonocna
-    - century
-    - cukr push # Cukr Push
-    - cwf
+    - cwf # 9 playlists # PARTY: CWF
+    - elk
+    - elks # 39 playlists
+    - esdc # 25 playlists # ESDC
+    - explore # 65 playlists # PARTY (when appearing next to a date)
+    - fnpl # 33 playlists # FNPL - event or org, google search yields no results
+    - gm # 8 playlists # PARTY: GM # imprecise
+    - hb # 28 playlists # HB / HB Lesson
+    - impreza # 47 playlists
+    - infinity # 17 playlists # PARTY (when appearing next to a date)
+    - lbb # 4 playlists # PARTY?/LOCATION?/DJ?: LBB
+    - mambita # 11 playlists # PARTY or LOCATION
+    - mdj # 15 playlists # PARTY: MDJ
+    - omj # 43 playlists # PARTY: OMJ
+    - papillon # 11 playlists # LOCATION?: Papillon
+    - tatarska # 8 playlists # PARTY: polish: tartar sauce, tartarian, republic of tatarstan
+    - the kårner # 20 playlists # PARTY?/ORG?: The Kårner
+    - the mamalist # 35 playlists # playlist series on spotify, not a party AFAICT
+    - zonawcs # 25 playlists # ZonaWCS
+    ###
+    - pulse dance studio+organization/various/unclear:
+    - żaczek+party/?/poland: # PARTY probably # polish: little girl
+    ###
+    - ivra+organization/various/sweden: # 4 playlists # ORG: Ivra Arts Centre in Göteborg, Sweden
+    - nadmorska # 9 playlists # croatian: above sea level? / polish: seaside
+    - otsukareswing+party/wcs/japan: # 4 playlists # PARTY: Otsukareswing (After-work party?)
+    - rowell # 4 playlists # PARTY?/LOCATION?: Rowell
+    - roxie's # 4 playlists # LOCATION: Roxie's
+    - sds # 5 playlists # PARTY: SDS
+    - wsca # 8 playlists # PARTY?: WCSA # very imprecise
+    ###
+    - barka
+    ###
     - dance lab
     - dansfest
     - elevation dance
-    - elk
-    - elks
-    - esdc
-    - evolve
-    - explore
-    - fnpl # FNPL - event or org, google search yields no results
     # - getreadywith<name>
-    - gm
-    - hb
-    - hcs
-    - impreza
-    - infinity
-    - ivra
-    - lbb
-    - lyon à la maison # Lyon à la Maison
-    - mambita
-    - mcs # EVENT?: MCS, MCS FH, MCS Later
-    - mdj
-    - melanie
-    - nadmorska integracja # Nadmorska Integracja
-    - nyc # NYC
-    - omj # OMJ
-    - papillon
+    - lyon à la maison # 2 playlists # PARTY: Lyon à la Maison
+    - melanie # 22 playlists # misc stuff
+    - nadmorska integracja # Nadmorska Integracja # polish: seaside integration
     - rideau swing collective # ORG: Rideau Swing Collective
-    - rowell
-    - roxie's
-    - sds
-    - tatarska # polish: tartar sauce, tartarian, republic of tatarstan
-    - the kårner # PARTY?/ORG?: The Kårner
     - trivia # PARTY?
-    - ulm
     - wieczorek
-    - wsca
     - zf # sometimes appearing together with KonoBueno
-    - zonawcs # ZonaWCS
+
     # other: we don't know whether it's an event/organization/location/...
     # various: multiple dances
     # unrelated: unrelated to wcs
@@ -1532,7 +2243,7 @@ keywords:
         - asiaopen
         - awcso
         - awcso200424
-    - atlanta social+social/wcs/usa: # PARTY: Atlanta Social
+    - atlanta social+party/wcs/usa: # PARTY: Atlanta Social
         - atlanta social
         - atl social
     - atlanta swing classic+event/wcs/usa: # EVENT: Atlanta Swing Classic
@@ -1583,10 +2294,13 @@ keywords:
     - canadian swing championships+event/wcs/canada: # EVENT: Canadian Swing Championships
         - canadian swing championships
         - csc
-    - candy swing+social/lindy hop/germany+werk36: # PARTY: Candy Swing - Lindy Hop Party by weRK36
+    - candy swing+party/lindy hop/germany+werk36: # PARTY: Candy Swing - Lindy Hop Party by weRK36
         - candy swing
     - capital swing+event/wcs/usa: # EVENT: Capital Swing in Sacramento, California
     - cds
+    - century ballroom+organization/various/usa: # ORGANIZATION/LOCATION: Century Ballroom
+        - century
+        - century ballroom
     - cincy westie bash+event/wcs/usa: # EVENT: Cincy Westie Bash in Cincinatti, USA
         - cincy westie bash
         - Cincinatti westie bash
@@ -1597,10 +2311,11 @@ keywords:
         - countdown boston
         - countdown swing
         - countdown swing boston
+    - cukr push+party/wcs/slowenia: # PARTY: Cukr Push in Ljubljana, Slowenia
     - dance boston+organization/wcs/usa: # ORG: Dance Boston
         - danceboston
         - dance boston
-    - boston westie+organization+social/wcs/usa: # ORG/PARTY: Boston Westie
+    - boston westie+organization+party/wcs/usa: # ORG/PARTY: Boston Westie
     - dancing for dessert+organization+location/various/canada: # ORG/LOCATION: Dancing for Desert Ballroom in Vancouver
         - dancing for desert
         - dancing for dessert
@@ -1633,19 +2348,23 @@ keywords:
         - d townswing
         - d-town swing
     - easter swing+event/various/unclear: # ?: Probably matches multiple events
+    - euro dance festival: # EVENT: Euro Dance Festival in Germany
+        - euro dance festival
+        - edf
     - fall into swing+event/wcs/poland: # EVENT: Fall into Swing in Poland
-    - farnham friday freestyle+social/wcs/uk: # PARTY: Farnham Friday Freestyle
+    - farnham friday freestyle+party/wcs/uk: # PARTY: Farnham Friday Freestyle
         - farnham friday
         - farnham fridays
     - feel good fridays # PARTY: Feel Good Fridays
     - finnfest+event/wcs/finland: # EVENT: Finnfest
     - fin4swing+event/wcs/finland: # Event Fin4Swing
-    - first friday+social/various/unclear: # PARTY: First Friday
+    - first friday+party/various/unclear: # PARTY: First Friday
         - first friday
         - ff
-    - flow friday+social/wcs/usa: # PARTY: Flow Fridays in New York
+    - flow friday+party/wcs/usa: # PARTY: Flow Fridays in New York
         - flow friday
         - flow fridays
+        - flowfriday
     - flow state+event/various/unrelated: # EVENT: Flow State Festival (Flow Arts & Performance Development) - probably unrelated
         - flow state
         - flowstate
@@ -1661,13 +2380,13 @@ keywords:
         - fo22
         - fo23
     - friday jams # PARTY?: Friday Jams
-    - friday swing+social/wcs/unclear: # Different parties
+    - friday swing+party/wcs/unclear: # Different parties
         - friday swing
-    - friday swing+social/wcs/poland:
+    - friday swing+party/wcs/poland:
         - piątkowy west # polish: friday west
         - piątkowe wcs
-    - friday tulsa dance+social/wcs/usa: # PARTY: Friday Tulsa Dance
-    - german open+social/wcs/germany: # EVENT: German Open WCS in Freiburg, Germany
+    - friday tulsa dance+party/wcs/usa: # PARTY: Friday Tulsa Dance
+    - german open+party/wcs/germany: # EVENT: German Open WCS in Freiburg, Germany
         - german open
         - go[year]
         - go24
@@ -1676,13 +2395,21 @@ keywords:
         - gowest
         - gws
     - groovetopia+event/wcs/usa: # EVENT: Groovetopia - Weekend Intensive
-    - groovy tuesdays+social/wcs/usa: # PARTY: Groovy Tuesdays in San Jose, California
+    - groovy tuesdays+party/wcs/usa: # PARTY: Groovy Tuesdays in San Jose, California
         - groovy tuesday
         - groovy tuesdays
         - groovy tuesday's
+    - halloween swing thing+events/wcs/usa: # EVENT: Halloween SwingThing in California
+        - halloween swing thing
+        - halloween swingthing
+        - hst
     - hike & dance:
         - hike & dance
         - hike&dance
+    - hill city swing+party/wcs/usa: # PARTY: Hill City Swing
+        - hill city swing
+        - hcs
+    - house of west+party/wcs/usa: # PARTY: House of West in New York, USA
     - idance+organization/various/usa: # ORG: iDance - mainly online lessons?
     - intensiv' experience+event/wcs/unclear: # EVENT?: Intensiv' Experience
     - jinglebellswing+event/various/unclear: # EVENT: JingleBellSwing
@@ -1726,6 +2453,9 @@ keywords:
         - med vendredi
         - med dimanche
         - med venedi
+    - meet me in st. louis swing change championships+event/wcs/usa: # EVENT: Meet Ne in St. Louis
+        - meet me st louis
+        - mmisl
     - mega tiny westy festival+event/wcs/france: # EVENT: Mega Tiny Westy Festival in France
         - mega tiny
         - mega tiny festival
@@ -1750,6 +2480,10 @@ keywords:
         - milanms
         - mms
         - milan modern swing
+    - mission city swing+organization/wcs/usa: # ORG: Mission City Swing in San Francisco, USA
+        - mcs
+        - mission city
+        - mission city swing
     - monterey swingfest+event/wcs/usa: # EVENT: Monterey SwingFest
     - mountain magic dance convention+event/various/usa: # EVENT: Mountain Magic Dance Convention [year] - WCS, Country 2-Step, Hustle, Nightclub 2-Step, Line Dance
         - mountain magic
@@ -1791,7 +2525,7 @@ keywords:
         - ncdc
         - nye ncdc
     - odyssey # EVENT?: Odyssey ?
-    - openair böblingen+social/wcs/germany: # PARTY: OpenAir Böblingen
+    - openair böblingen+party/wcs/germany: # PARTY: OpenAir Böblingen
     - paris swing classic: # EVENT: Paris Swing Classic
         - paris swing
         - paris swing classic
@@ -1808,6 +2542,8 @@ keywords:
     - push ton west+event/wcs/france: # EVENT: PUSH' TON WEST in Toulouse, France
         - push ton west
     - red white and blue dance
+    - resolution swing+event/wcs/uk: # EVENT: Resolution Swing in Edinburgh, Scotland
+        - resolution swing
     - riga summer swing+event/wcs/latvia: # EVENT: Riga Summer Swing in Riga, Latvia
     - rocketwesties+organization/wcs/usa: # ORG: Rocket Westies - Huntsville's West Coast Swing dance community
     - rolling swing+event/wcs/france: # EVENT: Rolling Swing in France
@@ -1819,7 +2555,7 @@ keywords:
     - rsb:
         - rsb
     - rtb
-    - the roundhouse experiment vancouver+social/wcs/canada: # PARTY: The Roundhouse Experiment
+    - the roundhouse experiment vancouver+party/wcs/canada: # PARTY: The Roundhouse Experiment
         - rx
         - roundhouse experiment
     - sauna swing+event/wcs/finland: # EVENT: Sauna Swing
@@ -1870,8 +2606,8 @@ keywords:
         - shoreline friday
         - shoreline saturday
         - shoreline sunday
-    - sharky swing+social/wcs/usa: # PARTY: Sharky Swing in San Jose, California
-    - showme showdown+social/wcs/usa: # EVENT: Showme Showdown - now called Gateway Swing Classic
+    - sharky swing+party/wcs/usa: # PARTY: Sharky Swing in San Jose, California
+    - showme showdown+party/wcs/usa: # EVENT: Showme Showdown - now called Gateway Swing Classic
         - showme
         - showme showdown
     - silbando+organization/various/switzerland: # ORG: Club Silbando in Zurich
@@ -1894,9 +2630,9 @@ keywords:
     - summer swing camp: # EVENT: SummerSwingCamp - there are multiple events with this title
         - summer swing camp
         - summerswingcamp
-    - sunday & swing+social/various/unclear: # PARTY: Sunday & Swing - there are multiple parties with this name
-    - sunday swing+social/various/unclear: # PARTY: Sunday Swing - there are multiple parties with this name
-    - sunset swing+social/wcs/usa: # PARTY: Sunset Swing at Omni Dance Studios in Oakland, California
+    - sunday & swing+party/various/unclear: # PARTY: Sunday & Swing - there are multiple parties with this name
+    - sunday swing+party/various/unclear: # PARTY: Sunday Swing - there are multiple parties with this name
+    - sunset swing+party/wcs/usa: # PARTY: Sunset Swing at Omni Dance Studios in Oakland, California
     - swing amore: # ORG: Swing Amore - Amoré Dance Studio in Oregon
         - swing amore
         - swing amoré
@@ -1904,6 +2640,7 @@ keywords:
         - swingamoré
         - amore dance studio
         - amoré dance studio
+    - swing central+organization/wcs/new zealand: # ORG: Swing Central dance studio in Wellington, New Zealand
     - swing city chicago+event/wcs/usa: # EVENT: Swing City Chicago [year]
     - swing crush+event/wcs/usa: # EVENT: Swing Crush
     - swing dance alley+organization+location/wcs/usa: # ORG/LOCATION: Swing Dance Alley in Syracuse, USA
@@ -1966,7 +2703,7 @@ keywords:
         - swingtingapr
         - swingtingapr24
         - swing ting
-    - swingout+social/wcs/usa: # PARTY: SwingOut in Oakland, California
+    - swingout+party/wcs/usa: # PARTY: SwingOut in Oakland, California
     - swingsoul+organization/wcs/canada: # ORG: SwingSoul - WCS in Vancouver
     - swingtzerland+event/wcs/switzerland: # EVENT: Swingtzerland
     - swingvasion+event/wcs/new zealand: # EVENT: Swingvasion
@@ -1979,7 +2716,7 @@ keywords:
         - switchx
         - switchxp
         - switchxperience
-    - swung/texas+social/wcs/usa: # PARTY: Swung/Texas: "Swung/TX is a WCS social on the third Saturday of every month..."
+    - swung/texas+party/wcs/usa: # PARTY: Swung/Texas: "Swung/TX is a WCS social on the third Saturday of every month..."
         - swung/texas
         - swung/tx
     - symphony swing+event/wcs/germany: # EVENT: Symphony Swing in Bonn, Germany
@@ -1987,6 +2724,7 @@ keywords:
     - tanzbogen+organization/wcs/austria: # ORG: Tanzbogen Wien
     - tanzbrunnen+location/various/unclear: # LOCATION: Tanzbrunnen (there are multiple locations with this name, also not always WCS)
     - tanzes+organization/various/germany: # ORG: TanzEs dance studio in Esslingen, Germany
+    - tanzloft+organization/various/germany: # ORG: Tanzloft in Germany
     - tb swing # ORG: TB Swing
     - tc rebels: # ?: TC Rebels
         - tc rebels
@@ -2008,6 +2746,7 @@ keywords:
     - tri-town swing+event/wcs/usa: # EVENT: Tri-Town Swing
         - tri-town swing
         - tritown
+        - ttowns # TtownS
     - toulon westie camp+event/wcs/france: # EVENT: Toulon Westie Camp
         - toulon westie camp
         - twc
@@ -2036,6 +2775,11 @@ keywords:
         - ukrainian open
         - ua open
     - us open+event/wcs/usa: # EVENT: US Open [year]
+        - usopen
+        - usopen[year]
+        - us open
+        - usopen2019
+        - usopen24
     - valentine swing
     - warsaw halloween swing+event/wcs/poland: # EVENT: Warsaw Halloween Swing
         - warsaw halloween swing
@@ -2046,14 +2790,14 @@ keywords:
         - wsnw
     - wcsa # ?: WCSA | West Coast Swing Amsterdam?
     - wcsr # ?: WCSR
-    - wcstuesday+social/wcs/unclear: # PARTY: WCSTuesday
+    - wcstuesday+party/wcs/unclear: # PARTY: WCSTuesday
     - werk36+organization+location/various/germany: # ORG/LOCATION: weRK36
     - west coast swingmas # EVENT: West Coast Swingmas
     - west coast wednesdays: # PARTY: West Coast Wednesdays in Chicago
         - west coast wednesday
         - west coast wednesdays
         - wcw
-    - west cone swing+social/wcs/usa: # PARTY: West Cone Swing in the Minneapolis Region
+    - west cone swing+party/wcs/usa: # PARTY: West Cone Swing in the Minneapolis Region
     - west duck swing+event/wcs/france: # EVENT: West Duck Swing in Toulouse
     - west family festival+event/wcs/france: # EVENT: West Family Festival in France
         - west family
@@ -2063,8 +2807,11 @@ keywords:
     - west in lyon+event/wcs/france: # EVENT: West in Lyon
         - west in lyon
         - wil
+    - westie club timisoara+organization/wcs/romania: # ORG: Westie Club Timisoara in Romania
     - westie spring thing+event/wcs/hungary: # EVENT: Westie Spring Thing in Budapest, Hungary
-    - westie wednesdays+social/wcs/unclear: # PARTY: Westie Wednesday's
+        - westie spring thing
+        - wst
+    - westie wednesdays+party/wcs/unclear: # PARTY: Westie Wednesday's
         - westie wednesday
         - westie wednesdays
         - westie wednesday's
@@ -2076,15 +2823,18 @@ keywords:
         - westieval
         - 9westieval
     - westiebos+organization/wcs/usa: # ORG: WestieBOS in Watertown, Massachusetts
+    - westiemate+party/wcs/japan: # PARTY: Westiemate in Japan
     - westiewaves+event/wcs/unclear: # ?: WestieWaves
     - westieweekend+event/wcs/unclear: # ?: WestieWeekend
     - westieval+event/wcs/unclear: # EVENT, multiple events have this in their name
+    - westowy karnawał+party/wcs/poland: # PARTY: polish: western carnival
+    - westowy sylewester+party/wcs/poland: # PARTY: polish: western sylwester
     - westy nantes+event/wcs/france: # EVENT: Westy Nantes
     - wicked westie+organization/wcs/usa: # ORG: Wicked Westie in Atlanta
     - windy city westies+organization/wcs/usa: # ORG: Windy City Westies in Illinois, USA
         - windy city westies
         - windy city
-    - winnipeg workshop weekend+social/various/canada:
+    - winnipeg workshop weekend+party/various/canada:
     - winter crazy swing+event/wcs/france: # EVENT: Winter Crazy Swing
     - winter white+event/wcs/russia: # EVENT: Winter White in St. Petersburg
     - westie on the promenade+event/wcs/france: # EVENT: Westie on the Promenade
