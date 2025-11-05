@@ -996,6 +996,29 @@ keywords:
         - no blues
         - not blues
     - bluesy
+    - club:
+        - club
+        - club wcs
+        - clubbing
+        - night club two-step
+        - swing club
+        - wcs and night club
+        - wcs club
+        - wcs dance club
+        - wcs night club
+        - westie club
+    - club-:
+        - bicycle club
+        - boat club
+        - club bike
+        - club of
+        - club tumbao
+        - fan club
+        - nike run club
+        - santa cruz
+        - sesame club
+        - strip club
+        - tyrol club # tyrol club of solvay
     - country:
         - country
         - contry # misspelling of 'country'
@@ -1025,7 +1048,11 @@ keywords:
     - r&b:
         - rnb
         - r&b
-    - rock # "soft rock", "alternative rock", "pop rock",
+    - rock:
+        - rock
+        - soft rock
+        - alternative rock
+        - pop rock
     - soul:
         - soul
         - soulfunkblues
@@ -2173,7 +2200,6 @@ keywords:
     - mainz # germany
     - malaysia # it's a country, not a city...
     - munich: # germany
-        - munich
         - münchen
     - münster # germany
     - new york: # usa
