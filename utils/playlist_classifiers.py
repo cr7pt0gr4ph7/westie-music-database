@@ -194,6 +194,43 @@ def contains_date_in_name(playlist_name: pl.Expr):
     return extract_date_strings_from_name(playlist_name).list.len().gt(0)
 
 
+pattern_MMM_yy = date_pattern('MMM_yy', f'{MMM} {yy}')
+pattern_MMM_yyyy = date_pattern('MMM_yyyy', f'{MMM} {yyyy}')
+
+pattern_mm_yy = date_pattern('mm_yy', f'{mm}[/]{yy}')
+pattern_mm_yyyy = date_pattern('mm_yyyy', f'{mm}[/]{yyyy}')
+
+pattern_m_yy = date_pattern('mm_yy', f'{m}[/]{yy}')
+pattern_m_yyyy = date_pattern('mm_yyyy', f'{m}[/]{yyyy}')
+
+pattern_yyyy_m = date_pattern('mm_yyyy', f'{yyyy}[ ]{m}')
+pattern_yyyy_mm = date_pattern('mm_yyyy', f'{yyyy}[ ]{mm}')
+
+patterns_month_year = [
+    pattern_MMM_yy,
+    pattern_MMM_yyyy,
+    pattern_mm_yy,
+    pattern_mm_yyyy,
+    pattern_m_yy,
+    pattern_m_yyyy,
+]
+
+
+def extract_month_year_strings_from_name(playlist_name: pl.Expr, *, sort: bool = False):
+    """"Extract a list of calendar dates from the given playlist name."""
+    result = pl.concat_list([
+        playlist_name.str.extract_all(pattern)
+        for (name, pattern) in patterns_month_year
+    ]).list.drop_nulls().list.unique()
+
+    return result.list.sort() if sort else result
+
+
+def contains_month_year_in_name(playlist_name: pl.Expr):
+    """Returns whether `playlist_name` likely contains month + year specification."""
+    return extract_month_year_strings_from_name(playlist_name).list.len().gt(0)
+
+
 #######################################################
 # Patterns for detecting BPM ranges in playlist names #
 #######################################################
