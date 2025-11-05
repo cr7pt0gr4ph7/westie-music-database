@@ -82,6 +82,16 @@ pattern_yyyy_dd_mm = date_pattern('yyyy_dd_mm', f'{yyyy}[-/.]{dd}[-/.]{mm}')
 pattern_dd_mm_yyyy = date_pattern('dd_mm_yyyy', f'{dd}[-/.]{mm}[-/.]{yyyy}')
 pattern_mm_dd_yyyy = date_pattern('mm_dd_yyyy', f'{mm}[-/.]{dd}[-/.]{yyyy}')
 
+pattern_yyyymmdd = date_pattern('yyyymmdd', f'{yyyy}{mm}{dd}')
+pattern_yyyyddmm = date_pattern('yyyyddmm', f'{yyyy}{dd}{mm}')
+pattern_ddmmyyyy = date_pattern('ddmmyyyy', f'{dd}{mm}{yyyy}')
+pattern_mmddyyyy = date_pattern('mmddyyyy', f'{mm}{dd}{yyyy}')
+
+pattern_yymmdd = date_pattern('yymmdd', f'{yy}{mm}{dd}')
+pattern_yyddmm = date_pattern('yyddmm', f'{yy}{dd}{mm}')
+pattern_ddmmyy = date_pattern('ddmmyy', f'{dd}{mm}{yy}')
+pattern_mmddyy = date_pattern('mmddyy', f'{mm}{dd}{yy}')
+
 pattern_yy_mm_dd = date_pattern('yy_mm_dd', f'{yy}[-/.]{mm}[-/.]{dd}')
 pattern_yy_dd_mm = date_pattern('yy_dd_mm', f'{yy}[-/.]{dd}[-/.]{mm}')
 pattern_dd_mm_yy = date_pattern('dd_mm_yy', f'{dd}[-/.]{mm}[-/.]{yy}')
@@ -103,9 +113,12 @@ pattern_yy_mm = date_pattern('yy_mm', f'{yy}[-/. ]{mm}')
 pattern_mm_dd = date_pattern('mm_dd', f'{mm}[-/. ]{dd}')
 
 pattern_d_m_yy = date_pattern('d_m_yy', f'{d}[-/.]{m}[-/.]{yy}')
+pattern_m_d_yy = date_pattern('m_d_yy', f'{m}[-/.]{d}[-/.]{yy}')
 pattern_d_m_yyyy = date_pattern('d_m_yyyy', f'{d}[-/.]{m}[-/.]{yyyy}')
-pattern_DDD_dd_MMM = date_pattern('DDD_dd_MMM', f'{DDD}[., ]+{dd}(?:\.|st|nd|rd|th)?( of |[-, ]){MMM}')
-pattern_DDDD_dd_MMM = date_pattern('DDDD_dd_MMM', f'{DDDD}[., ]+{dd}(?:.|st|nd|rd|th)?( of |[-, ]){MMM}')
+pattern_m_d_yyyy = date_pattern('m_d_yyyy', f'{m}[-/.]{d}[-/.]{yyyy}')
+
+pattern_DDD_dd_MMM = date_pattern('DDD_dd_MMM', f'{DDD}[., ]+{dd}(?:\\.|st|nd|rd|th)?( of |[-, ]){MMM}')
+pattern_DDDD_dd_MMM = date_pattern('DDDD_dd_MMM', f'{DDDD}[., ]+{dd}(?:\\.|st|nd|rd|th)?( of |[-, ]){MMM}')
 
 pattern_month_year_or_reversed = date_pattern('month_year_or_reversed', f'(?:{MMM}[a-z]* {yyyy}|{yyyy} {MMM}[a-z]*)')
 
@@ -115,10 +128,20 @@ patterns_date = [
     pattern_dd_mm_yyyy,
     pattern_mm_dd_yyyy,
 
+    pattern_yyyymmdd,
+    pattern_yyyyddmm,
+    pattern_ddmmyyyy,
+    pattern_mmddyyyy,
+
     pattern_yy_mm_dd,
     pattern_yy_dd_mm,
     pattern_dd_mm_yy,
     pattern_mm_dd_yy,
+
+    pattern_yymmdd,
+    pattern_yyddmm,
+    pattern_ddmmyy,
+    pattern_mmddyy,
 
     pattern_dd_MMM_yyyy,
     pattern_MMM_dd_yyyy,
@@ -136,7 +159,9 @@ patterns_date = [
     # pattern_mm_dd,
 
     pattern_d_m_yy,
+    pattern_m_d_yy,
     pattern_d_m_yyyy,
+    pattern_m_d_yyyy,
 
     pattern_DDD_dd_MMM,
     pattern_DDDD_dd_MMM,
