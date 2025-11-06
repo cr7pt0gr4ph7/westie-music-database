@@ -172,6 +172,7 @@ keywords:
         - florence + the machine
         - foo fighters
         - forte
+        - francesco parrino
         - frank ocean
         - fred pellerin
         - gary numan
@@ -192,6 +193,7 @@ keywords:
         - imagine dragons
         - india.arie
         - indila
+        - instagram models
         - irving berlin
         - ivan jack
         - jack johnson
@@ -292,7 +294,9 @@ keywords:
         - nico santos
         - nina nesbitt
         - noice
+        - norah jones
         - noriel vilela
+        - normani
         - nsync
         - of monsters and men
         - ofenbach
@@ -337,6 +341,7 @@ keywords:
         - sam smith
         - sandra mccracken
         - sara bareilles
+        - sarah connor
         - satin jackets
         - scooter lee
         - scott bradlee's postmodern jukebox
@@ -436,6 +441,7 @@ keywords:
         - july
         - juli # german
         - juillet # french
+        - luli # romanian
     - august:
         - aug
         - august # german / english
@@ -459,8 +465,10 @@ keywords:
         - dec
         - december
         - decembre # french
+        - deciembre # spanish?
         - dez # german
         - dezember # german
+        - diciembre # spanish
   time-of-day:
     - morning
     - noon
@@ -494,6 +502,7 @@ keywords:
         - mi. # german
         - mittwoch # german
         - mittwochs # german
+        - onsdag # norwegian
     - thursday:
         - thu
         - thurs
@@ -530,7 +539,15 @@ keywords:
         - sonntag # german
   language:
     - chinese
-    - english
+    - english:
+        - english
+        - englisch
+        - englische
+    - english-:
+        - no english
+        - non english
+        - non-english
+        - not english
     - french:
         - francophones
         - französische
@@ -551,6 +568,7 @@ keywords:
     - italian:
         - italian
         - italiane
+        - italiano
     - italian-:
         - italian open
     - korean
@@ -612,11 +630,23 @@ keywords:
         - swoukable
         - zwouk
 
+    - wcs-:
+        - non-wcs
+        - not wcs
+        - '"not" west coast'
+
     - not west coast swing:
         - east coast swing:
             - ecs
             - east coast swing
             - eastcoastswing
+
+        - jitterbug:
+            - jitterbug
+
+        - lindy hop:
+            - lindy
+            - lindy hop
 
         - ballroom / latin:
             # Ballroom & Latin
@@ -676,15 +706,17 @@ keywords:
                 - esküvő # hungarian: wedding
                 - esküvő buli # hungarian: wedding party
                 - guest arrival music
-                - hochzeit
-                - hochzeitsplaylist
-                - hochzeits
-                - hochzeits-songs
-                - hochzeitsgäste
-                - hochzeitstanz
+                - hochzeit # german: wedding
+                - hochzeitsplaylist # german
+                - hochzeits # german
+                - hochzeits-songs # german
+                - hochzeitsgäste # german
+                - hochzeitstanz # german
                 - reception
                 - reception music
-                - silberhochzeit
+                - silberhochzeit # german
+                - weddind # misspelling
+                - wedding
 
         # Unrelated solo dancing
         - ballet*:
@@ -698,6 +730,7 @@ keywords:
             - fitness
             - strong(her)
             - zumba
+        - flamenco
         - hardstyle
         - jumpstyle
         - kids*:
@@ -756,9 +789,10 @@ keywords:
             - nightclub twos-tep
             - twostep
         - reggaeton:
+            - raggaeton
             - reggaeton
             - regaeton
-            - Regueton
+            - regueton
             - westaeton:
                 - westaeton
         - soltinho: # Google says: "Brasilian couple dance, that developed from East Coast Swing and is danced to Rock, Disco and Swing."
@@ -772,6 +806,7 @@ keywords:
             - zouk
             - zouksea
             - zoukable
+            - zoukables
             - swouk
             - swoukable
             - zwouk
@@ -809,6 +844,7 @@ keywords:
             - bootcamp
             - schnupperworkshop
         - clase # spanish: class
+        - clases # spanish: classes
         - class
         - classes
         - cours
@@ -871,6 +907,9 @@ keywords:
                 - intensivos
             - all level
             - open level
+            - stages # french: workshops
+            - taller # spanish: workshop
+            - talleres # spanish: workshops
             - workshop
             - workshops
             - ws
@@ -901,6 +940,7 @@ keywords:
         - warmups
         - warm up
         - warm-up
+        - echauffement # french: warm-up
         - échauffement # french: warm-up
 
     # Cool down
@@ -1027,6 +1067,7 @@ keywords:
     # The following genres seem to lead to precise matches
     - not blues:
         - no blues
+        - non-blues
         - not blues
     - blues:
         - blues
@@ -1038,13 +1079,15 @@ keywords:
         - blues dance
         - fusion
         - no blues
+        - non-blues
         - not blues
+        - rhythm & blues
+        - slow blues/fast contemp
     - bluesy
     - club:
         - club
         - club wcs
         - clubbing
-        - night club two-step
         - swing club
         - wcs and night club
         - wcs club
@@ -1058,6 +1101,7 @@ keywords:
         - club of
         - club tumbao
         - fan club
+        - night club two-step
         - nike run club
         - santa cruz
         - sesame club
@@ -1092,6 +1136,7 @@ keywords:
     - r&b:
         - rnb
         - r&b
+        - rhythm & blues
     - rock:
         - rock
         - soft rock
@@ -1111,6 +1156,7 @@ keywords:
         - orchestra
         - orchestral works
         - orcehstral works
+        - orchestrated
         - antonio vivaldi
         - vivaldi
         - johann strauss
@@ -1136,16 +1182,22 @@ keywords:
     # Review these
     - bossa nova
     - indie
+    - latino
     - lo-fi:
         - lo-fi
         - lofi
         - low-fi
         - lowfi
+        - not lowfi but same vibes
+    - lo-fi-:
+        - not lowfi
     - remixes
     - techno:
         - techno
         - täkkno
     - soundtrack:
+        - arrangement album
+        - chrono trigger
         - soundtrack
         - motion picture
         - movie music
@@ -1172,11 +1224,23 @@ keywords:
     - guitar
     - instrumental:
         - instrumental
-        - instrumentals
         - instrumentala # basque: instrumental
+        - instrumentals
+        - no lyrics
+        - no vocals
+        - non vocal
         - without lyrics
         - without vocals
-        - non vocal
+        - without vocals
+    - beatless:
+        - beatless
+        - no beat
+        - no beats
+        - not beat
+        - not beats # review
+    - no percussion:
+        - no drums
+        - no percussion
     - late night:
         - ambient
         - ln
@@ -1218,9 +1282,12 @@ keywords:
     - piano:
         - piano
         - pianino # uzbek: piano
+    - violins:
+        - violins
+        - violinos
 
-      # The following terms probably need further investigation.
-      # Some of them seem to define "musical feels".
+    # The following terms probably need further investigation.
+    # Some of them seem to define "musical feels".
     - fusion # imprecise
   epoch:
     # These classifications are based on time frames instead of genres
@@ -1302,8 +1369,12 @@ keywords:
     # "now",  # imprecise
     # ----------------
     - classics: classics
-    - nostalgia: nostalgia
-    - oldies: oldies
+    - nostalgia:
+        - nostalgia
+        - nostalgie # german: nostalgia
+    - oldies:
+        - oldie
+        - oldies
     - retro: retro
     - throwback:
         - throwback
@@ -1328,29 +1399,6 @@ keywords:
         - chillin
     - chill-:
         - suspense
-    - club:
-        - club
-        - club wcs
-        - clubbing
-        - night club two-step
-        - swing club
-        - wcs and night club
-        - wcs club
-        - wcs dance club
-        - wcs night club
-        - westie club
-    - club-:
-        - bicycle club
-        - boat club
-        - club bike
-        - club of
-        - club tumbao
-        - fan club
-        - nike run club
-        - santa cruz
-        - sesame club
-        - strip club
-        - tyrol club # tyrol club of solvay
     - epic
     - happy:
         - happy
@@ -1377,6 +1425,7 @@ keywords:
     - happy-:
         - happy birthday
         - happy hour
+        - no sunshine
     - energy:
         - energy
         - energy2
@@ -1477,6 +1526,8 @@ keywords:
         - good
         - gut
         - gute
+    - good-:
+        - no good
     - vibe
     - vibes:
         - vibes
@@ -1517,6 +1568,8 @@ keywords:
         - slow dance with me
     - romantic-:
         - depressing
+        - not about love
+        - not all angsty pop songs are about romance
         - sad # to avoid e.g.: sad love songs
     - sensual
     - tropical
@@ -1589,6 +1642,7 @@ keywords:
         - slow/medium
         - medium/slow
         - lassú-közepes # hungarian: slow-medium
+        # - nidas nopee? # finnish: slow or fast?
     - fast?: # imprecise
         - medium fast
         - medium-fast
@@ -1604,8 +1658,9 @@ keywords:
         - 6/8
         - six-eigth time
         - six-eight time
-    - clear beat: # TODO: Avoid matching e.g. "no clear beat"
+    - clear beat:
         - clear beat
+        - clear metronome
         - easily countable
         - easy to count
         - obvious beat
@@ -1644,6 +1699,7 @@ keywords:
         - 8 ct
         - 8 beat
         - 8 beats
+        - 8c
         - 8er
     - 16 counts:
         - 16 bar
@@ -1652,7 +1708,9 @@ keywords:
         - 16 ct
         - 16 beat
         - 16 beats
+        - 16c
         - 16er
+        - starke 16
     - 32 counts:
         - 32 bar
         - 32 count
@@ -1759,7 +1817,7 @@ keywords:
             - intro long
             - intro longue
         - long intro-:
-          - long intro workshop # review
+            - long intro workshop # review
     - intro-:
         - cours d'intro
         - intro ride
@@ -2072,6 +2130,10 @@ keywords:
         - hate these songs
         - odrzucone # slowakian: rejected
 
+    - not often played:
+        - not often played
+        - not played by most djs
+
     - hits:
         - all time
         - all time favorites
@@ -2103,6 +2165,12 @@ keywords:
         - top gear
         - to hit
 
+    # Negations have to be coded in manually
+    - possible negation:
+        - "but"
+        - "no"
+        - "not"
+
     # Playlists with the following keywords in a name have a
     # higher probability of being a partially unsorted pile
     # of songs, and as such the tags they assign to songs
@@ -2115,18 +2183,22 @@ keywords:
         - mixed
         - mostly
         - no clear
+        - not sure
         - random
         - test
         - unsorted*:
+            - not sorted
             - sort
             - to try
-            - unsorted
-            - unsortiert
-            - durch hören
-            - durchhören
             - unorganised
             - unorganized
-            - sortieren
+            - unsorted
+            - durch hören # german
+            - durchhören # german
+            - einsortieren # german
+            - sortieren # german
+            - unorganisiert # german
+            - unsortiert # german
 
         # These are mostly veeery big playlists
         - bunch of songs:
@@ -2162,6 +2234,7 @@ keywords:
     - audience requests:
         # - new # but not "new years", "new playlist", "new day"
         - requests
+        - sugestões # portugese (brasilian): suggestions
         - suggestions
         - request song
         - request songs
@@ -2178,6 +2251,8 @@ keywords:
         - new wcs*:
             - "+dance:wcs"
             - new wcs
+        - nuzică nouă # romanian: new music
+        - muzica noua # romanian: new music
 
     # Playlists with the following in their name are collections
     # created by users that indicate a very subjective sorting.
@@ -2341,8 +2416,15 @@ keywords:
     - zonawcs # 25 playlists # ZonaWCS
     - westival # there are multiple events with this name
     ###
+    - avignon city swing+event/dance:wcs/country:france: # EVENT: Avignon City Swing
+    - norway westie fest+event/dance:wcs/country:norway: # EVENT: Norway Westie West
+        - norway westie fest
+        - nwf
     - pulse dance studio+organization/various/country:unclear:
     - swing dansekveld frode+party/dance:wcs/country:norway: # PARTY: Swing Dance Evening Frode
+    - west in nougat+event/dance:wcs/country:france: # EVENT: West in Nougat
+        - west in nougat
+        - win # review
     - żaczek+party/?/country:poland: # PARTY probably # polish: little girl
     ###
     - ivra+organization/various/country:sweden: # 4 playlists # ORG: Ivra Arts Centre in Göteborg, Sweden
@@ -2370,7 +2452,7 @@ keywords:
     # other: we don't know whether it's an event/organization/location/...
     # various: multiple dances
     # unrelated: unrelated to wcs
-    # unclear: unclear location
+    # unclear: unclear country
     - amigo's # PARTY?: AMIGO'S
     - aix on west+event/dance:wcs/country:france: # EVENT: Aix on West / AoW
         - aiw
@@ -2409,7 +2491,7 @@ keywords:
     - bcsdc
     - berlin swing revolution+event/dance:wcs/country:germany: # EVENT: Berlin Swing Revolution [year]
         - berlin swing revolution
-    - blackout friday+other/unknown:
+    - blackout friday+other/unknown/country:unclear:
         - blackout friday
     - bonn tanzt+organization/dance:wcs/country:germany: # ORG: Bonn Tanzt
         - bonn-tanzt
@@ -2430,14 +2512,14 @@ keywords:
         - brivi
         - brivi buli
         - brivi swing
-    - boston swing labs+organization/dance:wcs/country:usa: # ORG: Boston Swing Labs
+    - boston swing labs+organization/dance:wcs/country:usa: # ORG: Boston Swing Labs in Boston, USA
         - boston swing labs
         - bsl
-    - budafest+event/dance:wcs/hungary: # EVENT: Budafest
+    - budafest+event/dance:wcs/country:hungary: # EVENT: Budafest in Budapest, Hungary
     - canadian swing championships+event/dance:wcs/country:canada: # EVENT: Canadian Swing Championships
         - canadian swing championships
         - csc
-    - candy swing+party/lindy hop/country:germany+werk36: # PARTY: Candy Swing - Lindy Hop Party by weRK36
+    - candy swing+party/dance:lindy hop/country:germany+werk36: # PARTY: Candy Swing - Lindy Hop Party by weRK36
         - candy swing
     - capital swing+event/dance:wcs/country:usa: # EVENT: Capital Swing in Sacramento, California
     - cds
@@ -2447,10 +2529,10 @@ keywords:
     - cincy westie bash+event/dance:wcs/country:usa: # EVENT: Cincy Westie Bash in Cincinatti, USA
         - cincy westie bash
         - Cincinatti westie bash
-    - code03+unrelated: # PARTY?/ORG?/DANCE GROUP?: Code 03
+    - code 03 swing+organization/dance:wcs/country:new zealand: # ORG: Code 03 Swing in Christchurch, New Zealand
         - code03
         - code 03
-    - countdown swing boston+event/dance:wcs/country:usa+danceboston: # EVENT: Countdown Boston
+    - countdown swing boston+event/dance:wcs/country:usa+dance boston: # EVENT: Countdown Boston
         - countdown boston
         - countdown swing
         - countdown swing boston
@@ -2465,18 +2547,18 @@ keywords:
         - dfd
     - dance for hope # EVENT?: Dance for Hope
     - dance n play+event/dance:wcs/country:usa: # EVENT: Dance n Play in Oregon
-    - dance out loud+organization/ballet: # ORG: Dance Out Loud / ORG: Let's Dance Out Loud (both are ballet studios)
+    - dance out loud+organization/dance:ballet: # ORG: Dance Out Loud / ORG: Let's Dance Out Loud (both are ballet studios)
     - dance with joy+organization/various/country:usa: # ORG: Dance with Joy Studios in Oregon (WCS, ECS & more)
         - dance with joy
         - dwj
     - dancing fools+event/dance:wcs/country:usa: # EVENT: Dancing Fools in Massachusetts
-    - dc bachata experience+event/bachata/country:usa: # EVENT: DCBXperience
+    - dc bachata experience+event/dance:bachata/country:usa: # EVENT: DCBXperience
         - dcbx
         - dc bachata experience
     - dc swing experience+event/dance:wcs/country:usa: # EVENT: DC Swing eXperience
         - dcsx
         - dc swing experience
-    - dcwcs+organization/wcs/country:usa: # ORG: Washington DC WCS - see also MADjam
+    - dcwcs+organization/dance:wcs/country:usa: # ORG: Washington DC WCS - see also MADjam
     - derby city swing+event/dance:wcs/country:usa: # EVENT: Derby City Swing
         - derby city swing
     - desert city swing+event/dance:wcs/country:usa: # EVENT: Desert City Swing
@@ -2510,21 +2592,21 @@ keywords:
         - flow friday
         - flow fridays
         - flowfriday
-    - flow state+event/various/unrelated: # EVENT: Flow State Festival (Flow Arts & Performance Development) - probably unrelated
+    - flow state+event/various/playlist:unrelated: # EVENT: Flow State Festival (Flow Arts & Performance Development) - probably unrelated
         - flow state
         - flowstate
     - forest city brewery+location/various/country:usa: # LOCATION: Forest City Brewery in Cleveland, Ohio, USA
     - frankfurt tanzt+organization/dance:wcs/country:germany: # ORG: Frankfurt Tanzt
     - freedom swing dance challenge+event/dance:wcs/country:usa: # EVENT: Freedom Swing Dance Challenge in Delaware
         - freedom swing
-    - frenchco # ?: FrenchCo
+    - frenchco # ?: FrenchCo - maybe the solo dance style Frenchcore (which is related to Hardcore Techno)?
     - french open+event/dance:wcs/country:france: # EVENT: French Open [year] in Paris
         - french open
         - fowcs
         - fo[year]
         - fo22
         - fo23
-    - friday jams # PARTY?: Friday Jams
+    - friday jams+party/dance:wcs/country:new zealand+code 03 swing: # PARTY?: Friday Jams by Code 03 Swing in New Zealand
     - friday swing+party/dance:wcs/country:unclear: # Different parties
         - friday swing
     - friday swing+party/dance:wcs/country:poland:
@@ -2535,7 +2617,7 @@ keywords:
         - german open
         - go[year]
         - go24
-    - go west swingfest+event/dance:wcs/australia: # EVENT: Go West Swingfest in Australia
+    - go west swingfest+event/dance:wcs/country:australia: # EVENT: Go West Swingfest in Australia
         - go west
         - gowest
         - gws
@@ -2548,7 +2630,7 @@ keywords:
         - halloween swing thing
         - halloween swingthing
         - hst
-    - hike & dance:
+    - hike & dance+event/dance:wcs/country:switzerland: # EVENT: Hike & Dance in Switzerland
         - hike & dance
         - hike&dance
     - hill city swing+party/dance:wcs/country:usa: # PARTY: Hill City Swing
@@ -2568,13 +2650,13 @@ keywords:
         - kiwi
     - klc # EVENT, but seems to be discontinued (could only find references to KLC 2013 online)
     - konobueno # ZF Konobueno # I have no idea what this is, but it appears consistently in multiple playlist names
-    - korean open+event/dance:wcs/korea: # EVENT: Korea Open [year]
+    - korean open+event/dance:wcs/country:korea: # EVENT: Korea Open [year]
         - ko # GO[yy]
         - korea open
         - korean open
         - koreanopen
         - koreaopen
-    - korea westival+event/dance:wcs/korea: # EVENT: Korea Westival
+    - korea westival+event/dance:wcs/country:korea: # EVENT: Korea Westival
     - kv # Probably an event, but not sure which one
     - lakeside swing+event/dance:wcs/country:usa: # EVENT: Lakeside Swing in Oakland, California
         - lakeside swing
@@ -2582,7 +2664,7 @@ keywords:
         - liberty
         - liberty swing
     - longhorn westies+organization/dance:wcs/country:usa: # ORG: Longhorn Westies is a WCS Dance Club at the University of Texas at Austin
-    - lollapalooza+event/various/germany/usa+unrelated: # EVENT: LOLLA - GERMANY/USA
+    - lollapalooza+event/various/germany/usa+playlist:unrelated: # EVENT: LOLLA - GERMANY/USA
         - lolla
         - lollapalooza
     - love & swing+event/dance:wcs/country:france: # EVENT: LOVE & SWING [year] in Bordeaux, Frane
@@ -2599,16 +2681,20 @@ keywords:
         - med vendredi
         - med dimanche
         - med venedi
-    - meet me in st. louis swing change championships+event/dance:wcs/country:usa: # EVENT: Meet Ne in St. Louis
+    - meet me in st. louis swing dance championships+event/dance:wcs/country:usa: # EVENT: Meet Me in St. Louis
         - meet me st louis
+        - meet me st. louis
+        - meet me in st louis
+        - meet me in st. louis
         - mmisl
     - mega tiny westy festival+event/dance:wcs/country:france: # EVENT: Mega Tiny Westy Festival in France
         - mega tiny
         - mega tiny festival
+        - mega tiny westy festival
     - midland swing open+event/dance:wcs/country:uk: # EVENT: Midland Swing Open in London, UK
         - midland
         - mso
-    - midsummer swing+event/dance:wcs/latvia: # EVENT: Midsummer Swing in Riga, Latvia
+    - midsummer swing+event/dance:wcs/country:latvia: # EVENT: Midsummer Swing in Riga, Latvia
         - midsummer swing
     - midtown dance+organization/various/country:usa: # ORG: Midtown Dance
         - midtown
@@ -2621,7 +2707,7 @@ keywords:
         - midwest saturday
         - midwest sunday
         - mwf # MWF [year]
-    - milan modern swing+event/dance:wcs/italy:
+    - milan modern swing+event/dance:wcs/country:italy:
         - milanms2024
         - milanms
         - mms
@@ -2645,11 +2731,11 @@ keywords:
     - new england dance festival+event/various/country:uk: # EVENT: New England Dance Festival - WCS + other dances
         - nedf
         - new england dance festival
-    - new zealand open+event/dance:wcs/enw zealand: # EVENT: New Zealand Open
+    - new zealand open+event/dance:wcs/country:new zealand: # EVENT: New Zealand Open
         - new zealand open
         - nz open
         - nzo
-    - neverland swing+event/dance:wcs/netherlands: # EVENT: NeverlandSwing in the Netherlands
+    - neverland swing+event/dance:wcs/country;netherlands: # EVENT: NeverlandSwing in the Netherlands
         - nls # could also be next level swing
         - neverland
         - neverlandswing
@@ -2692,7 +2778,7 @@ keywords:
     - red white and blue dance
     - resolution swing+event/dance:wcs/country:uk: # EVENT: Resolution Swing in Edinburgh, Scotland
         - resolution swing
-    - riga summer swing+event/dance:wcs/latvia: # EVENT: Riga Summer Swing in Riga, Latvia
+    - riga summer swing+event/dance:wcs/country:latvia: # EVENT: Riga Summer Swing in Riga, Latvia
     - rocketwesties+organization/dance:wcs/country:usa: # ORG: Rocket Westies - Huntsville's West Coast Swing dance community
     - rolling swing+event/dance:wcs/country:france: # EVENT: Rolling Swing in France
     - rose city swing+event/dance:wcs/country:usa: # EVENT: Rose City Swing
@@ -2758,9 +2844,9 @@ keywords:
     - showme showdown+party/dance:wcs/country:usa: # EVENT: Showme Showdown - now called Gateway Swing Classic
         - showme
         - showme showdown
-    - silbando+organization/various/switzerland: # ORG: Club Silbando in Zurich
-    - simply adelaide+event/dance:wcs/australia: # EVENT: Simply Adelaide in Adelaide, Australia
-    - skåneswing+event/dance:wcs/sweden: # EVENT: SkåneSwing in Lund, Sweden
+    - silbando+organization/various/country:switzerland: # ORG: Club Silbando in Zurich
+    - simply adelaide+event/dance:wcs/country:australia: # EVENT: Simply Adelaide in Adelaide, Australia
+    - skåneswing+event/dance:wcs/country:sweden: # EVENT: SkåneSwing in Lund, Sweden
     - slingshot swing+event/dance:wcs/country:norway: # EVENT: Slingshot Swing in Oslo, Norway
         - slingshot swing
         - slingshot wcs
@@ -2840,7 +2926,7 @@ keywords:
         - swingmany
     - swingsation+event/dance:wcs/country:australia: # EVENT: Swingsation in Australia
         - swingsation
-    - swingside invitational+event/dance:wcs/belgium: # EVENT: Swingside Invitational in Belgium
+    - swingside invitational+event/dance:wcs/country:belgium: # EVENT: Swingside Invitational in Belgium
         - ssi
         - swingside
         - swingside invitational
@@ -2878,7 +2964,7 @@ keywords:
     - tanzbrunnen+location/various/country:unclear: # LOCATION: Tanzbrunnen (there are multiple locations with this name, also not always WCS)
     - tanzes+organization/various/country:germany: # ORG: TanzEs dance studio in Esslingen, Germany
     - tanzloft+organization/various/country:germany: # ORG: Tanzloft in Germany
-    - tb swing # ORG: TB Swing
+    - tb swing+organization/dance:wcs/country:norway: # ORG: TB Swing aka. Trond WCS in Tønsberg, Norway
     - tc rebels: # ?: TC Rebels
         - tc rebels
         - rebels anniversary
@@ -2886,7 +2972,7 @@ keywords:
         - temple du swing
         - tds
         - afterwork tds # PARTY: Afterwork by Temple Du Swing
-        - ski west: # EVENT: Ski West by Temple du Swing
+        - ski west+event/dance:wcs/country:france: # EVENT: Ski West by Temple du Swing
             - ski west
     - the after party+event/dance:wcs/country:usa: # EVENT: The After Party [year] / TAP [year]
         - tap
@@ -2926,7 +3012,7 @@ keywords:
     - uptown swing+event/dance:wcs/country:sweden: # EVENT: UpTown Swing in Stockholm, Sweden
         - uptown
         - up town swing
-    - ukrainian open+event/dance:wcs/ukraine: # EVENT: Ukrainian Open [year]
+    - ukrainian open+event/dance:wcs/country:ukraine: # EVENT: Ukrainian Open [year]
         - ukrainian open
         - ua open
     - us open+event/dance:wcs/country:usa: # EVENT: US Open [year]
@@ -2963,8 +3049,8 @@ keywords:
     - west in lyon+event/dance:wcs/country:france: # EVENT: West in Lyon
         - west in lyon
         - wil
-    - westie club timisoara+organization/dance:wcs/romania: # ORG: Westie Club Timisoara in Romania
-    - westie spring thing+event/dance:wcs/hungary: # EVENT: Westie Spring Thing in Budapest, Hungary
+    - westie club timisoara+organization/dance:wcs/country:romania: # ORG: Westie Club Timisoara in Romania
+    - westie spring thing+event/dance:wcs/country:hungary: # EVENT: Westie Spring Thing in Budapest, Hungary
         - westie spring thing
         - wst
     - westie wednesdays+party/dance:wcs/country:unclear: # PARTY: Westie Wednesday's
@@ -2993,6 +3079,8 @@ keywords:
     - winnipeg workshop weekend+party/various/country:canada:
     - winter crazy swing+event/dance:wcs/country:france: # EVENT: Winter Crazy Swing
     - winter white+event/dance:wcs/country:russia: # EVENT: Winter White in St. Petersburg
+        - winter white
+        - wwwcs
     - westie on the promenade+event/dance:wcs/country:france: # EVENT: Westie on the Promenade
         - westie on the promenade
         - wotp
@@ -3004,8 +3092,8 @@ keywords:
     # - win # WIN - probably an event, not sure which one
     - wny dance+organization/dance:wcs/country:usa: # ORG: WnY Dance in Marin, California
         - wny # WnY
-    - wwwcs # ?: WWWCS
-    - xpress # XPRESS seems to be an organization
+    - xpress your swing+event/dance:wcs/country:france: # EVENT: Xpress Your Swing in Montpellier, France
+    - xpress+organization/dance # XPRESS seems to be an organization
     - zouk sea+event/zouk/country:malaysia: # EVENT: Zouk SEA [year] in Malaysia
         - zouk sea
         - zouksea
