@@ -110,7 +110,7 @@ def write_to_file(data: pl.LazyFrame | pl.DataFrame, file_name: str, format: Lit
     if isinstance(data, pl.DataFrame):
         getattr(data, 'write_' + format)(file_name)
     else:
-        getattr(data, 'sink_' + format)(file_name)
+        getattr(data, 'sink_' + format)(file_name, engine='streaming')
 
     file_size = os.path.getsize(file_name)
     print(f'- SIZE: {file_size:,} bytes')
