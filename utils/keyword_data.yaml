@@ -5,6 +5,33 @@ colors:
   epoch: "#00c0f2" # Turqouise
   mood: "#29b09d" # Blue-Green [blueGreen80]
   topic: "#ffabab" # Light Red [red40]
+icons:
+  # daily: material/event
+  # weekly: material/date_range
+  # monthly: material/calendar_month
+  time-of-day: material/schedule
+  weekday: material/event
+  month: material/calendar_month
+  #
+  artist: material/artist # material/album material/art_track
+  country: material/globe # material/globe_location_pin
+  city: material/location_city
+  events: material/celebration
+  events-misc: material/celebration
+  #
+  language: material/translate # material/language
+  dance: material/music_note # material/palette material/brush material/format_paint
+  context: material/contextual_token
+  level: material/android_cell_5_bar
+  genre: material/genres
+  epoch: material/history_toggle_off
+  mood: material/comedy_mask # material/theater_comedy
+  tempo: material/speed
+  timing: material/timer
+  topic: material/label
+  seasonal: material/local_florist
+  playlist: material/queue_music
+  misc: material/tab_unselected
 limits:
   seasonal:
     christmas:

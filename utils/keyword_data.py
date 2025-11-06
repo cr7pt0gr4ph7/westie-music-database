@@ -34,6 +34,9 @@ type TagName = str
 type HexColor = str
 """Hexadecimal color string (e.g. `#ff8800`)."""
 
+type IconName = str
+"""Icon name (e.g. `material/thumbs_up_double`)."""
+
 
 def format_tag(category: CategoryName, short_name: ShortTagName) -> TagName:
     return f'{category}:{short_name}'
@@ -77,6 +80,7 @@ def extract_tag(tag_name: PolarsExpr[TagName]) -> PolarsExpr[ShortTagName | None
 class _KeywordsFile(TypedDict, total=False):
     """Defines the YAML schema for the `keyword_data.yaml` file."""
     colors: dict[CategoryName, HexColor]
+    icons: dict[CategoryName, IconName]
     limits: dict[CategoryName, dict[ShortTagName, TagLimits]]
     hide_from_ui: TagFilterSpec
     strip_from_tracks: TagFilterSpec
@@ -85,6 +89,10 @@ class _KeywordsFile(TypedDict, total=False):
 
 def load_colors(keywords_file: _KeywordsFile) -> dict[CategoryName, HexColor]:
     return keywords_file.get('colors') or {}
+
+
+def load_icons(keywords_file: _KeywordsFile) -> dict[CategoryName, IconName]:
+    return keywords_file.get('icons') or {}
 
 
 def load_aliases(keywords_file: _KeywordsFile, category_as_tag: bool = False):
@@ -337,6 +345,7 @@ def _parse_filter(spec: TagFilterSpec) -> TagNameMatcher:
 class KeywordData:
     """Contains all keyword-related settings."""
     colors_by_category: dict[CategoryName, HexColor]
+    icons_by_category: dict[CategoryName, IconName]
     limits_by_tag: TagLimitsMatcher
     hide_from_ui: TagNameMatcher
     strip_from_tracks: TagNameMatcher
@@ -354,11 +363,13 @@ class KeywordData:
     def read_yaml_object(cls, keywords_file: _KeywordsFile) -> Self:
         """Load keyword data from a parsed YAML file."""
         colors = load_colors(keywords_file)
+        icons = load_icons(keywords_file)
         limits = load_limits(keywords_file)
         hide_from_ui = load_filters(keywords_file, 'hide_from_ui')
         strip_from_tracks = load_filters(keywords_file, 'strip_from_tracks')
         alias_to_tags, alias_to_negated_tags = load_aliases(keywords_file, category_as_tag=False)
         return cls(colors_by_category=colors,
+                   icons_by_category=icons,
                    limits_by_tag=limits,
                    hide_from_ui=hide_from_ui,
                    strip_from_tracks=strip_from_tracks,
