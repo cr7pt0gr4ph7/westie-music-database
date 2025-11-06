@@ -75,7 +75,7 @@ import streamlit as st
 from utils.common.entities import PolarsLazyFrame
 from utils.common.filters import create_date_filter, create_text_filter, or_filter
 from utils.common.stats import count_n_unique
-from utils.keyword_data import CategoryName, HexColor, KeywordData, ShortTagName, TagName, load_keyword_data
+from utils.keyword_data import CategoryName, HexColor, KeywordData, ShortTagName, TagName, load_keyword_data, split_tag
 from utils.playlist_classifiers import extract_date_strings_from_name, extract_date_types_from_name
 from utils.tables import Playlist, PlaylistOwner, PlaylistStats, PlaylistTags, PlaylistTrack, Stats, Tag, Track, TrackAdjacent, TrackLyrics, TrackTag, TrackTags
 
@@ -1156,8 +1156,7 @@ class TagManager:
         else:
             return categories
 
-    @staticmethod
-    def format_category(category: CategoryName) -> str:
+    def format_category(self, category: CategoryName) -> str:
         if category == TagManager.ALL_CATEGORIES:
             return "(All categories)"
 
@@ -1179,15 +1178,25 @@ class TagManager:
 
         return tags
 
-    @staticmethod
-    def format_tag(tag: TagName) -> str:
+    def format_tag(self, tag: TagName) -> str:
         if tag == "":
             return "---"
 
         if tag == TagManager.UNTAGGED:
             return "(Untagged)"
 
-        return ': '.join(tag.split(':')).title()
+        # TODO: Icons are not yet supported in Selectbox option labels
+        # See here: https://github.com/streamlit/streamlit/issues/12151
+        # and here: https://github.com/streamlit/streamlit/issues/7466
+        # and here: https://github.com/streamlit/streamlit/pull/10086
+        if False:
+            category, short_name = split_tag(tag)
+            icon = self.config.icons_by_category.get(category) if category else None
+            icon_prefix = f":{icon}: " if icon else ""
+        else:
+            icon_prefix = ""
+
+        return icon_prefix + ': '.join(tag.split(':')).title()
 
     def get_default_colors(self):
         dark_colors = [
