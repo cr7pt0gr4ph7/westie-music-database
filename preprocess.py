@@ -2,6 +2,7 @@
 from typing import Callable, Final, Literal
 import math
 import os
+import time
 
 import polars as pl
 
@@ -107,10 +108,16 @@ def write_to_file(data: pl.LazyFrame | pl.DataFrame, file_name: str, format: Lit
 
     print(f'- SCHEMA: {data.collect_schema()}')
 
+    start = time.time()
+
     if isinstance(data, pl.DataFrame):
         getattr(data, 'write_' + format)(file_name)
     else:
         getattr(data, 'sink_' + format)(file_name, engine='streaming')
+
+    end = time.time()
+    duration = end - start
+    print(f'- TOOK: {duration:.2f} seconds')
 
     file_size = os.path.getsize(file_name)
     print(f'- SIZE: {file_size:,} bytes')
