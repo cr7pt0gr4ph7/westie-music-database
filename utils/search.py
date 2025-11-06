@@ -1586,7 +1586,7 @@ class SearchEngine:
                     pl.element().struct.field(TrackTag.tag))))\
             .with_columns(TrackTags.unnest_tags_data())\
             .select(pl.exclude('adjacent_tags'))\
-            .join(pl.scan_parquet(DATA_DIR + 'data_song_adjacent_tags[min_size_11][-2,+2].parquet', glob=False)
+            .join(pl.scan_parquet(DATA_DIR + 'data_song_adjacent_tags[min_size_10][-2,+2].parquet', glob=False)
                   .select(Track.id, TrackTags.tags_data().alias('adjacent_tags_data')),
                   how='left', on=Track.id)\
             .with_columns(pl.col('adjacent_tags_data').fill_null(pl.lit([])))\
