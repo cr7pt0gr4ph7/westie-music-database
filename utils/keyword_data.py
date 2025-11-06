@@ -3,7 +3,8 @@ Classes and methods for parsing the keyword/tagging configuration in `keyword_da
 """
 from __future__ import annotations
 from dataclasses import dataclass
-from typing import NamedTuple, Self, TypedDict
+from enum import StrEnum
+from typing import Literal, NamedTuple, Self, TypedDict
 
 import os
 import polars as pl
@@ -84,6 +85,7 @@ class _KeywordsFile(TypedDict, total=False):
     limits: dict[CategoryName, dict[ShortTagName, TagLimits]]
     hide_from_ui: TagFilterSpec
     strip_from_tracks: TagFilterSpec
+    relations: list[dict[Literal['opposites', 'related'], list[TagName]]]
     keywords: dict[CategoryName, list[KeywordOrTagSpec]]
 
 
@@ -341,6 +343,74 @@ def _parse_filter(spec: TagFilterSpec) -> TagNameMatcher:
     return TagNameMatcher(categories_to_filter, tags_to_filter)
 
 
+class TagRelationType(StrEnum):
+    OPPOSITES = 'opposites'
+    RELATED = 'related'
+
+    @staticmethod
+    def from_string(type: str) -> TagRelationType:
+        if type == 'opposites':
+            return TagRelationType.OPPOSITES
+        elif type == 'related':
+            return TagRelationType.RELATED
+        else:
+            raise ValueError(f"Invalid tag relation type: {type}")
+
+
+@dataclass
+class TagRelation:
+    type: TagRelationType
+    tags: list[TagName]
+
+    @property
+    def name(self) -> str:
+        match self.type:
+            case TagRelationType.OPPOSITES:
+                return " ~ ".join(self.tags)
+
+            case TagRelationType.RELATED:
+                return " vs. ".join(self.tags)
+
+            case _:
+                raise ValueError(f"Invalid TagRelationType value: {self.type}")
+
+
+@dataclass
+class TagRelations:
+    relations: list[TagRelation]
+
+    def of_type(self, type: TagRelationType) -> list[TagRelation]:
+        return [rel for rel in self.relations
+                if rel.type == type]
+
+    def get_relations(self, tag_name: TagName, type: TagRelationType | None = None) -> list[TagRelation]:
+        return [rel for rel in self.relations
+                if type is None or rel.type == type
+                if tag_name in rel.tags]
+
+    def get_opposite_tags(self, tag_name: TagName) -> set[TagName]:
+        return {tag for rel in self.relations
+                if rel.type == TagRelationType.OPPOSITES
+                if tag_name in rel.tags
+                for tag in rel.tags
+                if tag != tag_name}
+
+    def get_related_tags(self, tag_name: TagName) -> set[TagName]:
+        return {tag for rel in self.relations
+                if rel.type == TagRelationType.RELATED
+                if tag_name in rel.tags
+                for tag in rel.tags
+                if tag != tag_name}
+
+
+def load_relations(keywords_file: _KeywordsFile) -> TagRelations:
+    return TagRelations([
+        TagRelation(TagRelationType.from_string(type), item[type])
+        for item in keywords_file.get('relations') or []
+        for type in item
+    ])
+
+
 @dataclass
 class KeywordData:
     """Contains all keyword-related settings."""
@@ -349,6 +419,7 @@ class KeywordData:
     limits_by_tag: TagLimitsMatcher
     hide_from_ui: TagNameMatcher
     strip_from_tracks: TagNameMatcher
+    relations: TagRelations
     keywords_to_tags: dict[KeywordString, set[TagName]]
     keywords_to_excluded_tags: dict[KeywordString, set[TagName]]
 
@@ -367,12 +438,14 @@ class KeywordData:
         limits = load_limits(keywords_file)
         hide_from_ui = load_filters(keywords_file, 'hide_from_ui')
         strip_from_tracks = load_filters(keywords_file, 'strip_from_tracks')
+        relations = load_relations(keywords_file)
         alias_to_tags, alias_to_negated_tags = load_aliases(keywords_file, category_as_tag=False)
         return cls(colors_by_category=colors,
                    icons_by_category=icons,
                    limits_by_tag=limits,
                    hide_from_ui=hide_from_ui,
                    strip_from_tracks=strip_from_tracks,
+                   relations=relations,
                    keywords_to_tags=alias_to_tags,
                    keywords_to_excluded_tags=alias_to_negated_tags)
 
