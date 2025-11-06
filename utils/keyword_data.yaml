@@ -1,73 +1,95 @@
-colors:
-  context: "#ffa421" # Orange [lightTheme.orangeColor]
-  level: "#0068c9" # Dark Blue [blue80]
-  genre: "#803df5" # Violet [lightTheme.violetColor]
-  epoch: "#00c0f2" # Turqouise
-  mood: "#29b09d" # Blue-Green [blueGreen80]
-  topic: "#ffabab" # Light Red [red40]
-icons:
-  # daily: material/event
-  # weekly: material/date_range
-  # monthly: material/calendar_month
-  time-of-day: material/schedule
-  weekday: material/event
-  month: material/calendar_month
-  #
-  artist: material/artist # material/album material/art_track
-  country: material/globe # material/globe_location_pin
-  city: material/location_city
-  events: material/celebration
-  events-misc: material/celebration
-  #
-  language: material/translate # material/language
-  dance: material/music_note # material/palette material/brush material/format_paint
-  context: material/contextual_token
-  level: material/android_cell_5_bar
-  genre: material/genres
-  epoch: material/history_toggle_off
-  mood: material/comedy_mask # material/theater_comedy
-  tempo: material/speed
-  timing: material/timer
-  topic: material/label
-  seasonal: material/local_florist
-  playlist: material/queue_music
-  misc: material/tab_unselected
+metadata:
+  time-of-day:
+    icon: material/schedule
+    hide_from_ui: true
+    strip_from_tracks: true
+  weekday:
+    icon: material/event
+    hide_from_ui: true
+    strip_from_tracks: true
+  month:
+    icon: material/calendar_month
+    hide_from_ui: true
+    strip_from_tracks: true
+  #######
+  artist:
+    icon: material/artist # material/album material/art_track
+    hide_from_ui: true
+    strip_from_tracks: true
+  country:
+    icon: material/globe # material/globe_location_pin
+    hide_from_ui: true
+    strip_from_tracks: true
+  city:
+    icon: material/location_city
+    hide_from_ui: true
+    strip_from_tracks: true
+  events:
+    icon: material/celebration
+    hide_from_ui: true
+    strip_from_tracks: true
+  events-misc:
+    icon: material/celebration
+    hide_from_ui: true
+    strip_from_tracks: true
+  #######
+  context:
+    icon: material/contextual_token
+    color: "#ffa421" # Orange [lightTheme.orangeColor]
+  level:
+    icon: material/android_cell_5_bar
+    color: "#0068c9" # Dark Blue [blue80]
+  dance:
+    icon: material/music_note # material/palette material/brush material/format_paint
+  #######
+  seasonal:
+    icon: material/local_florist
+  playlist:
+    icon: material/queue_music
+    strip_from_tracks:
+      - ordered
+      - ordered by bpm
+      - ordered by danceability
+      - ordered by duration
+      - ordered by energy
+      ###
+      - spotify stuff
+      - default name
+      - playlist in a bottle
+      - specific
+      - backup
+      - mondaymix
+      - setlist
+  misc:
+    icon: material/tab_unselected
+    strip_from_tracks: true
+  miscx:
+    icon: material/tab_unselected
+    strip_from_tracks: true
+  #######
+  language:
+    icon: material/translate # material/language
+  genre:
+    icon: material/genres
+    color: "#803df5" # Violet [lightTheme.violetColor]
+  epoch:
+    icon: material/history_toggle_off
+    color: "#00c0f2" # Turqouise
+  mood:
+    icon: material/comedy_mask # material/theater_comedy
+    color: "#29b09d" # Blue-Green [blueGreen80]
+  tempo:
+    icon: material/speed
+  timing:
+    icon: material/timer
+  topic:
+    icon: material/label
+    color: "#ffabab" # Light Red [red40]
 limits:
   seasonal:
     christmas:
       min_playlist_count: 1
       min_playlist_percent: 20.0
-hide_from_ui:
-  artist: true
-  month: true
-  weekday: true
-  time-of-day: true
-  city: true
-  country: true
-  events: true
-  events-misc: true
-strip_from_tracks:
-  artist: true
-  month: true
-  weekday: true
-  time-of-day: true
-  city: true
-  country: true
-  events: true
-  playlist:
-    - ordered
-    - ordered by bpm
-    - ordered by danceability
-    - ordered by duration
-    - ordered by energy
-    ###
-    - spotify stuff
-    - default name
-    - playlist in a bottle
-    - specific
-    - backup
-    - mondaymix
-    - setlist
 relations:
   - opposites:
       - "tempo:fast"

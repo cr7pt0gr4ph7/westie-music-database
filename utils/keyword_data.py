@@ -77,24 +77,33 @@ def extract_tag(tag_name: PolarsExpr[TagName]) -> PolarsExpr[ShortTagName | None
 # YAML FILE SCHEMA #
 ####################
 
+class _CategoryMetadata(TypedDict, total=False):
+    icon: IconName
+    color: HexColor
+    hide_from_ui: bool | list[ShortTagName]
+    strip_from_tracks: bool | list[ShortTagName]
+
 
 class _KeywordsFile(TypedDict, total=False):
     """Defines the YAML schema for the `keyword_data.yaml` file."""
-    colors: dict[CategoryName, HexColor]
-    icons: dict[CategoryName, IconName]
+    metadata: dict[CategoryName, _CategoryMetadata]
     limits: dict[CategoryName, dict[ShortTagName, TagLimits]]
-    hide_from_ui: TagFilterSpec
-    strip_from_tracks: TagFilterSpec
     relations: list[dict[Literal['opposites', 'related'], list[TagName]]]
     keywords: dict[CategoryName, list[KeywordOrTagSpec]]
 
 
 def load_colors(keywords_file: _KeywordsFile) -> dict[CategoryName, HexColor]:
-    return keywords_file.get('colors') or {}
+    metadata = keywords_file.get('metadata') or {}
+    return {category: metadata[category].get('color')
+            for category in metadata
+            if 'color' in metadata[category]}
 
 
 def load_icons(keywords_file: _KeywordsFile) -> dict[CategoryName, IconName]:
-    return keywords_file.get('icons') or {}
+    metadata = keywords_file.get('metadata') or {}
+    return {category: metadata[category].get('icon')
+            for category in metadata
+            if 'icon' in metadata[category]}
 
 
 def load_aliases(keywords_file: _KeywordsFile, category_as_tag: bool = False):
@@ -323,7 +332,11 @@ class TagNameMatcher(NamedTuple):
 
 
 def load_filters(keywords_file: _KeywordsFile, field_name: str) -> TagNameMatcher:
-    return _parse_filter(keywords_file.get(field_name) or {})
+    metadata = keywords_file.get('metadata') or {}
+    filter_spec = {category: metadata[category].get(field_name)
+                   for category in metadata
+                   if field_name in metadata[category]}
+    return _parse_filter(filter_spec)
 
 
 def _parse_filter(spec: TagFilterSpec) -> TagNameMatcher:
