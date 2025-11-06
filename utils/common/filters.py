@@ -3,17 +3,8 @@ from typing import Literal
 
 import polars as pl
 
+from utils.common.polars import IntoExpr, into_expr
 from utils.keyword_data import extract_category
-
-IntoExpr = str | list[str] | pl.Expr
-
-
-def into_expr(expr: IntoExpr) -> pl.Expr:
-    if isinstance(expr, str):
-        return pl.col(expr)
-    if isinstance(expr, list):
-        return pl.col(expr)
-    return expr
 
 
 def or_filter(*filters: pl.Expr | None) -> pl.Expr | None:

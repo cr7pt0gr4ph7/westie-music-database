@@ -7,6 +7,7 @@ import time
 import polars as pl
 
 from utils.additional_data import actual_wcs_djs, queer_artists, poc_artists
+from utils.common.aggregation import rolling_fixed_group_by
 from utils.common.temp_files import TempFileTracker, with_temp_files
 from utils.keyword_data import extract_category, load_keyword_data
 from utils.playlist_classifiers import extract_date_strings_from_name, extract_tags_from_name
@@ -915,20 +916,16 @@ def process_adjacent_song_tags(temp_files: TempFileTracker):
             .join(track_tags.select(Track.id, TrackTags.extract_tags()),
                   how='inner', on=Track.id)\
             .sort(Playlist.id, PlaylistTrack.number)\
-            .rolling(index_column=PlaylistTrack.number().cast(pl.UInt32), period=f'{window_size}i', group_by=Playlist.id)\
-            .agg(Track.id().get(prev_window_size),
-                 Track.id().count().alias('window_size'),
-                 pl.concat([TrackTags.tags().head(prev_window_size),
-                            TrackTags.tags().tail(next_window_size)],
-                           how='horizontal'))\
-            .filter(pl.col('window_size').eq(window_size))\
+            .pipe(rolling_fixed_group_by,
+                  aggregated_column=TrackTags.tags(),
+                  prev_window=prev_window_size,
+                  next_window=next_window_size,
+                  group_by=Playlist.id())\
             .with_columns(
                 pl.reduce(exprs=TrackTags.tags()
-                          .list.to_struct(fields=lambda idx: f'context.{idx}.tags',
-                                          upper_bound=prev_window_size + next_window_size)
+                          .arr.to_struct(lambda idx: f'context.{idx}.tags')
                           .struct.unnest(),
                           function=lambda acc, x: acc.list.set_intersection(x)).alias(TrackTags.tags))\
-            .drop('window_size')
 
     temp_file = temp_files.register_for_deletion(TEMP_DATA_DIR + 'temp_adjacent_track_tags.parquet')
     process_in_batches(
