@@ -49,9 +49,9 @@ def format_tag_if_needed(category: CategoryName, short_name: ShortTagName) -> Ta
 
 
 def split_tag(name: TagName) -> tuple[CategoryName, ShortTagName | None]:
-    parts = name.split(':', 2)
-    return (parts[0], parts[1] if len(parts) >= 2
-            else parts[0], None)
+    parts = name.split(':', 1)
+    return ((parts[0], parts[1]) if len(parts) >= 2
+            else (parts[0], None))
 
 
 def format_tag_expr(category: PolarsExpr[CategoryName], short_name: PolarsExpr[ShortTagName]) -> PolarsExpr[TagName]:
