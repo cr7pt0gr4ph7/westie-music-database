@@ -7,7 +7,7 @@ import time
 import polars as pl
 
 from utils.additional_data import actual_wcs_djs, queer_artists, poc_artists
-from utils.common.aggregation import rolling_fixed_group_by
+from utils.common.aggregation import rolling_fixed
 from utils.common.temp_files import TempFileTracker, with_temp_files
 from utils.keyword_data import extract_category, load_keyword_data
 from utils.playlist_classifiers import extract_date_strings_from_name, extract_tags_from_name
@@ -914,18 +914,14 @@ def process_adjacent_song_tags(temp_files: TempFileTracker):
         #       has a positive effect on the correctness of the tags.
         return playlist_tracks_batch\
             .join(track_tags.select(Track.id, TrackTags.extract_tags()),
-                  how='inner', on=Track.id)\
-            .sort(Playlist.id, PlaylistTrack.number)\
-            .pipe(rolling_fixed_group_by,
+                  how='inner', on=Track.id,
+                  maintain_order='left')\
+            .pipe(rolling_fixed,
                   aggregated_column=TrackTags.tags(),
                   prev_window=prev_window_size,
                   next_window=next_window_size,
-                  group_by=Playlist.id())\
-            .with_columns(
-                pl.reduce(exprs=TrackTags.tags()
-                          .arr.to_struct(lambda idx: f'context.{idx}.tags')
-                          .struct.unnest(),
-                          function=lambda acc, x: acc.list.set_intersection(x)).alias(TrackTags.tags))\
+                  group_by=Playlist.id(),
+                  reduce=lambda acc, cur: acc.list.set_intersection(cur))
 
     temp_file = temp_files.register_for_deletion(TEMP_DATA_DIR + 'temp_adjacent_track_tags.parquet')
     process_in_batches(
@@ -934,7 +930,7 @@ def process_adjacent_song_tags(temp_files: TempFileTracker):
         batch_by=Playlist.id,
         batch_values=social_playlists,
         batch_name="adjacent_tags_raw",
-        batch_size=2000,  # Higher batch sizes are faster but have a righer OOM risk
+        batch_size=16000,  # Higher batch sizes are faster but have a righer OOM risk
         output_name=temp_file,
         sort_by=None,
         merge_type='unsorted',
