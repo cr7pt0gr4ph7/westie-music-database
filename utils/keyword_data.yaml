@@ -2410,8 +2410,8 @@ keywords:
     - london # uk
     - madrid # spain
     - mainz # germany
-    - malaysia # it's a country, not a city...
     - munich: # germany
+        - munich
         - münchen
     - münster # germany
     - new york: # usa
