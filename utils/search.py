@@ -634,6 +634,7 @@ class TrackFilter:
     # User-provided parameters
     song_name: TextFilter = ''
     song_bpm_range: tuple[int, int] | None = None
+    song_has_bpm: bool | None = None
     song_release_date: str = ''
     artist_name: TextFilter = ''
     artist_is_queer: bool = False
@@ -671,6 +672,7 @@ class TrackFilter:
         """Returns whether any track filters are defined."""
         return self.match_song_name is not None\
             or self.song_bpm_range is not None\
+            or self.song_has_bpm is not None\
             or self.match_song_release_date is not None\
             or self.match_artist_name is not None\
             or self.match_tag is not None\
@@ -707,7 +709,13 @@ class TrackFilter:
             matching_tracks = matching_tracks.filter(
                 pl.col(Track.has_poc_artist))
 
-        if self.song_bpm_range:
+        if self.song_has_bpm is not None:
+            matching_tracks = matching_tracks.filter(
+                pl.col(Track.beats_per_minute)
+                .pipe(lambda x: x.is_not_null().and_(x.gt(0)))
+                .eq(pl.lit(self.song_has_bpm)))
+
+        if self.song_bpm_range is not None:
             matching_tracks = matching_tracks.filter(
                 pl.col(Track.beats_per_minute).is_null()
                 | (pl.col(Track.beats_per_minute).ge(self.song_bpm_range[0])
@@ -1474,6 +1482,7 @@ class SearchEngine:
         #
         song_name: str = '',
         song_bpm_range: tuple[int, int] | None = None,
+        song_has_bpm: bool | None = None,
         song_release_date: str = '',
         artist_name: TextFilter = '',
         artist_is_queer: bool = False,
@@ -1542,6 +1551,7 @@ class SearchEngine:
         track_filter = TrackFilter(
             song_name=song_name,
             song_bpm_range=song_bpm_range,
+            song_has_bpm=song_has_bpm,
             song_release_date=song_release_date,
             artist_name=artist_name,
             artist_is_queer=artist_is_queer,
