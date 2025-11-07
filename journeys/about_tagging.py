@@ -5,7 +5,7 @@ from typing import Literal, NotRequired, TypedDict, Unpack
 import polars as pl
 import streamlit as st
 
-from journeys.journey_utils import add_example, dataset_link, render_examples
+from journeys.journey_utils import add_example, dataset_note, render_examples
 from utils.common.filters import create_text_filter
 from utils.playlist_classifiers import contains_bpm_in_name, contains_date_in_name, contains_month_year_in_name
 from utils.search import SearchEngine
@@ -171,10 +171,9 @@ f"""
 This page tells the story of how we tag songs based on the large but
 at the same time limited dataset that we have \u2014 and the tricks we
 employ to make this work.
-
-> All numbers and graphs you see below are computed based on the current dataset
-{dataset_link()}, so the exact numbers you see might change between visits.
 """
+
+dataset_note()
 
 #
 # MISSION STATEMENT
