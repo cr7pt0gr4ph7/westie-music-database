@@ -1,11 +1,12 @@
 import math
 import random
-from typing import Callable, ClassVar, Literal, NotRequired, TypedDict, Unpack
+from typing import Literal, NotRequired, TypedDict, Unpack
 
 from huggingface_hub import dataset_info
 import polars as pl
 import streamlit as st
 
+from journeys.journey_utils import add_example, render_examples
 from utils.common.filters import create_text_filter
 from utils.playlist_classifiers import contains_bpm_in_name, contains_date_in_name, contains_month_year_in_name
 from utils.search import SearchEngine
@@ -23,61 +24,6 @@ base_column_config = {
     Playlist.matching_song_percent: st.column_config.ProgressColumn(format='percent'),
     'playlist_percent': st.column_config.ProgressColumn(format='percent'),
 }
-
-
-class WidgetHolder:
-    examples: ClassVar[dict[str, list[tuple[str, Callable[[], None]]]]] = {}
-
-
-def sample_section(title: str, *, expanded: bool = False):
-    return st.expander(f":blue-badge[Sample] **{title}**", expanded=expanded)
-
-
-def render_examples(name: str):
-    groups = WidgetHolder.examples
-    WidgetHolder.examples = {}
-
-    if len(groups) == 0:
-        return
-
-    def fragment():
-        render_examples_core(groups)
-
-    fragment.__qualname__ = name
-    fragment.__name__ = name
-
-    st.fragment(fragment)()
-
-
-def render_examples_core(groups: dict[str, list[tuple[str, Callable[[], None]]]]):
-    columns = st.columns(len(groups))
-
-    is_first = True
-    index = 0
-    for group in groups:
-        w = groups[group]
-
-        with columns[index]:
-            with st.container(border=True, height='stretch'):
-                selected_index = st.pills(
-                    group,
-                    range(len(w)),
-                    format_func=lambda i: w[i][0],
-                    default=None,
-                    # label_visibility='collapsed',
-                )
-
-                if selected_index is not None:
-                    selected_widget = w[selected_index][1]
-                    selected_widget()
-
-        is_first = False
-        index += 1
-
-
-def add_example(group: str, title: str, callback: Callable[[], None]):
-    WidgetHolder.examples.setdefault(group, []).append((title, callback))
-
 
 search_engine = SearchEngine()
 search_engine.load_data()
