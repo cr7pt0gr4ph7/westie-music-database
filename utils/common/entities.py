@@ -58,6 +58,10 @@ class Field[FieldName: LiteralString, FieldType: pl.DataType](str):
     def as_struct_field(self) -> pl.Field:
         return pl.Field(self.field_name, self.field_type)
 
+    def struct_field(self, expr: pl.Expr | None = None) -> pl.Expr:
+        expr = pl.element() if expr is None else expr
+        return expr.struct.field(self.field_name)
+
 
 def field[FieldName: LiteralString, FieldType: pl.DataType](
     field_name: FieldName,
