@@ -1,167 +1,18 @@
 import math
 import random
-from typing import Literal, NotRequired, TypedDict, Unpack
 
 import polars as pl
 import streamlit as st
 
-from journeys.journey_utils import add_example, dataset_note, render_examples
+from journeys.journey_utils import _count, base_column_config, count, dataset_note, percentage, playlist_name_like, render_examples, search_engine, tag_link
 from utils.common.filters import create_text_filter
 from utils.playlist_classifiers import contains_bpm_in_name, contains_date_in_name, contains_month_year_in_name
-from utils.search import SearchEngine
-from utils.tables import Playlist, PlaylistOwner, PlaylistStats, PlaylistTags, Stats, Track
+from utils.tables import Playlist, PlaylistOwner, PlaylistStats, PlaylistTags, Stats
 
 st.set_page_config(
     page_title="About Tagging",
     page_icon=":material/sell:",
 )
-
-base_column_config = {
-    PlaylistOwner.name: st.column_config.MultiselectColumn(),
-    Playlist.url: st.column_config.LinkColumn(),
-    PlaylistStats.wcs_song_percent: st.column_config.ProgressColumn(format='percent'),
-    Playlist.matching_song_percent: st.column_config.ProgressColumn(format='percent'),
-    'playlist_percent': st.column_config.ProgressColumn(format='percent'),
-}
-
-search_engine = SearchEngine()
-search_engine.load_data()
-
-
-def song_link(title, artist):
-    """Link to a playable version of a song (e.g. via a Spotify link)."""
-    # TODO: Make song links interactive (by adding a Spotify URL and/or linking to data card)
-    return f"_{title}_ by _{artist}_"
-
-
-def tag_link(display_name, *, tag: str = '', code: bool = False):
-    """Link to a tag."""
-    tag_name = tag or display_name
-    add_example("Show playlists tagged with...",
-                f"**{tag_name}**",
-                lambda: st.dataframe(search_engine.find_playlists(playlist_tag_include=tag_name,
-                                                                  sort_by=[Stats.song_count],
-                                                                  limit=100)
-                                     .select(Playlist.name, Playlist.url, Stats.song_count),
-                                     column_config=base_column_config))
-
-    # TODO: Make tag links interactive
-    if code:
-        return f"`{display_name}`"
-
-    return f":green-badge[{display_name}]"
-
-
-class SearchParameters(TypedDict):
-    link_text: str
-    artist_name: NotRequired[str]
-    song_name: NotRequired[str]
-    playlist_name: NotRequired[str]
-
-
-def search_link(type: Literal['song', 'playlist'], **params: Unpack[SearchParameters]):
-    # TODO: Link to main application
-    pass
-
-
-def playlist_name_like(playlist_name):
-    # TODO: Render dataframe
-    add_example(
-        "Show playlists named...",
-        f"**{playlist_name}**",
-        lambda: st.dataframe(search_engine.find_playlists(playlist_include=playlist_name,
-                                                          tracks_limit=10,
-                                                          sort_by=[Playlist.matched_terms_count,
-                                                                   Stats.song_count],
-                                                          limit=100)
-                             .select(Playlist.name, Playlist.url, Playlist.matched_terms, Stats.song_count),
-                             column_config=base_column_config))
-
-    # TODO: Link to main application
-    return f"`{playlist_name}`"
-    # return search_link('playlist', link_text=playlist_name, )
-
-
-def no_docstring():
-    pass
-
-
-@st.cache_data
-def _count(
-    type: Literal['playlists', 'songs'] | None = None,
-    *,
-    with_tag: str | list[str] = [],
-    without_tag: str | list[str] = [],
-    without_tags: str | list[str] = [],
-    with_any_tag: list[str] = [],
-):
-    if type == 'playlists':
-        return search_engine\
-            .find_playlists(playlist_tag_include=with_tag or with_any_tag,
-                            playlist_tag_exclude=without_tag or without_tags,
-                            limit=None)\
-            .select(Playlist.id().count())\
-            .collect(engine='streaming')[Playlist.id].first()
-
-    elif type == 'songs':
-        return search_engine\
-            .find_songs(tag_include=with_tag or with_any_tag,
-                        tag_exclude=without_tag or without_tags,
-                        limit=None)\
-            .select(Track.id().count())\
-            .collect(engine='streaming')[Track.id].first()
-
-    return None
-
-
-@st.cache_data
-def count(
-    type: Literal['playlists', 'songs'] | None = None,
-    *,
-    with_tag: str | list[str] = [],
-    without_tag: str | list[str] = [],
-    without_tags: str | list[str] = [],
-    with_any_tag: list[str] = [],
-):
-    cnt = _count(type, with_tag=with_tag, with_any_tag=with_any_tag,
-                 without_tag=without_tag, without_tags=without_tags)
-
-    if cnt is None:
-        return "???"
-
-    return f"**{cnt:,}**"
-
-
-@st.cache_data
-def percentage(
-    type: Literal['playlists', 'songs'] | None = None,
-    *,
-    with_tag: str | list[str] = [],
-    without_tag: str | list[str] = [],
-    without_tags: str | list[str] = [],
-    with_any_tag: list[str] = [],
-):
-    if type == 'playlists' or type == 'songs':
-        matching = _count(type, with_tag=with_tag, with_any_tag=with_any_tag,
-                          without_tag=without_tag, without_tags=without_tags)
-        total = _count(type)
-        pct = (matching / total) * 100
-
-        if pct >= 10:
-            return f"**{pct:.0f} %**"
-        elif pct >= 1:
-            return f"**{pct:.1f} %**"
-        elif pct >= 0.1:
-            return f"**{pct:.2f} %**"
-        elif pct >= 0.01:
-            return f"**{pct:.3f} %**"
-        elif pct >= 0.001:
-            return f"**{pct:.4f} %**"
-        else:
-            return f"**{pct:f} %**"
-
-    return "??? %"
-
 
 st.title("How we tag songs (in a way that is _actually_ useful)", "main")
 
@@ -348,6 +199,7 @@ def classify_playlist() -> pl.Expr:
         pl.when(has_tag('playlist:unrelated', 'playlist:spotify stuff')).then(pl.lit('misc')),
         pl.when(has_level).then(pl.lit('level')),
     ]).list.drop_nulls()
+
 
 @st.fragment
 def table_playlist_classification():
