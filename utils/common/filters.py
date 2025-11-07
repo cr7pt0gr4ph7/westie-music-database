@@ -32,6 +32,7 @@ def create_text_filter(
     is_list_column: bool = False,
     ascii_case_insensitive: bool = True,
     match_mode: Literal['exact', 'exact|category', 'contains'] = 'contains',
+    group_mode: Literal['all', 'any'] = 'any',
 ) -> pl.Expr | None:
     """Parse a filter expression for a text column."""
     if filter_expression is None:
@@ -53,6 +54,14 @@ def create_text_filter(
         return None
 
     def is_match(expr: pl.Expr) -> pl.Expr:
+        if group_mode == 'any':
+            return matches(expr, values)
+        if group_mode == 'all':
+            return pl.all_horizontal([matches(expr, [value]) for value in values])
+        else:
+            raise ValueError(f"Invalid grouping mode: {group_mode}")
+
+    def matches(expr: pl.Expr, values: list[str]) -> pl.Expr:
         if match_mode == 'contains':
             return expr.cast(pl.String).str.contains_any(values, ascii_case_insensitive=ascii_case_insensitive)
         elif match_mode == 'exact':
