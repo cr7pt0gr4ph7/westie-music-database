@@ -2,11 +2,10 @@ import math
 import random
 from typing import Literal, NotRequired, TypedDict, Unpack
 
-from huggingface_hub import dataset_info
 import polars as pl
 import streamlit as st
 
-from journeys.journey_utils import add_example, render_examples
+from journeys.journey_utils import add_example, dataset_link, render_examples
 from utils.common.filters import create_text_filter
 from utils.playlist_classifiers import contains_bpm_in_name, contains_date_in_name, contains_month_year_in_name
 from utils.search import SearchEngine
@@ -27,22 +26,6 @@ base_column_config = {
 
 search_engine = SearchEngine()
 search_engine.load_data()
-
-# TODO: Determine dataset version
-dataset_name = "westie-data-collective/wcs-music-database-v1"
-dataset_version = "main"
-
-
-@st.cache_data(persist=True)
-def dataset_link():
-    """
-    Link to the underlying dataset on HuggingFace,
-    based on the version that was used to generate this page.
-    """
-    info = dataset_info(dataset_name, revision=dataset_version)
-    dataset_url = f"https://huggingface.co/datasets/{info.id}"
-    dataset_rev_url = f"https://huggingface.co/datasets/{info.id}/tree/{info.sha}"
-    return f":blue-badge[:material/open_in_new: [{info.id} @ {info.sha[:7]} [{info.last_modified.date()}]]({dataset_rev_url})]"
 
 
 def song_link(title, artist):

@@ -1,5 +1,6 @@
 from typing import Callable
 
+from huggingface_hub import dataset_info
 import streamlit as st
 
 
@@ -70,3 +71,25 @@ class InlineExamplesContainer:
 global_examples = InlineExamplesContainer()
 add_example = global_examples.add_example
 render_examples = global_examples.render_example_section
+
+
+#######################
+# DATASET INFORMATION #
+#######################
+
+
+# TODO: Determine dataset version
+dataset_name = "westie-data-collective/wcs-music-database-v1"
+dataset_version = "main"
+
+
+@st.cache_data(persist=True)
+def dataset_link():
+    """
+    Link to the underlying dataset on HuggingFace,
+    based on the version that was used to generate this page.
+    """
+    info = dataset_info(dataset_name, revision=dataset_version)
+    dataset_url = f"https://huggingface.co/datasets/{info.id}"
+    dataset_rev_url = f"https://huggingface.co/datasets/{info.id}/tree/{info.sha}"
+    return f":blue-badge[:material/open_in_new: [{info.id} @ {info.sha[:7]} [{info.last_modified.date()}]]({dataset_rev_url})]"
