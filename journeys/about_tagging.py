@@ -360,7 +360,7 @@ def table_playlist_classification():
         .with_columns(classify_playlist().alias('classification'))\
         .group_by('classification')\
         .agg(Playlist.id().count().alias(Stats.playlist_count))\
-        .with_columns((Stats.playlist_count() / total).alias('playlist_percent'))\
+        .with_columns((Stats.playlist_count() / total).alias(Stats.playlist_percent))\
         .sort(Stats.playlist_count, descending=True)
 
     playlists_df = search_engine\
@@ -415,7 +415,7 @@ def table_wcs_song_percent():
         .find_playlists(playlist_tag_exclude='dance:wcs',
                         playlist_stats_in_result=True,
                         tracks_in_result=False,
-                        sort_by='wcs_song_percent',
+                        sort_by=PlaylistStats.wcs_song_percent,
                         descending=True,
                         limit=None)\
         .gather_every(total // limit, offset)\

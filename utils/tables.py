@@ -34,6 +34,11 @@ class Stats(Entity):
     3. The number of playlists in a certain region/country.
     """
 
+    playlist_percent: Final = field("playlist_percent", pl.Float32)
+    """
+    The percentage of playlists that have a certain property, compared against a given total number of playlists.
+    """
+
     song_count: Final = field("song_count", pl.UInt32)
     """
     The number of (unique) songs. Depending on the context, this can mean:
@@ -41,6 +46,11 @@ class Stats(Entity):
     1. The number of (unique) songs in a playlist.
     2. The number of (unique) songs in a DJ's playlists.
     3. The number of songs played in a certain region/country.
+    """
+
+    song_percent: Final = field("song_percent", pl.Float32)
+    """
+    The percentage of songs that have a certain property, compared against a given total number of songs.
     """
 
     date_formats: Final = field('date_formats', pl.List(pl.String))
