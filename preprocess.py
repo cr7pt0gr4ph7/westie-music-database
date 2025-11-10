@@ -851,7 +851,7 @@ def process_tag_stats():
             .group_by(TrackTag.tag)\
             .agg(TrackTag.matching_playlist_count().max().alias(Tag.max_playlist_count),
                  TrackTag.matching_playlist_count().sort(descending=True),
-                 pl.col('num_tracks').sort_by(Track.matching_playlist_count, descending=True))
+                 pl.col('num_tracks').sort_by(TrackTag.matching_playlist_count, descending=True))
 
     def process_track_tags_batch(track_tags_batch: pl.LazyFrame) -> pl.LazyFrame:
         return track_tags_batch\
