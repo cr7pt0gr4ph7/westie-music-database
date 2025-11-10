@@ -846,15 +846,6 @@ def process_tag_stats():
 
     def process_track_tags_batch(track_tags_batch: pl.LazyFrame) -> pl.LazyFrame:
         return track_tags_batch\
-            .group_by(TrackTag.tag, TrackTag.matching_playlist_count)\
-            .agg(TrackTag.matching_playlist_count().count().alias('num_tracks'))\
-            .group_by(TrackTag.tag)\
-            .agg(TrackTag.matching_playlist_count().max().alias(Tag.max_playlist_count),
-                 TrackTag.matching_playlist_count().sort(descending=True),
-                 pl.col('num_tracks').sort_by(TrackTag.matching_playlist_count, descending=True))
-
-    def process_track_tags_batch(track_tags_batch: pl.LazyFrame) -> pl.LazyFrame:
-        return track_tags_batch\
             .group_by(TrackTag.tag)\
             .agg(TrackTag.matching_playlist_count().max().alias(Tag.max_playlist_count))
 
