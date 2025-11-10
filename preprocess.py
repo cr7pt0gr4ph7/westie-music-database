@@ -167,10 +167,13 @@ def process_in_batches(
     sort_by: str | None = '',
     batch_by: str = '',
     batch_values: pl.LazyFrame = None,
-    merge_type: Literal['sorted', 'unsorted'] = 'sorted',
+    merge_type: Literal['auto', 'sorted', 'unsorted'] = 'auto',
 ):
     if sort_by == '':
         sort_by = batch_by
+
+    if merge_type == 'auto':
+        merge_type = 'sorted' if sort_by else 'unsorted'
 
     if batch_by or batch_values is not None:
         row_count = batch_values.select(pl.len()).collect().item()
@@ -198,7 +201,7 @@ def process_in_batches(
         batch_output = batch_input\
             .pipe(map)
 
-        if sort_by is not None:
+        if sort_by:
             batch_output = batch_output\
                 .sort(sort_by)
 
