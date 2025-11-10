@@ -8,6 +8,7 @@ import polars as pl
 
 from utils.additional_data import actual_wcs_djs, queer_artists, poc_artists
 from utils.common.aggregation import rolling_fixed
+from utils.common.polars import lazy_pivot
 from utils.common.temp_files import TempFileTracker, with_temp_files
 from utils.keyword_data import extract_category, load_keyword_data
 from utils.playlist_classifiers import extract_date_strings_from_name, extract_tags_from_name
@@ -32,6 +33,7 @@ from utils.search import (
     TRACK_ORIGINAL_DATA_FILE,
     TRACK_PLAYLISTS_DATA_FILE,
     TRACK_TAGS_DATA_FILE,
+    TRACK_TAGS_ORIGINAL_DATA_FILE,
     UNPROCESSED_PLAYLISTS_DATA_FILE,
     UNPROCESSED_TRACK_BPM_DATA_FILE,
     UNPROCESSED_TRACK_LYRICS_DATA_FILE,
@@ -823,8 +825,101 @@ def process_playlist_and_song_tags():
             batch_values=tracks,
             batch_name="tags",
             batch_size=10000,  # Higher batch sizes are faster but have a righer OOM risk
-            output_name=TRACK_TAGS_DATA_FILE,
+            output_name=TRACK_TAGS_ORIGINAL_DATA_FILE,
         )
+
+
+@with_temp_files
+def filter_out_outlier_tags(temp_files: TempFileTracker):
+    """
+    Remove tags with low confidence scores that are contradicted
+    by other tags with comparatively higher confidence scores.
+    """
+
+    track_tags = scan_parquet_file(TRACK_TAGS_ORIGINAL_DATA_FILE)
+    keywords = load_keyword_data()
+
+    # Explode each tag into a separate column that contains the tag's score
+    tags_as_columns = track_tags\
+        .select(Track.id, TrackTags.tags_data)\
+        .explode(TrackTags.tags_data)\
+        .select(Track.id, TrackTags.tags_data().struct.unnest())\
+        .collect()\
+        .pivot(TrackTag.tag,
+               index=Track.id,
+               values=TrackTag.matching_playlist_count,
+               aggregate_function="first")\
+
+    temp_file = temp_files.register_for_deletion(TEMP_DATA_DIR + 'temp_track_tags_as_columns.parquet')
+    write_to_parquet_file(tags_as_columns, temp_file)
+    tags_as_columns = scan_parquet_file(temp_file, low_memory=True)
+
+    # Filter tag probabilities
+    def filter_tag(tag_name: str, schema: dict[str, Any]) -> pl.Expr | None:
+        opposite_tags = keywords.relations.get_opposite_tags(tag_name)
+        if not opposite_tags:
+            return None
+
+        # Exclude tags that are not present in the processed tracks
+        opposite_tags.intersection_update(schema.keys())
+
+        max_score = pl.max_horizontal(pl.col(opposite_tags))
+        cur_score = pl.col(tag_name)
+
+        limits: list[tuple[int, int]] = [
+            (3, 1),
+            (5, 2),
+            (10, 3),
+            (20, 4),
+            (30, 5),
+            (40, 6),
+            (50, 10),
+            (100, 20),
+        ]
+        limits.sort(key=lambda x: x[0])
+
+        expr = pl.when(cur_score.is_null()).then(cur_score)
+
+        for limit in limits:
+            expr = expr.when((max_score >= pl.lit(limit[0]))
+                             .and_(cur_score < pl.lit(limit[1])))\
+                       .then(pl.lit(None))
+
+        return expr.otherwise(cur_score)
+
+    tags_as_columns = tags_as_columns\
+        .pipe_with_schema(lambda lf, schema: lf.with_columns_seq([
+            expr
+            for key in schema
+            if key != Track.id
+            if (expr := filter_tag(key)) is not None
+        ]))
+
+    def unite_tags(lf: pl.LazyFrame, schema: pl.Schema) -> pl.LazyFrame:
+        return lf.select_seq(
+            Track.id,
+            pl.concat_arr([
+                pl.struct(pl.lit(key).alias(TrackTag.tag),
+                          pl.col(key).alias(TrackTag.matching_playlist_count))
+                for key in list(schema.keys())
+                if key != Track.id
+            ])
+            .arr.to_list()
+            .list.filter(TrackTag.matching_playlist_count.struct_field().is_not_null())
+            .list.eval(pl.element().sort_by(TrackTag.matching_playlist_count.struct_field(),
+                                            TrackTag.tag.struct_field(),
+                                            descending=[True, False]))
+            .alias(TrackTags.tags_data)
+        )
+
+
+    process_in_batches(
+        tags_as_columns,
+        lambda lf: lf.pipe_with_schema(unite_tags),
+        batch_size=100000,
+        batch_name="track_tags2",
+        output_name=TRACK_TAGS_DATA_FILE,
+    )
 
 
 def process_tag_stats():
@@ -1058,6 +1153,7 @@ def process_everything(merge_duplicates: bool = True):
 
     # Extract tags from playlist titles and assign to songs
     process_playlist_and_song_tags()
+    filter_out_outlier_tags()
     process_tag_stats()
     process_adjacent_song_tags()
     merge_playlist_tags_into_metadata()

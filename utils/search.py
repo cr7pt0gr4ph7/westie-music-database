@@ -115,6 +115,7 @@ UNPROCESSED_TRACK_LYRICS_DATA_FILE: Final = UNPROCESSED_DATA_DIR + 'song_lyrics.
 PLAYLIST_ORIGINAL_DATA_FILE: Final = TEMP_DATA_DIR + 'data_playlist_metadata.original.parquet'
 PLAYLIST_TRACKS_ORIGINAL_DATA_FILE: Final = TEMP_DATA_DIR + 'data_playlist_songs.original.parquet'
 TRACK_ORIGINAL_DATA_FILE: Final = TEMP_DATA_DIR + 'data_song_metadata.original.parquet'
+TRACK_TAGS_ORIGINAL_DATA_FILE: Final = TEMP_DATA_DIR + 'data_song_tags.original.parquet'
 
 # Processed files
 PLAYLIST_DATA_FILE: Final = DATA_DIR + 'data_playlist_metadata.parquet'
