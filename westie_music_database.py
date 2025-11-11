@@ -396,7 +396,7 @@ if song_locator_toggle:
                 Stats.dj_count
             ],
             descending=True,
-            limit=1000,
+            limit=100,
         ).collect(engine="streaming")
 
         results_df = song_search_df.lazy()\
