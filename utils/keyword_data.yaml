@@ -229,6 +229,7 @@ keywords:
         - chris tomlin
         - claude debussy
         - coldplay
+        - conor maynard
         - craig david
         - cro
         - da vinci's notebook
@@ -469,6 +470,8 @@ keywords:
         - the city harmonic
         - the civil wars
         - the fray
+        - the insomniacs
+        - the knocks
         - the lonely island
         - the lumineers
         - the mowgli's
@@ -484,7 +487,7 @@ keywords:
         - tim mcgraw
         - trampoline
         - travis scott
-        - twenty one pilots:
+        - twenty one pilots*:
             - twenty one pilots
             - twenty one pilots setlist
         - usher
@@ -1227,7 +1230,9 @@ keywords:
     - motown:
         - motown
         - mo town
-    - punk
+    - punk:
+        - punk
+        - punkpop
     - rap
     - r&b:
         - rnb
@@ -1922,9 +1927,13 @@ keywords:
         - lyrcical
         - lyrique # french: lyrical
     - lyrics
-    - vocals
     - lyrics-:
+        - no lyrics
         - without lyrics
+    - vocals
+    - vocals-:
+        - no vocals
+        - without vocals
     - micromusciality:
         - micro musciality
         - micromusciality
@@ -1943,6 +1952,9 @@ keywords:
         - musicality
         - musikalität
         - musiklitet
+    - complex phrasing:
+        - not 8 beat aligned
+        - phrase change not on the 8 count
     - phrasing:
         - qualities*:
             - energy changes # review
@@ -2069,7 +2081,9 @@ keywords:
         - mistletoe
         - mistletoes
         - navidad # spanish: christmas
+        - noel # french: christmas
         - noël # french: christmas
+        - noêl # french: christmas
         - santa swing
         - swingmas
         - switchmas
@@ -2084,6 +2098,7 @@ keywords:
         - merry go round
         - motion picture
         - the best man holiday # motion picture soundtrack
+        - not christmas
     - valentine's day:
         - valentine
         - valentines
@@ -2094,6 +2109,7 @@ keywords:
         - new years
         - new year's
         - new year’s
+        - nouvel an # french: new year
         - nye
         - nye ncdc
         - silvester # german: new year's eve
@@ -2126,6 +2142,7 @@ keywords:
         - spooky
     - spring: # todo: remove event titles from matches
         - spring
+        - primavera # french / portugese: spring
     - summer: # todo: remove event titles from matches
         - beach
         - pool
@@ -2138,6 +2155,9 @@ keywords:
         - "❄️"
         - winter
   playlist:
+    - ordered-:
+        - not ordered
+        - not sorted
     - ordered:
         - decreasing
         - increasing
@@ -2210,6 +2230,7 @@ keywords:
         - i like
         - lieblings lieder
         - liked
+        - mes prefs # french: my favorites
         - mit star bewertet
         - starred
         - tykätyt # finnish: liked
@@ -2219,6 +2240,9 @@ keywords:
     - dislikes:
         - dislike
         - dislikes
+        - don't play
+        - don't use
+        - do not play
         - do not use
         - exclude
         - excluded
