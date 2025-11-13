@@ -909,7 +909,11 @@ def filter_out_outlier_tags(temp_files: TempFileTracker):
             .list.eval(pl.element().sort_by(TrackTag.matching_playlist_count.struct_field(),
                                             TrackTag.tag.struct_field(),
                                             descending=[True, False]))
-            .alias(TrackTags.tags_data)
+            .alias(TrackTags.tags_data),
+        ).with_columns(
+            TrackTags.tags_data()
+            .list.eval(TrackTag.matching_playlist_count.struct_field().sum())
+            .alias(TrackTags.tag_relations_count)
         )
 
 
