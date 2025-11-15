@@ -163,6 +163,7 @@ def process_in_batches(
     batch_name: str,
     batch_size: int,
     output_name: str,
+    batch_storage: Literal['in-memory', 'disk'] = 'disk',
     sort_by: str | None = '',
     batch_by: str = '',
     batch_values: pl.LazyFrame = None,
@@ -177,7 +178,7 @@ def process_in_batches(
         row_count = data.select(pl.len()).collect().item()
 
     batch_count = int(math.ceil(row_count / batch_size))
-    batch_outputs: list[str] = []
+    batch_outputs: list[str | pl.DataFrame] = []
 
     print(f"Processing {row_count:,} {batch_name} in {batch_count:,} batches of {batch_size:,} items...")
 
@@ -201,13 +202,16 @@ def process_in_batches(
             batch_output = batch_output\
                 .sort(sort_by)
 
-        # Write batch result to temp file
-        temp_file = batch_temp_files.register_for_deletion(
-            create_temp_dir() + f'temp_{batch_name}_batch_{batch_index+1}.parquet')
-        write_to_parquet_file(batch_output, temp_file)
+        if batch_storage == 'disk':
+            # Write batch result to temp file
+            temp_file = batch_temp_files.register_for_deletion(
+                create_temp_dir() + f'temp_{batch_name}_batch_{batch_index+1}.parquet')
+            write_to_parquet_file(batch_output, temp_file)
 
-        # Add temp file to final merge
-        batch_outputs.append(temp_file)
+            # Add temp file to final merge
+            batch_outputs.append(temp_file)
+        else:
+            batch_outputs.append(batch_output.collect().lazy())
 
     print("Merging batches...")
 
@@ -215,12 +219,15 @@ def process_in_batches(
         merged: pl.LazyFrame | None = None
 
         for temp_file in batch_outputs:
-            batch_output = scan_parquet_file(temp_file)
+            batch_output = scan_parquet_file(temp_file) if isinstance(temp_file, str) else temp_file
             merged = (batch_output if merged is None else
                       merged.merge_sorted(batch_output, sort_by))
 
     elif merge_type == 'unsorted':
-        merged = pl.concat([scan_parquet_file(temp_file) for temp_file in batch_outputs])
+        merged = pl.concat([
+            scan_parquet_file(temp_file) if isinstance(temp_file, str) else temp_file
+            for temp_file in batch_outputs
+        ])
 
     else:
         raise ValueError(f'Invalid merge_type: {merge_type}')
