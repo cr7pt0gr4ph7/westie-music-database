@@ -22,6 +22,7 @@ from utils.search import (
     PLAYLIST_TRACKS_DATA_FILE,
     PLAYLIST_TRACKS_ORIGINAL_DATA_FILE,
     REGION_DATA_FILE,
+    TAG_CORRELATIONS_DATA_FILE,
     TAG_STATS_DATA_FILE,
     TAGS_DATA_FILE,
     TEMP_DATA_DIR,
@@ -916,7 +917,6 @@ def filter_out_outlier_tags(temp_files: TempFileTracker):
             .alias(TrackTags.tag_relations_count)
         )
 
-
     process_in_batches(
         tags_as_columns,
         lambda lf: lf.pipe_with_schema(unite_tags),
@@ -1095,6 +1095,83 @@ def merge_song_tags_into_metadata():
     write_to_parquet_file(tracks_with_tags, TRACK_DATA_FILE)
 
 
+@with_temp_files
+def compute_tag_correlations(temp_files: TempFileTracker):
+    """
+    Compute correlations between different tags.
+    """
+
+    categories = ["genre", "mood"]
+
+    # Get all existing tags
+    tags = scan_parquet_file(TAGS_DATA_FILE)\
+        .filter(Tag.category().is_in(categories))
+
+    track_tags = scan_parquet_file(TRACK_TAGS_ORIGINAL_DATA_FILE)\
+        .select(Track.id,
+                TrackTags.tags_data()
+                .list.filter(extract_category(TrackTag.Tag.name.struct_field()).is_in(categories)))
+
+    # Generate a list of all unique (tag1, tag2) pairs.
+    # (tag1, tag2) and (tag2, tag1) are considered to be equivalent.
+    # The result is the cross product, minus the diagonal and everything below it.
+    tag_pairs = tags.select(Tag.name().alias("tag1"))\
+        .join(tags.select(Tag.name().alias("tag2")), how='cross')\
+        .filter(pl.col('tag1') < pl.col('tag2'))\
+        .collect()
+
+    # Explode each tag into a separate column that contains the tag's score
+    tags_as_columns = track_tags\
+        .explode(TrackTags.tags_data)\
+        .select(Track.id, TrackTags.tags_data().struct.unnest())\
+        .collect()\
+        .pivot(TrackTag.tag,
+               index=Track.id,
+               values=TrackTag.matching_playlist_count,
+               aggregate_function="first")#\
+        # .with_columns(pl.exclude(Track.id).fill_null(0))
+
+    temp_file = temp_files.register_for_deletion(TEMP_DATA_DIR + 'temp_track_tags_as_columns.parquet')
+    write_to_parquet_file(tags_as_columns.lazy(), temp_file)
+    tags_as_columns = scan_parquet_file(temp_file, low_memory=True)
+
+    def process_correlations(tag_pairs: pl.LazyFrame) -> pl.LazyFrame:
+        for row in tag_pairs.select(pl.col('tag1', 'tag2').item()).collect().iter_rows():
+            tag1: str = row[0]
+            tag2: str = row[1]
+            return tags_as_columns\
+                .filter(pl.any_horizontal(pl.col(tag1, tag2).is_not_null()))\
+                .with_columns(pl.col(tag1, tag2).fill_null(0))\
+                .select(pl.corr(pl.col(tag1).fill_null(0),
+                                pl.col(tag2).fill_null(0),
+                                method='spearman')
+                        .alias('spearman_correlation'),
+                        pl.min_horizontal(pl.col(tag1, tag2)).max()
+                        .fill_null(0).alias('max_of_min'),
+                        pl.min_horizontal(pl.col(tag1, tag2)).sum()
+                        .fill_null(0).alias('sum_of_min'),
+                        pl.min_horizontal(pl.col(tag1, tag2)).sqrt().sum()
+                        .fill_null(0).alias('sum_of_sqrt_of_min'),
+                        pl.min_horizontal(pl.col(tag1, tag2)).cbrt().sum()
+                        .fill_null(0).alias('sum_of_cbrt_of_min'))\
+                .with_columns(pl.lit(tag1).alias('tag1'), pl.lit(tag2).alias('tag2'))
+
+        raise ValueError()
+
+    process_in_batches(
+        tag_pairs.lazy(),
+        process_correlations,
+        batch_name="tag_pairs_correlation",
+        batch_size=1,
+        batch_storage='in-memory',
+        output_name=TAG_CORRELATIONS_DATA_FILE,
+    )
+
+    correlations = scan_parquet_file(DATA_DIR + "data_tag_correlations.parquet")
+
+    print(correlations.collect(engine='streaming'))
+
+
 def compute_playlist_wcs_score():
     """
     Compute a probability of how likely a playlist is wcs-related by checking
@@ -1162,6 +1239,7 @@ def process_everything(merge_duplicates: bool = True):
     process_adjacent_song_tags()
     merge_playlist_tags_into_metadata()
     merge_song_tags_into_metadata()
+    compute_tag_correlations()
 
     # Compute the "is_wcs" probability for each playlist
     compute_playlist_wcs_score()
