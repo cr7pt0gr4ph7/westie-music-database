@@ -163,7 +163,7 @@ def process_in_batches(
     batch_name: str,
     batch_size: int,
     output_name: str,
-    batch_storage: Literal['in-memory', 'disk'] = 'disk',
+    batch_storage: Literal['none', 'in-memory', 'disk'] = 'disk',
     sort_by: str | None = '',
     batch_by: str = '',
     batch_values: pl.LazyFrame = None,
@@ -188,7 +188,8 @@ def process_in_batches(
     for batch_index in range(0, batch_count):
         batch_start = batch_index * batch_size
 
-        print(f"Processing batch {batch_index+1:,}/{batch_count:,}")
+        if batch_storage != 'none':
+            print(f"Processing batch {batch_index+1:,}/{batch_count:,}")
 
         if batch_by or batch_values is not None:
             batch_input = data\
@@ -213,8 +214,12 @@ def process_in_batches(
 
             # Add temp file to final merge
             batch_outputs.append(temp_file)
-        else:
+        elif batch_storage == 'in-memory':
             batch_outputs.append(batch_output.collect().lazy())
+        elif batch_storage == 'none':
+            batch_outputs.append(batch_output)
+        else:
+            raise ValueError(f"Invalid batch_storage value: {batch_storage}")
 
     print("Merging batches...")
 
