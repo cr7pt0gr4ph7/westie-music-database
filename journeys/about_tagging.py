@@ -26,13 +26,29 @@ employ to make this work.
 
 dataset_note()
 
+with st.expander(":blue-badge[:material/list: **Table of Contents**]"):
+    """
+
+    1. Preface
+    2. ["Why?"](#why)
+       - [What are trying to achieve?](#what-are-we-trying-to-achieve)
+    3. ["How?"](#how)
+       - [From tagging playlists...](#from-tagging-playlists)
+       - [...to tagging songs](#to-tagging-songs)
+    4. [Improving accuracy & usefulness](#improving-accuracy-and-usefulness)
+       - [Supressing false-positive tags](#supressing-false-positive-tags)
+    5. [Understanding our dataset](#understanding-our-dataset)
+       - [Classifying playlists](#classifying-playlists)
+       - [Useful keywords in playlist names](#useful-keywords-in-playlist-names)
+    """
+
 #
 # MISSION STATEMENT
 #
 
-"""
-## Why?
+st.header("Why?", divider="blue")
 
+"""
 ###### What are we trying to achieve?
 
 While it is nice & enlightening to be able to compare countries' music / trends in how & where a song is played / ...
@@ -46,7 +62,9 @@ _I'm trying to achieve,_ **without** _the cool new stuff_ **being drowned out in
 # FROM TAGGING PLAYLISTS....
 #
 
-st.header("From tagging playlists...")
+st.header("How?", divider="red")
+
+st.subheader("From tagging playlists...")
 
 f"""
 The first step in our journey is pretty easily explained: Tag playlists with
@@ -79,7 +97,7 @@ and can be [:small[:material/open_in_new:] found in][kw-data] `utils/keyword_dat
 # ...TO TAGGING SONGS
 #
 
-st.header("...to tagging songs")
+st.subheader("...to tagging songs")
 
 f"""
 Tagging playlists in this way works pretty well, so the next logical step is to ask the question:
@@ -87,7 +105,7 @@ _»Can we use the tagging information from the playlists to automatically derive
 """
 
 with st.container(border=True):
-    """
+    r"""
     :blue-badge[:material/info: Details]
 
     More precisely, for any given `(song, tag)` pairing, we want to estimate the following probability:
@@ -95,7 +113,35 @@ with st.container(border=True):
     > _»How likely is it that one of the DJs from our dataset would consider song X to be a WCS / late night / ... song?«_.
 
     That is, if we played a given song to 100 DJs, how many would agree it's a late night song?
-    Though this is obviously a simplification, as we are dealing with random and uncertain statistical data.
+    If estimating the true probability proves difficult (_foreshadowing..._), we would also be satisfied with
+    any kind of scoring function that is positively correlated with the probability.
+    """
+
+with st.expander("Mathematical Details"):
+    r"""
+    :blue-badge[:material/info: Details]
+
+    In mathematical terms, the probability that a **song $s$** would be tagged with a **tag $t$** by a random DJ is defined as:
+
+    $$P(s,t) = \dfrac{N(s,t,\text{yes})}{N(s,t,\text{yes}) + N(s,t,\text{no})}$$
+
+    where $\small N$ can be either $\small N_\text{DJs}$ or $\small N_\text{Playlists}$.
+
+    It's not possible to directly estimate the true probability $\small P(S,T)$
+    from our dataset, though, because **while we do know**
+    $\small N(s,t,\text{yes})$ and
+    $\small N(\text{total})$
+    and thus:
+    $\small N(s,t,\text{no}) + N(s,t,\text{not reviewed}) = N(\text{total}) - N(s,t,\text{yes})$,
+    **we do not know**
+    $\small N(s,t,\text{no})$ or $\small N(s,t,\text{not reviewed})$.
+
+    We'll therefore use a **score** $\small S(s,t) \stackrel{\propto}{\sim} P(s,t)$
+    instead, defined as $\small S(s,t) = N(s,t,\text{yes}) - N_\text{Correction}(s,t)$.
+
+    $\small N_\text{Correction}(s,t)$ represents a small correction computed using an algorithm
+    described below to filter out false positives. For now, we can just assume
+    $\small N_\text{Correction}(s,t) = 0$
     """
 
 song_tags = [
@@ -110,16 +156,50 @@ song_tags = [
 
 f"""
 In a first step, simply counting the number of e.g. `genre:late night` playlists a song appears in yields acceptable results.
+"""
+
+
+st.header("Improving accuracy & usefulness", divider="violet")
+
+f"""
+To improve the usefulness of the song tags for the typical user, let us remind ourselves of
+our [initially stated goal](#what-are-we-trying-to-achieve) and its consequences:
+
+- Provide tags for as many tracks as possible (not only the most popular tracks)
+- Avoid noise by suppressing tags that are clearly false positives.
+- Make sure that high score for a tag correlates with a high probability.
+  Past a certain score threshold there shouldn't be false positives.
+
+In practical terms:
+
+- Songs only contained in very few playlists (<5 playlists) should still be tagged,
+  accepting that we can't very confident in the tags.
+- Ed Sheeran's Don't shouldn't be tagged as "low energy".
+- When sorting songs by tag confidence...
+
+There are different options for utilizing tags:
+
+- Searching for songs with a certain tag (and sorting by tag confidence)
+- Showing the tags for a song (filtering made harder by long-tail characeristics)
+"""
+
+st.subheader("Supressing false-positive tags")
+
+f"""
+1.  Supress stuff that is very likely false positives.
+2.  Leave in contradictory tags when we can't determine which are better.
+
+1.  We need to deal with variations
 
 We run into two problems:
 
-1.  Only a small percentage \u2014 roughly {percentage('playlists', with_any_tag=song_tags)}
+1.  Only a certain percentage \u2014 roughly {percentage('playlists', with_any_tag=song_tags)}
     \u2014 of our playlists have names from which we can derive useful information about the songs they contain.
 
-    Another {percentage('playlists', with_any_tag=['context:social', 'events'])} of playlist are named in a way
-    that indicates they are a class/workshop/event playlist.
-    - Late night, late nite, ...
-    - Class/Social/...
+    This leaves a sizeable portion of our dataset unused (for the purpose of tagging songs).
+
+    Another {percentage('playlists', with_any_tag=['context', 'events'])} of playlist are named in a way
+    that indicates they are a class/workshop/event/competition/...(-related) playlist.
 
 2.  While a few popular songs are contained in many playlists, most of the songs we are actually
     interested in are contained in comparatively fewer playlists
@@ -127,6 +207,8 @@ We run into two problems:
     If we plot the number of playlists per song, it quickly becomes apparent that we have a typical
     :blue-badge[:material/open_in_new: [long-tail distribution](https://www.google.com/search?q=long+tail+distribution)]
     with a very long tail:
+
+    TBD: Graph
 """
 
 """
@@ -281,11 +363,13 @@ def table_wcs_song_percent():
 
 table_wcs_song_percent()
 
-f""""
+f"""
 One additional complication are combined `WCS/Zouk` playlists, which contain
 both WCS and Zouk songs, where it isn't entirely clear whether all songs
 are both `Zouk` and `WCS`. We currently tag these playlists as both `WCS` and `Zouk`.
+"""
 
+f"""
 #### The term `Late Night` and its variations
 
 Surprisingly, one of the only other tags that is useful...
