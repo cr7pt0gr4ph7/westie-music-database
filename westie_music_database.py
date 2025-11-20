@@ -403,29 +403,38 @@ if song_locator_toggle:
             .with_columns(
                 pl.col(Playlist.name).list.head(30),
                 TrackTags.tags_data()
-                .list.filter(extract_category(pl.element().struct.field(TrackTag.tag))
+                .list.filter(extract_category(TrackTag.tag.struct_field())
                              .is_in(["genre", "mood", "tempo", "level", "topic"]))
                 .list.eval(
-                    pl.element().sort_by(pl.element().struct.field(TrackTag.matching_playlist_count),
-                                         pl.element().struct.field(TrackTag.tag),
+                    pl.element().sort_by(TrackTag.matching_playlist_count.struct_field(),
+                                         TrackTag.tag.struct_field(),
                                          descending=[True, False]))
                 .list.eval(pl.concat_str(
-                    pl.element().struct.field(TrackTag.tag),
+                    TrackTag.tag.struct_field(),
                     pl.lit(" ("),
-                    pl.element().struct.field(TrackTag.matching_playlist_count),
+                    TrackTag.matching_playlist_count.struct_field(),
                     pl.lit(")")))
                 .alias('tag_frequency'),
-                pl.col('adjacent_tags_data')
-                .list.filter(extract_category(pl.element().struct.field(TrackTag.tag))
+                TrackTags.tags_data()
+                .list.filter(extract_category(TrackTag.tag.struct_field())
                              .is_in(["genre", "mood", "tempo", "level", "topic"]))
                 .list.eval(
-                    pl.element().sort_by(pl.element().struct.field(TrackTag.matching_playlist_count),
-                                         pl.element().struct.field(TrackTag.tag),
+                    pl.element().sort_by(TrackTag.matching_playlist_count.struct_field(),
+                                         TrackTag.tag.struct_field(),
+                                         descending=[True, False]))
+                .list.eval(TrackTag.matching_playlist_count.struct_field())
+                .alias(TrackTags.playlist_counts_per_tag),
+                pl.col('adjacent_tags_data')
+                .list.filter(extract_category(TrackTag.tag.struct_field())
+                             .is_in(["genre", "mood", "tempo", "level", "topic"]))
+                .list.eval(
+                    pl.element().sort_by(TrackTag.matching_playlist_count.struct_field(),
+                                         TrackTag.tag.struct_field(),
                                          descending=[True, False]))
                 .list.eval(pl.concat_str(
-                    pl.element().struct.field(TrackTag.tag),
+                    TrackTag.tag.struct_field(),
                     pl.lit(" ("),
-                    pl.element().struct.field(TrackTag.matching_playlist_count),
+                    TrackTag.matching_playlist_count.struct_field(),
                     pl.lit(")")))
                 .alias('adjacent_tag_frequency'))\
             .rename({Track.country: 'country'})\
@@ -434,11 +443,24 @@ if song_locator_toggle:
             .select((cs.all()
                     - Playlist.matching_columns()
                     - PlaylistTrack.matching_columns()
-                    - PlaylistOwner.matching_columns())
+                    - PlaylistOwner.matching_columns()
+                    - cs.by_name(TrackTags.tags_data)
+                    - cs.by_name('adjacent_tags_data'))
                     | cs.by_name(Playlist.name)
                     | cs.by_name(PlaylistOwner.name))\
-            .select(pull_columns_to_front(
+            .with_row_index(offset=1)\
+            .collect(engine="streaming")
+
+        st.dataframe(
+            results_df,
+            column_order=[
+                'index',
                 Track.name,
+                Track.artists,
+                TrackTags.tags,
+                'tag_frequency',
+                TrackTags.playlist_counts_per_tag,
+                'adjacent_tag_frequency',
                 Track.url,
                 Stats.playlist_count,
                 Stats.dj_count,
@@ -448,26 +470,16 @@ if song_locator_toggle:
                 Track.has_queer_artist,
                 Track.has_poc_artist,
                 Playlist.name,
-                Track.artists,
                 PlaylistOwner.name,
                 'country',
-            ))\
-            .with_columns(TrackTags.tags().list.eval(
-                pl.element().str.split(':').list.get(1, null_on_oob=True).drop_nulls()))\
-            .select(pull_columns_to_front(
-                Track.name,
-                Track.artists,
-                TrackTags.tags,
-                'tag_frequency',
-                'adjacent_tag_frequency',
-                Track.url,
-            ))\
-            .with_row_index(offset=1)\
-            .collect(engine="streaming")
-
-        st.dataframe(results_df, column_config={
-                     Track.url: st.column_config.LinkColumn(),
-                     TrackTags.tags: tag_manager.get_column_config(Tag.short_name)})
+            ],
+            column_config={
+                'index': st.column_config.TextColumn(pinned=True),
+                Track.name: st.column_config.TextColumn(pinned=True),
+                Track.url: st.column_config.LinkColumn(),
+                TrackTags.tags: tag_manager.get_column_config(Tag.name),
+                TrackTags.playlist_counts_per_tag: st.column_config.LineChartColumn(y_min=0)
+            })
 
         if song_search_df.shape[0] <= 3:
             playlists_with_song = search_engine.data.playlists\
