@@ -5,6 +5,7 @@ import networkx as nx
 import streamlit as st
 import polars as pl
 
+from utils.keyword_data import TagRelationType, load_keyword_data
 from utils.search import TAG_CORRELATIONS_DATA_FILE, TAGS_DATA_FILE, TRACK_DATA_FILE, TRACK_TAGS_ORIGINAL_DATA_FILE
 from utils.tables import Tag, Track, TrackTag, TrackTags
 
@@ -149,6 +150,8 @@ def tag_comparison():
 @immediate
 @st.fragment
 def tag_clusters():
+    keywords = load_keyword_data()
+
     tags_to_exclude = [
         "genre:fusion",
         "genre:remixes",
@@ -174,30 +177,30 @@ def tag_clusters():
             "genre:beatless",
             "genre:late night",
             "genre:acoustic",
-            # "genre:piano",
+            "genre:piano",
         ],
         [
             "genre:beatless",
             "genre:late night",
             "genre:acoustic",
-            # "genre:guitar",
+            "genre:guitar",
         ],
         [
-            # "genre:instrumental",
-            # "genre:guitar",
+            "genre:instrumental",
+            "genre:guitar",
         ],
         [
-            # "genre:instrumental",
-            # "genre:piano",
+            "genre:instrumental",
+            "genre:piano",
         ],
         [
-            # "genre:instrumental",
-            # "genre:violins",
+            "genre:instrumental",
+            "genre:violins",
         ],
         [
             "genre:folk",
             "genre:country",
-            # "genre:guitar",
+            "genre:guitar",
         ],
         [
             "genre:motown",
@@ -209,12 +212,12 @@ def tag_clusters():
         [
             "genre:soundtrack",
             "genre:classical",
-            # "genre:instrumental",
-            # "genre:violins",
+            "genre:instrumental",
+            "genre:violins",
         ],
         [
             "genre:jazz",
-            # "genre:instrumental",
+            "genre:instrumental",
         ],
         [
             "genre:broadway",
@@ -222,58 +225,57 @@ def tag_clusters():
             "genre:soundtrack",
             "genre:orchestral",
         ],
-    ]
-
-    # Additional clusters of opposite tags not contained in the data
-    opposite_clusters: list[list[str]] = [
         [
-            "genre:acoustic",
-            "genre:beatless",
-            "genre:late night",
-            "genre:lo-fi",
-            "genre:vaporwave",
+            "mood:good",
+            "mood:good mood",
+            "mood:good morning",
+            "mood:morning",
+            "mood:good vibes",
+            "mood:happy",
+            "mood:lucky",
+            "mood:vibe",
+            "mood:vibes",
+            "mood:vibin",
+            "mood:groovy",
+            "mood:upbeat",
             #
-            "genre:blues",
-            "genre:bluesy",
-            "genre:funk",
-            "genre:soul",
-            "genre:motown",
+            "mood:soft",
+            "mood:relaxed",
+            "mood:chill",
+            "mood:chillout",
+            "mood:tropical",
+            "mood:lovely",
             #
-            "genre:bossa nova",
-            "genre:latino",
+            "mood:sexy",
+            "mood:romantic",
+            "mood:sensual",
+            "mood:feeling",
+            "mood:feels",
             #
-            "genre:country",
-            "genre:folk",
+            "mood:energy",
+            "mood:possibly energetic",
             #
-            "genre:techno",
-            "genre:trance",
+            "mood:cool",
+            "mood:calm",
             #
-            "genre:broadway",
-            "genre:classical",
-            "genre:musicals",
-            "genre:orchestral",
+            "mood:mysterious",
             #
-            "genre:dancehall",
-            "genre:drum & bass",
-            "genre:hip hop",
-            "genre:jazz",
-            "genre:kpop",
-            "genre:punk",
-            "genre:rap",
-            "genre:r&b",
-            "genre:rock",
-            "genre:soundtrack",
+            "mood:epic",
         ],
         [
-            "genre:musicals",
-            "genre:classical",
-        ]
+            "mood:energy",
+            "mood:power",
+            "mood:funky",
+            "mood:high energy",
+            "mood:fast and high energy",
+            "mood:slow but high energy",
+        ],
     ]
 
     low_correlations = correlations\
         .filter(pl.col("max_of_min").is_between(0, 1))\
-        .filter(pl.col("tag1").str.starts_with("genre:"),
-                pl.col("tag2").str.starts_with("genre:"),
+        .filter(pl.col("tag1").str.starts_with("genre:").or_(pl.col("tag1").str.starts_with("mood:")),
+                pl.col("tag2").str.starts_with("genre:").or_(pl.col("tag2").str.starts_with("mood:")),
                 ~pl.col("tag1").is_in(tags_to_exclude),
                 ~pl.col("tag2").is_in(tags_to_exclude))
 
@@ -282,11 +284,16 @@ def tag_clusters():
 
     graph.add_edges_from([pair
                           for cluster in related_clusters
-                          for pair in combinations(cluster, 2)])
+                          for pair in combinations(cluster, 2)
+                          if not pair[0] in tags_to_exclude and not pair[1] in tags_to_exclude
+                          if (pair[0].startswith("genre:") or pair[0].startswith("mood:"))
+                          and (pair[1].startswith("genre:") or pair[1].startswith("mood:"))])
 
     graph.add_edges_from([pair
-                          for cluster in opposite_clusters
-                          for pair in combinations(cluster, 2)])
+                          for pair in keywords.relations.get_pairs(TagRelationType.OPPOSITES)
+                          if not pair[0] in tags_to_exclude and not pair[1] in tags_to_exclude
+                          if (pair[0].startswith("genre:") or pair[0].startswith("mood:"))
+                          and (pair[1].startswith("genre:") or pair[1].startswith("mood:"))])
 
     max_cliques_list: list[list[str]] = list(nx.find_cliques(graph))
     max_cliques = pl.LazyFrame({"tags": max_cliques_list})
