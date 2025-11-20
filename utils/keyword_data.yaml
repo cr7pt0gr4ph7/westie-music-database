@@ -1269,6 +1269,7 @@ keywords:
         - not blues
         - rhythm & blues
         - slow blues/fast contemp
+        - blues @ cybertron
     - bluesy
     - club:
         - club
@@ -1604,7 +1605,17 @@ keywords:
         - upbeat:
             - upbeat
             - upbeats
-        - good morning
+        - morning:
+            - morning
+            - good morning:
+                - bright morning
+                - good morning
+                - sunday morning
+                - morning coffee
+                - morning pop bops
+            - good morning-:
+                - fairycore
+                - goblincore
         - good vibes:
             - good vibe
             - good vibes
@@ -1721,8 +1732,6 @@ keywords:
         - vibes
         - vibras # spanish: vibes
     - vibin
-    - morning
-    - good morning
     - power
 
     # Also need more investigation
@@ -2554,12 +2563,15 @@ keywords:
         - shazams
         - shazam-titel
         - shazamed
+  country:
+    - malaysia
   city:
     - avalon # there a cities in multiple countries named avalon
     - berlin # germany
     - böblingen # germany
     - bratislava # slowakia
     - bristol # uk
+    - brno # czechia
     - calpe # spain (calp)
     - denver # usa
     - dunedin # new zealand
@@ -2595,10 +2607,9 @@ keywords:
     - wichita # usa
     - wrocław # poland
   events:
-    - aloha+event/dance:wcs/category:usa: # EVENT: Aloha on Hawaii
     - andrzejki # 26 playlists # polish: st. andrew's day
     - buma # 25 playlists
-    - calonocna+social/?/category:poland: # PARTY / polish: all-nighter # Seems to represent one or more party series
+    - calonocna+social/?/country:poland: # PARTY / polish: all-nighter # Seems to represent one or more party series
         - całonocna
         - calonocna
     - cwf # 9 playlists # PARTY: CWF
@@ -2623,20 +2634,9 @@ keywords:
     - zonawcs # 25 playlists # ZonaWCS
     - westival # there are multiple events with this name
     ###
-    - avignon city swing+event/dance:wcs/country:france: # EVENT: Avignon City Swing
-    - norway westie fest+event/dance:wcs/country:norway: # EVENT: Norway Westie West
-        - norway westie fest
-        - nwf
-    - pulse dance studio+organization/various/country:unclear:
-    - swing dansekveld frode+party/dance:wcs/country:norway: # PARTY: Swing Dance Evening Frode
-    - west in nougat+event/dance:wcs/country:france: # EVENT: West in Nougat
-        - west in nougat
-        - win # review
     - żaczek+party/?/country:poland: # PARTY probably # polish: little girl
     ###
-    - ivra+organization/various/country:sweden: # 4 playlists # ORG: Ivra Arts Centre in Göteborg, Sweden
     - nadmorska # 9 playlists # croatian: above sea level? / polish: seaside
-    - otsukareswing+party/dance:wcs/country:japan: # 4 playlists # PARTY: Otsukareswing (After-work party?)
     - rowell # 4 playlists # PARTY?/LOCATION?: Rowell
     - roxie's # 4 playlists # LOCATION: Roxie's
     - sds # 5 playlists # PARTY: SDS
@@ -2664,6 +2664,7 @@ keywords:
     - aix on west+event/dance:wcs/country:france: # EVENT: Aix on West / AoW
         - aiw
         - aix on west
+    - aloha+event/dance:wcs/country:usa: # EVENT: Aloha on Hawaii
     - arnic: # EVENT?: [ArNic]
         - arnic
         - "[arnic]"
@@ -2693,6 +2694,7 @@ keywords:
     - austin westie academy+organization/dance:wcs/country:usa: # ORG: Austin Westie Academy
         - austin westie academy
         - awa
+    - avignon city swing+event/dance:wcs/country:france: # EVENT: Avignon City Swing
     - baltic swing+event/dance:wcs/country:poland: # EVENT: Baltic Swing [year]
     - bavarian open+event/dance:wcs/country:germany: bavarian open
     - bcsdc
@@ -2846,6 +2848,7 @@ keywords:
     - house of west+party/dance:wcs/country:usa: # PARTY: House of West in New York, USA
     - idance+organization/various/country:usa: # ORG: iDance - mainly online lessons?
     - intensiv' experience+event/dance:wcs/country:unclear: # EVENT?: Intensiv' Experience
+    - ivra+organization/various/country:sweden: # 4 playlists # ORG: Ivra Arts Centre in Göteborg, Sweden
     - jinglebellswing+event/various/country:unclear: # EVENT: JingleBellSwing
     - karelliswing+organization/dance:wcs/country:france: # ORG: KarelliSwing in Paris
     - king swing+event/dance:wcs/country:poland: # EVENT: King Swing in Kraków, Poland
@@ -2965,8 +2968,12 @@ keywords:
         - northern california dance collective
         - ncdc
         - nye ncdc
+    - norway westie fest+event/dance:wcs/country:norway: # EVENT: Norway Westie West
+        - norway westie fest
+        - nwf
     - odyssey # EVENT?: Odyssey ?
     - openair böblingen+party/dance:wcs/country:germany: # PARTY: OpenAir Böblingen
+    - otsukareswing+party/dance:wcs/country:japan: # 4 playlists # PARTY: Otsukareswing (After-work party?)
     - paris swing classic: # EVENT: Paris Swing Classic
         - paris swing
         - paris swing classic
@@ -2980,6 +2987,7 @@ keywords:
     - portland swing dance club+organization/dance:wcs/country:usa:
         - portland swing dance club
         - psdc
+    - pulse dance studio+organization/various/country:unclear:
     - push ton west+event/dance:wcs/country:france: # EVENT: PUSH' TON WEST in Toulouse, France
         - push ton west
     - red white and blue dance
@@ -3089,6 +3097,7 @@ keywords:
     - swing dance alley+organization+location/dance:wcs/country:usa: # ORG/LOCATION: Swing Dance Alley in Syracuse, USA
         - swing dance alley
         - steve ryan dance
+    - swing dansekveld frode+party/dance:wcs/country:norway: # PARTY: Swing Dance Evening Frode
     - swing diego+event/dance:wcs/country:usa: # EVENT: Swing Diego in San Diego, USA
         - swingdiego
         - swing diego
@@ -3193,6 +3202,7 @@ keywords:
         - tri-town swing
         - tritown
         - ttowns # TtownS
+    - tsc trier+organization/various/country:germany: # ORGANIZATION: Tanzsportclub Trier
     - toulon westie camp+event/dance:wcs/country:france: # EVENT: Toulon Westie Camp
         - toulon westie camp
         - twc
@@ -3256,6 +3266,9 @@ keywords:
     - west in lyon+event/dance:wcs/country:france: # EVENT: West in Lyon
         - west in lyon
         - wil
+    - west in nougat+event/dance:wcs/country:france: # EVENT: West in Nougat
+        - west in nougat
+        - win # review
     - westie club timisoara+organization/dance:wcs/country:romania: # ORG: Westie Club Timisoara in Romania
     - westie spring thing+event/dance:wcs/country:hungary: # EVENT: Westie Spring Thing in Budapest, Hungary
         - westie spring thing
