@@ -113,6 +113,10 @@ relations:
   - opposites:
       - "mood:chill"
       - group:
+          - "mood:energy"
+          - "mood:power"
+          - "mood:rage"
+      - group:
           - "mood:emotional"
           - "mood:deep"
   - opposites:
