@@ -416,6 +416,11 @@ class TagRelations:
                 for tag in rel.tags
                 if tag != tag_name}
 
+    def get_pairs(self, type: TagRelationType) -> list[tuple[TagName, TagName]]:
+        return [comb for rel in self.relations
+                if rel.type == type
+                for comb in combinations(rel.tags, 2)]
+
 
 def load_relations(keywords_file: _KeywordsFile) -> TagRelations:
     def get_relation_item_sets(relation: list[TagName | dict[Literal['group'], list[TagName]]]) -> list[list[TagName]]:
