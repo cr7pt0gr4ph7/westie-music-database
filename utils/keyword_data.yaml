@@ -92,19 +92,102 @@ limits:
       min_playlist_percent: 20.0
 relations:
   - opposites:
+      - "mood:chill"
+      - group:
+          - "mood:high energy"
+          - "mood:funky"
+  - opposites:
+      - "topic:vocals"
+      - "genre:instrumental"
+  - opposites:
+      - "topic:lyrical"
+      - "genre:instrumental"
+  - opposites:
       - "tempo:fast"
+      - "mood:calm"
+  - opposites:
+      - group:
+          - "level:beginners"
+          - "level:easy"
+      - "level:hard"
+  - opposites:
+      - "mood:chill"
+      - group:
+          - "mood:emotional"
+          - "mood:deep"
+  - opposites:
+      - group:
+          - "genre:beatless"
+          - "genre:acoustic"
+          - "genre:late night"
+          - "genre:lo-fi"
+          - "genre:pop"
+          - "genre:vaporwave"
+      - group:
+          - "mood:tropical"
+      - group:
+          - "genre:blues"
+          - "genre:bluesy"
+          - "genre:funk"
+          - "genre:soul"
+          - "genre:motown"
+      - group:
+          - "genre:bossa nova"
+          - "genre:latino"
+      - group:
+          - "genre:country"
+          - "genre:folk"
+      - group:
+          - "genre:techno"
+          - "genre:trance"
+      - group:
+          - "genre:broadway"
+          - "genre:musicals"
+          - "genre:classical"
+          - "genre:orchestral"
+      - "genre:dancehall"
+      - "genre:drum & bass"
+      - "genre:hip hop"
+      - "genre:jazz"
+      - "genre:kpop"
+      - "genre:punk"
+      - "genre:rap"
+      - "genre:r&b"
+      - "genre:rock"
+      - "genre:soundtrack"
+  - opposites:
+      - group:
+          - "genre:broadway"
+          - "genre:musicals"
+      - group:
+          - "genre:classical"
+          - "genre:orchestral"
+  - opposites:
+      - "genre:late night"
+      - group:
+          - "mood:high energy"
+          - "genre:hip hop"
+          - "genre:funk"
+          - "genre:blues"
+          - "genre:soul"
+          - "genre:club"
+          - "genre:latino"
+  - opposites:
+      - "level:beginners"
+      - "genre:beatless"
+  - opposites:
+      - "tempo:fast"
+      - "mood:slow but high energy"
+  - opposites:
+      - "tempo:slow"
+      - "mood:fast and high energy"
+  - opposites:
+      - "tempo:fast"
+      - "tempo:medium"
       - "tempo:slow"
   - opposites:
-      - "genre:late night"
-      - "genre:club"
-  - opposites:
-      - "genre:late night"
-      - "genre:funk"
-  - opposites:
-      - "genre:late night"
-      - "genre:blues"
-  - opposites:
       - "mood:high energy"
+      - "mood:medium energy"
       - "mood:low energy"
   - related:
       - "genre:club"
