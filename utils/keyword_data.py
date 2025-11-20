@@ -4,6 +4,7 @@ Classes and methods for parsing the keyword/tagging configuration in `keyword_da
 from __future__ import annotations
 from dataclasses import dataclass
 from enum import StrEnum
+from itertools import combinations, product
 from typing import Literal, NamedTuple, Self, TypedDict
 
 import os
@@ -88,7 +89,7 @@ class _KeywordsFile(TypedDict, total=False):
     """Defines the YAML schema for the `keyword_data.yaml` file."""
     metadata: dict[CategoryName, _CategoryMetadata]
     limits: dict[CategoryName, dict[ShortTagName, TagLimits]]
-    relations: list[dict[Literal['opposites', 'related'], list[TagName]]]
+    relations: list[dict[Literal['opposites', 'related'], list[TagName | dict[Literal['group'], list[TagName]]]]]
     keywords: dict[CategoryName, list[KeywordOrTagSpec]]
 
 
@@ -417,10 +418,23 @@ class TagRelations:
 
 
 def load_relations(keywords_file: _KeywordsFile) -> TagRelations:
+    def get_relation_item_sets(relation: list[TagName | dict[Literal['group'], list[TagName]]]) -> list[list[TagName]]:
+        groups: list[list[TagName]] = []
+        standalone: list[TagName] = []
+
+        for item in relation:
+            if isinstance(item, dict):
+                groups.append(item['group'])
+            else:
+                standalone.append(item)
+
+        return list([[*standalone, *items] for items in product(*groups)] if groups else [standalone])
+
     return TagRelations([
-        TagRelation(TagRelationType.from_string(type), item[type])
-        for item in keywords_file.get('relations') or []
-        for type in item
+        TagRelation(TagRelationType.from_string(type), item_set)
+        for relation in keywords_file.get('relations') or []
+        for type in relation
+        for item_set in get_relation_item_sets(relation[type])
     ])
 
 
