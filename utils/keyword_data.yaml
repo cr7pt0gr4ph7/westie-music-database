@@ -723,6 +723,7 @@ keywords:
         - dimanche # french
         - so. # german
         - sonntag # german
+        - söndag # swedish
   language:
     - chinese
     - english:
@@ -1269,18 +1270,42 @@ keywords:
         - not blues
         - rhythm & blues
         - slow blues/fast contemp
+        # The following playlist is about blues as a dance style,
+        # not blues as a music genre, and contains effectively no tracks
+        # that we would consider as "Blues" in the WCS sense of the word.
         - blues @ cybertron
     - bluesy
     - club:
-        - club
-        - club wcs
-        - clubbing
-        - swing club
-        - wcs and night club
-        - wcs club
-        - wcs dance club
-        - wcs night club
-        - westie club
+        # The word "Club" by itself does not yield any consistent result,
+        # and seems to be as generic as "Pop". The original author of this
+        # tagging file uses "Club" to refer to songs with a style similar
+        # to "Twerk it like Mileay", "Don't Tell Em" etc., and has thus
+        # chosen the following keywords by looking for playlists with
+        # a vibe that matches those songs, and then selected keywords
+        # based on their names.
+        - tłusty bit
+        - fat beat
+        - badass
+        - swag/hip hop
+        - nasty
+        - the heavy one
+        - naughty naughty
+        - wcs songs to wiggle to
+        - wcs sex & dirty talk
+        - the dirty part of west coast
+        - night club vibes
+        - club beat
+        # The following keywords have been excluded because
+        # they do not yield satisfactory results, see above.
+        # - club
+        # - club wcs
+        # - clubbing
+        # - swing club
+        # - wcs and night club
+        # - wcs club
+        # - wcs dance club
+        # - wcs night club
+        # - westie club
     - club-:
         - bicycle club
         - boat club
@@ -1300,7 +1325,8 @@ keywords:
     - drum & bass:
         - drum&bass
         - drum & bass
-        - drum ‘n base
+        - drum ‘n base # TODO: Apply normalization of special characters?
+        - drum 'n base
     - funk:
         - funk
         - soulfunkblues
