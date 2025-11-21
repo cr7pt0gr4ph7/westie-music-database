@@ -351,16 +351,19 @@ if song_locator_toggle:
     if countries_selectbox:
         countries_2_filter = countries_selectbox
 
-    col1, col2, col3, col4, col5 = st.columns(5)
-    with col1:
-        bpm_low = st.number_input(
-            "Playlist low: ", value=90, min_value=0, step=2)
-    with col2:
-        bpm_med = st.number_input(
-            "Playlist med: ", value=95, min_value=0, step=2)
-    with col3:
-        bpm_high = st.number_input(
-            "Playlist high: ", value=100, min_value=0, step=2)
+    with st.container(border=True):
+        st.markdown(":small[**Settings for high/low playlist generator**]")
+
+        col1, col2, col3, col4, col5 = st.columns(5)
+        with col1:
+            bpm_low = st.number_input(
+                "Low BPM: ", value=90, min_value=0, step=2)
+        with col2:
+            bpm_med = st.number_input(
+                "Medium BPM: ", value=95, min_value=0, step=2)
+        with col3:
+            bpm_high = st.number_input(
+                "High BPM: ", value=100, min_value=0, step=2)
 
     if st.button("Search songs", type="primary", disabled=st.session_state["processing"]):
         st.session_state["processing"] = True
