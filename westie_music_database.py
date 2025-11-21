@@ -1,5 +1,6 @@
 from collections.abc import Callable
 from dataclasses import dataclass
+from functools import partial
 from threading import RLock
 from typing import Final
 
@@ -777,6 +778,66 @@ def section_find_playlist():
 
 @immediate
 @st.fragment
+def section_tag_explorer():
+    songs_by_tag_toggle = st.toggle("Explore Songs by Tags 🔍")
+    if not songs_by_tag_toggle:
+        return
+
+    categories = [
+        "genre",
+        "mood",
+        "topic"
+    ]
+    selected_tags = []
+
+    for category in categories:
+        category_title = tag_manager.format_category(category)
+        category_icon = tag_manager.config.icons_by_category.get(category)
+        category_icon = f":{category_icon}:" if category_icon else None
+
+        with st.expander(f":small[Select {category_title}(s)]", icon=category_icon):
+            selected_tags.extend(
+                st.pills(f"**{category_title}**",
+                         key=f"tag_explorer_category_{category}",
+                         options=tag_manager.get_tag_options(category=category),
+                         format_func=partial(tag_manager.format_tag, as_short_name=True),
+                         selection_mode="multi"))
+
+    if st.button("Search songs", key="search_songs_by_tags", type="primary", disabled=st.session_state["processing"]):
+        tagged_songs_df = search_engine\
+            .find_songs_by_tags(tag_names_exact=selected_tags, limit=200)\
+            .with_row_index(offset=1)\
+            .with_columns(
+                TrackTags.tags_data()
+                .list.filter(extract_category(TrackTag.tag.struct_field())
+                             .is_in(["genre", "mood", "tempo", "level", "topic"]))
+                .list.eval(pl.concat_str(
+                    TrackTag.tag.struct_field(),
+                    pl.lit(" ("),
+                    TrackTag.matching_playlist_count.struct_field(),
+                    pl.lit(")")))
+                .alias('tag_frequency'))\
+            .collect(engine='streaming')
+
+        st.dataframe(tagged_songs_df,
+                     column_order=[
+                         "index",
+                         Track.name,
+                         Track.artists,
+                         "ranks",
+                         "ranks_percent",
+                         "ranks_percent_sum",
+                         "tag_frequency",
+                         "matching_tags",
+                         "matching_tags_count",
+                         "matching_tags_score",
+                         "matching_tags_sum",
+                     ])
+
+    st.markdown("####")
+
+@immediate
+@st.fragment
 def section_tag_insights():
     keyword_insights_toggle = st.toggle("Tag Insights 🏷️")
     if not keyword_insights_toggle:
@@ -1463,6 +1524,7 @@ def get_song_comparison_data(song_one: SongSearcher, song_two: SongSearcher) -> 
                       pl.lit(song_one.track_title).alias("song1_track_title"),
                       pl.lit(song_two.track_title).alias("song2_track_title"))\
         .collect(engine='streaming')
+
 
 @immediate
 @st.fragment

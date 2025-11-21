@@ -1174,10 +1174,11 @@ class TagManager:
 
         return category.title()
 
-    def get_tag_options(self, *, or_empty: bool = False, or_untagged: bool = False, all_tags: bool = True) -> list[TagName]:
+    def get_tag_options(self, *, or_empty: bool = False, or_untagged: bool = False, all_tags: bool = True, category: str = '') -> list[TagName]:
         tags = self.tags_df.lazy()\
             .filter(pl.col(Tag.short_name).is_not_null(),
-                    pl.lit(True) if all_tags else ~self.config.hide_from_ui.matches(Tag.name()))\
+                    pl.lit(True) if all_tags else ~self.config.hide_from_ui.matches(Tag.name()),
+                    pl.lit(True) if not category else Tag.category().eq(category))\
             .sort(Tag.name)\
             .collect()[Tag.name]\
             .to_list()
@@ -1190,7 +1191,7 @@ class TagManager:
 
         return tags
 
-    def format_tag(self, tag: TagName) -> str:
+    def format_tag(self, tag: TagName, *, with_icon: bool = False, as_short_name: bool = False) -> str:
         if tag == "":
             return "---"
 
@@ -1201,14 +1202,17 @@ class TagManager:
         # See here: https://github.com/streamlit/streamlit/issues/12151
         # and here: https://github.com/streamlit/streamlit/issues/7466
         # and here: https://github.com/streamlit/streamlit/pull/10086
-        if False:
+        if with_icon:
             category, short_name = split_tag(tag)
             icon = self.config.icons_by_category.get(category) if category else None
             icon_prefix = f":{icon}: " if icon else ""
         else:
             icon_prefix = ""
 
-        return icon_prefix + ': '.join(tag.split(':')).title()
+        if as_short_name:
+            return icon_prefix + tag.split(':', 1)[-1].title()
+        else:
+            return icon_prefix + ': '.join(tag.split(':', 1)).title()
 
     def get_default_colors(self):
         dark_colors = [
@@ -1458,6 +1462,73 @@ class SearchEngine:
                     Track.name,
                     Track.artists)\
             .pipe(self.data.keywords.limits_by_tag.filter_track_tags)
+
+    def find_songs_by_tags(
+        self,
+        *,
+        tag_names_exact: list[str],
+        limit: int | None = None,
+    ) -> pl.LazyFrame:
+        # Do not perform search if tag_names_exact is None or empty, as that returns too many entries
+        if not tag_names_exact:
+            raise ValueError("Must specify tag_names_exact when using find_songs_by_tags")
+
+        matching_tracks = self.data.tracks\
+            .with_columns(
+                TrackTags.tags_data()
+                .list.filter(TrackTag.tag.struct_field().is_in(tag_names_exact))
+                .alias("matching_tags_data"))\
+            .filter(pl.col("matching_tags_data").list.len() == len(set(tag_names_exact)))\
+
+        mt = matching_tracks
+        for tag_name in set(tag_names_exact):
+            tag_ranks = matching_tracks\
+                .select(
+                    Track.id,
+                    TrackTags.tags_data()
+                    .list.agg(
+                        pl.element()
+                        .filter(TrackTag.tag.struct_field().eq(tag_name))
+                        .pipe(TrackTag.matching_playlist_count.struct_field)
+                        .first())
+                    .fill_null(0)
+                    .alias(Stats.playlist_count))\
+                .select(
+                    Track.id,
+                    Stats.playlist_count().rank(method="dense", descending=True).alias(f"rank"))\
+                .select(
+                    Track.id,
+                    pl.col("rank").alias(f"rank_{tag_name}"),
+                    pl.col("rank").max().alias(f"max_rank_{tag_name}"),
+                    (pl.col("rank") / pl.col("rank").max()).alias(f"pct_rank_{tag_name}"))
+
+            mt = mt\
+                .join(tag_ranks, on=Track.id, how="left")
+
+        matching_tracks = mt.select(
+            pl.exclude(r"^(pct_rank_|max_rank_|rank_).*$"),
+            pl.concat_list(pl.col(r"^rank_.*$")).alias("ranks"),
+            pl.concat_list(pl.col(r"^pct_rank_.*$")).alias("ranks_percent"),
+        ).with_columns(
+            pl.col("ranks_percent").list.sum().alias("ranks_percent_sum")
+        )
+
+        return matching_tracks\
+            .with_columns(
+                pl.col("matching_tags_data")
+                  .list.eval(TrackTag.tag.struct_field())
+                  .alias("matching_tags"),
+                pl.col("matching_tags_data")
+                  .list.len()
+                  .alias("matching_tags_count"),
+                pl.col("matching_tags_data")
+                  .list.agg(TrackTag.matching_playlist_count.struct_field().sum())
+                  .alias("matching_tags_sum"),
+                pl.col("matching_tags_data")
+                  .list.agg(TrackTag.matching_playlist_count.struct_field().sqrt().sum())
+                  .alias("matching_tags_score"))\
+            .sort("matching_tags_count", "matching_tags_score", descending=True)\
+            .slice(0, limit or None)
 
     def find_random_songs(
         self,
