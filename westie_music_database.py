@@ -681,8 +681,15 @@ if playlist_locator_toggle:
     song_input = song_and_artist_input[0] if len(song_and_artist_input) > 0 else ''
     artist_input = song_and_artist_input[1] if len(song_and_artist_input) > 1 else ''
 
+    col1, col2 = st.columns(2)
+    with col1:
+        perform_search = st.button("Search playlists", type="primary", disabled=st.session_state["processing"])
+    with col2:
+        show_common_keywords = st.toggle(
+            "Show common keywords", help="Show common keywords in the names of the matched WCS playlists.")
+
     # if any(val for val in [playlist_input, song_input, dj_input]):
-    if st.button("Search playlists", type="primary", disabled=st.session_state["processing"]):
+    if perform_search:
         st.session_state["processing"] = True
         log_query("Search playlists", {'song_input': song_input,
                                        'dj_input': dj_input,
@@ -709,25 +716,26 @@ if playlist_locator_toggle:
         )
 
         df = (playlist_search_df
-              .filter(~Playlist.is_social_set())
+            #   .filter(~Playlist.is_social_set())
               .with_columns(Playlist.name, PlaylistTags.tags, Playlist.url, PlaylistOwner.name,
                             Playlist.matching_song_count, Stats.artist_count, Track.name)
               .sort(PlaylistStats.wcs_song_count, nulls_last=True, descending=True))
 
-        st.dataframe(df
-                     .select(Playlist.name(),
-                             Playlist.id(),
-                             Playlist.name()
-                             .str.to_lowercase()
-                             .str.extract_all(r'\b\w+\b')
-                             .list.filter(pl.element().str.len_chars().gt(3))
-                             .alias('term'))
-                     .explode('term')
-                     .group_by('term')
-                     .agg(Playlist.id().n_unique().alias(Stats.playlist_count), Playlist.name().head(30))
-                     .filter(Stats.playlist_count().lt(10))
-                     .sort(Stats.playlist_count, descending=True)
-                     .collect(engine='streaming'))
+        if show_common_keywords:
+            st.dataframe(df
+                         .select(Playlist.name(),
+                                 Playlist.id(),
+                                 Playlist.name()
+                                 .str.to_lowercase()
+                                 .str.extract_all(r'\b\w+\b')
+                                 .list.filter(pl.element().str.len_chars().gt(3))
+                                 .alias('keyword'))
+                         .explode('keyword')
+                         .group_by('keyword')
+                         .agg(Playlist.id().n_unique().alias(Stats.playlist_count), Playlist.name().head(30))
+                         .filter(Stats.playlist_count().lt(10))
+                         .sort(Stats.playlist_count, descending=True)
+                         .collect(engine='streaming'))
 
         st.dataframe(df
                      .select(Playlist.name, PlaylistTags.tags, Playlist.url, PlaylistOwner.name,
