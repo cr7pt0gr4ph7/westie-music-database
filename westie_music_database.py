@@ -719,7 +719,7 @@ if playlist_locator_toggle:
         )
 
         df = (playlist_search_df
-            #   .filter(~Playlist.is_social_set())
+              # .filter(~Playlist.is_social_set())
               .with_columns(Playlist.name, PlaylistTags.tags, Playlist.url, PlaylistOwner.name,
                             Playlist.matching_song_count, Stats.artist_count, Track.name)
               .sort(PlaylistStats.wcs_song_count, nulls_last=True, descending=True))
