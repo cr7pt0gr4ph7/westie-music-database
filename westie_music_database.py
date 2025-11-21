@@ -762,7 +762,7 @@ if keyword_insights_toggle:
 
     tags_df = load_tags_data()
     tag_category_input = st.selectbox("Only show tags in category:",
-                                      options=tag_manager.get_categories(or_all=True),
+                                      options=tag_manager.get_categories(or_all=True, preferred_first=True),
                                       format_func=tag_manager.format_category)
 
     show_wordcloud = st.toggle("Show wordcloud")

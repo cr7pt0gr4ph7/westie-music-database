@@ -1153,12 +1153,14 @@ class TagManager:
         self.tags_df = tags_df
         self.config = config
 
-    def get_categories(self, *, or_all: bool = False) -> list[CategoryName]:
+    def get_categories(self, *, or_all: bool = False, preferred_first: bool = False) -> list[CategoryName]:
         categories = self.tags_df.lazy()\
             .select(Tag.category)\
             .filter(Tag.category().is_not_null())\
             .unique()\
-            .sort(Tag.category)\
+            .pipe(lambda lf:
+                  lf.sort(Tag.category) if not preferred_first else
+                  lf.sort(self.config.hide_from_ui.matches(Tag.category()).fill_null(pl.lit(False)), Tag.category()))\
             .collect()[Tag.category].to_list()
 
         if or_all:
