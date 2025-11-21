@@ -1,3 +1,4 @@
+from collections.abc import Callable
 from dataclasses import dataclass
 from threading import RLock
 from typing import Final
@@ -37,6 +38,10 @@ if "pull_data" not in st.session_state or st.session_state["pull_data"]:
     # This step does nothing when run in a local environment.
     automatically_pull_data_if_needed()
     st.session_state["pull_data"] = False
+
+
+def immediate[R](func: Callable[[], R]) -> R:
+    return func()
 
 
 def just_a_peek(df_):
@@ -289,38 +294,48 @@ def top_poc_songs():
         .collect(engine='streaming')
 
 
-top_songs_toggle = st.toggle("Top Songs")
-if top_songs_toggle:
-    top_songs = top_songs()
+@immediate
+@st.fragment
+def section_top_songs():
+    top_songs_toggle = st.toggle("Top Songs")
+    if not top_songs_toggle:
+        return
+
+    top_songs_df = top_songs()
     st.markdown(f"Top 100 WCS songs!")
     st.link_button('Playlist of the top 100',
                    url='https://open.spotify.com/playlist/7f5hPmFnIPy7lcj8EXX90V')
 
-    st.dataframe(top_songs.drop(Stats.playlist_count),
+    st.dataframe(top_songs_df.drop(Stats.playlist_count),
                  column_config={Track.url: st.column_config.LinkColumn()})
 
     st.markdown("Top 100 🏳️‍🌈 songs!")
-    top_queer_songs = top_queer_songs()
+    top_queer_songs_df = top_queer_songs()
 
     # st.link_button('Playlist of the top 100',
     #        url='https://open.spotify.com/playlist/7f5hPmFnIPy7lcj8EXX90V')
 
-    st.dataframe(top_queer_songs.drop(Stats.playlist_count),
+    st.dataframe(top_queer_songs_df.drop(Stats.playlist_count),
                  column_config={Track.url: st.column_config.LinkColumn()})
 
     st.markdown("Top 100 POC songs!")
-    top_poc_songs = top_poc_songs()
+    top_poc_songs_df = top_poc_songs()
 
     # st.link_button('Playlist of the top 100',
     #        url='https://open.spotify.com/playlist/7f5hPmFnIPy7lcj8EXX90V')
 
-    st.dataframe(top_poc_songs.drop(Stats.playlist_count),
+    st.dataframe(top_poc_songs_df.drop(Stats.playlist_count),
                  column_config={Track.url: st.column_config.LinkColumn()})
 
 
-# Courtesy of Vishal S.
-song_locator_toggle = st.toggle("Find a Song 🎵")
-if song_locator_toggle:
+@immediate
+@st.fragment
+def section_find_song():
+    # Courtesy of Vishal S.
+    song_locator_toggle = st.toggle("Find a Song 🎵")
+    if not song_locator_toggle:
+        return
+
     song_col1, song_col2 = st.columns(2)
     with song_col1:
         song_input = st.text_input("Song name:")
@@ -663,9 +678,14 @@ if song_locator_toggle:
     st.markdown(f"#### ")
 
 
-# Courtesy of Vishal S.
-playlist_locator_toggle = st.toggle("Find a Playlist 💿")
-if playlist_locator_toggle:
+@immediate
+@st.fragment
+def section_find_playlist():
+    # Courtesy of Vishal S.
+    playlist_locator_toggle = st.toggle("Find a Playlist 💿")
+    if not playlist_locator_toggle:
+        return
+
     playlist_col1, playlist_col2 = st.columns(2)
     with playlist_col1:
         song_and_artist_input = st.text_input("Contains the song (use `song|artist` to filter by artist):")
@@ -751,12 +771,17 @@ if playlist_locator_toggle:
                                     PlaylistTags.tags: tag_manager.get_column_config(PlaylistTags.tags),
                                     PlaylistStats.wcs_song_percent: st.column_config.ProgressColumn()})
         st.session_state["processing"] = False
+
     st.markdown(f"#### ")
 
 
-keyword_insights_toggle = st.toggle("Tag Insights 🏷️")
+@immediate
+@st.fragment
+def section_tag_insights():
+    keyword_insights_toggle = st.toggle("Tag Insights 🏷️")
+    if not keyword_insights_toggle:
+        return
 
-if keyword_insights_toggle:
     st.markdown(f"\n\n\n#### Common Tags for Playlists:")
     st.text(f"Disclaimer: Insights are based on a manually defined list of tags and aliases that is then used to extract keywords from playlist titles, and may not be accurate or representative of reality.")
 
@@ -895,10 +920,14 @@ def djs_data():
     return load_search_engine().get_dj_stats(playlist_limit=30, dj_limit=2000).collect(engine='streaming')
 
 
-# Courtesy of Lino V.
-search_dj_toggle = st.toggle("DJ insights 🎧")
+@immediate
+@st.fragment
+def section_dj_insights():
+    # Courtesy of Lino V.
+    search_dj_toggle = st.toggle("DJ insights 🎧")
+    if not search_dj_toggle:
+        return
 
-if search_dj_toggle:
     dj_col1, dj_col2 = st.columns(2)
     with dj_col1:
         dj_input = st.text_input("DJ name/ID (ex. Kasia Stepek or 1185428002)")
@@ -906,8 +935,8 @@ if search_dj_toggle:
         dj_playlist_input = st.text_input("DJ playlist name:")
 
     if not dj_input and not dj_playlist_input:
-        djs_data = djs_data()
-        st.dataframe(djs_data,
+        djs_data_df = djs_data()
+        st.dataframe(djs_data_df,
                      column_config={PlaylistOwner.url: st.column_config.LinkColumn()})
 
     # else:
@@ -1013,6 +1042,7 @@ if search_dj_toggle:
                      .head(500),
                      column_config={Track.url: st.column_config.LinkColumn()})
         st.session_state["processing"] = False
+
     st.markdown(f"#### ")
 
 
@@ -1028,9 +1058,14 @@ def country_data():
             .collect(engine='streaming'))
 
 
-# Courtesy of Lino V.
-geo_region_toggle = st.toggle("Geographic Insights 🌎")
-if geo_region_toggle:
+@immediate
+@st.fragment
+def section_geographic_insights():
+    # Courtesy of Lino V.
+    geo_region_toggle = st.toggle("Geographic Insights 🌎")
+    if not geo_region_toggle:
+        return
+
     st.markdown(f"\n\n\n#### Region-Specific Music:")
     st.text(f"Disclaimer: Insights are based on available data and educated guesses - which may not be accurate or representative of reality.")
 
@@ -1108,10 +1143,13 @@ def top_related_songs():
             .collect(engine='streaming'))
 
 
-# Courtesy of Vincent M.
-songs_together_toggle = st.toggle("Songs most played together")
-
-if songs_together_toggle:
+@immediate
+@st.fragment
+def section_songs_most_played_together():
+    # Courtesy of Vincent M.
+    songs_together_toggle = st.toggle("Songs most played together")
+    if not songs_together_toggle:
+        return
 
     song_combo_col1, song_combo_col2 = st.columns(2)
     with song_combo_col1:
@@ -1121,8 +1159,8 @@ if songs_together_toggle:
 
     if not song_input and not artist_name_input:
         st.markdown("#### Most common songs to play next to each other")
-        top_related_songs = top_related_songs()
-        st.dataframe(top_related_songs,
+        top_related_songs_df = top_related_songs()
+        st.dataframe(top_related_songs_df,
                      column_config={Track.url: st.column_config.LinkColumn()})
 
     if st.button("Search songs played together", type="primary", disabled=st.session_state["processing"]):
@@ -1409,24 +1447,31 @@ if song_distance_toggle:
         st.altair_chart(chart)
 
 
-if enable_song_distance and st.toggle("Compare multiple songs"):
+@st.cache_data(persist=True)
+def get_song_comparison_data(song_one: SongSearcher, song_two: SongSearcher) -> pl.DataFrame:
+    return SongComparison(song_one, song_two)\
+        .find_shared_playlists(playlist_in_result=True,
+                               min_distance_in_result=True)\
+        .select(Playlist.id().alias('playlist_id'),
+                Playlist.name().alias('playlist_name'),
+                Stats.song_count().alias('playlist_size'),
+                'min_distance')\
+        .with_columns(pl.lit(" / ".join([song_one.track_title, song_two.track_title])).alias('track_title'),
+                      pl.lit(" / ".join([song_one.track_name, song_two.track_name])).alias('track_name'),
+                      pl.lit(song_one.track_name).alias("song1_track_name"),
+                      pl.lit(song_two.track_name).alias("song2_track_name"),
+                      pl.lit(song_one.track_title).alias("song1_track_title"),
+                      pl.lit(song_two.track_title).alias("song2_track_title"))\
+        .collect(engine='streaming')
 
-    @st.cache_data(persist=True)
-    def get_data(song_one: SongSearcher, song_two: SongSearcher) -> pl.DataFrame:
-        return SongComparison(song_one, song_two)\
-            .find_shared_playlists(playlist_in_result=True,
-                                   min_distance_in_result=True)\
-            .select(Playlist.id().alias('playlist_id'),
-                    Playlist.name().alias('playlist_name'),
-                    Stats.song_count().alias('playlist_size'),
-                    'min_distance')\
-            .with_columns(pl.lit(" / ".join([song_one.track_title, song_two.track_title])).alias('track_title'),
-                          pl.lit(" / ".join([song_one.track_name, song_two.track_name])).alias('track_name'),
-                          pl.lit(song_one.track_name).alias("song1_track_name"),
-                          pl.lit(song_two.track_name).alias("song2_track_name"),
-                          pl.lit(song_one.track_title).alias("song1_track_title"),
-                          pl.lit(song_two.track_title).alias("song2_track_title"))\
-            .collect(engine='streaming')
+@immediate
+@st.fragment
+def section_song_distance():
+    if not enable_song_distance:
+        return
+
+    if not not st.toggle("Compare multiple songs"):
+        return
 
     def show_chart(chart_data):
         track_selection = alt.selection_point(fields=['track_title'])
@@ -1474,12 +1519,12 @@ if enable_song_distance and st.toggle("Compare multiple songs"):
         song4 = SongSearcher(song_name="Galway Girl", artist_name="Ed Sheeran")
 
         return pl.concat([
-            get_data(song1, song2),
-            get_data(song3, song4),
-            get_data(song1, song3),
-            get_data(song2, song3),
-            get_data(song1, song4),
-            get_data(song2, song4),
+            get_song_comparison_data(song1, song2),
+            get_song_comparison_data(song3, song4),
+            get_song_comparison_data(song1, song3),
+            get_song_comparison_data(song2, song3),
+            get_song_comparison_data(song1, song4),
+            get_song_comparison_data(song2, song4),
         ])
 
     show_chart(get_chart_data())
@@ -1492,8 +1537,13 @@ def songs_by_year():
         .collect(engine='streaming')
 
 
-song_popularity_toggle = st.toggle("Song popularity over time 📊")
-if song_popularity_toggle:
+@immediate
+@st.fragment
+def section_song_popularity():
+    song_popularity_toggle = st.toggle("Song popularity over time 📊")
+    if not song_popularity_toggle:
+        return
+
     DAY = 'day'
     INTERVALS: Final = {
         'year': 'Yearly',
@@ -1576,8 +1626,13 @@ if song_popularity_toggle:
                              min_value=0, format='percent',
                              max_value=popularity_max[RELATIVE_POPULARITY].first())})
 
-lyrics_toggle = st.toggle("Search lyrics 📋")
-if lyrics_toggle:
+
+@immediate
+@st.fragment
+def section_find_lyrics():
+    lyrics_toggle = st.toggle("Search lyrics 📋")
+    if not lyrics_toggle:
+        return
 
     st.write(f"from {lyrics_count:,} songs")
     lyrics_col1, lyrics_col2 = st.columns(2)
