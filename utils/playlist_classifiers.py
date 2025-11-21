@@ -14,6 +14,7 @@ from utils.keyword_data import load_keyword_data
 
 treat_like_whitespace: Final = f'[ \-_.]+'
 
+
 def _create_regex_for_term(term: str) -> str:
     escaped_term = pl.escape_regex(term)
 
@@ -41,11 +42,19 @@ def _extract_tags(expr: pl.Expr, tags_to_extract: dict[str, list[str]]) -> pl.Ex
         .str.extract_all(all_keywords_regex)\
         .list.eval(pl.element()
                    .str.to_lowercase()
-                   .str.extract_groups(r'^(.+?)(?:20[0-2][0-9])?$')
-                   .struct["1"]
-                   .replace_strict(tags_to_extract,
-                                   default=pl.lit([], dtype=pl.List(pl.String)),
-                                   return_dtype=pl.List(pl.String))
+                   .pipe(lambda expr:
+                         pl.concat_list(
+                             expr
+                             .replace_strict(tags_to_extract,
+                                             default=pl.lit([], dtype=pl.List(pl.String)),
+                                             return_dtype=pl.List(pl.String)),
+                             expr
+                             .str.extract_groups(r'^(.+?)(?:20[0-2][0-9])?$')
+                             .struct["1"]
+                             .replace_strict(tags_to_extract,
+                                             default=pl.lit([], dtype=pl.List(pl.String)),
+                                             return_dtype=pl.List(pl.String))
+                         ))
                    .explode())
 
 
