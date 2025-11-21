@@ -344,7 +344,7 @@ if song_locator_toggle:
         num_results = st.number_input(
             "Skip the top __ results", value=0, min_value=0, step=250)
         # num_results = st.slider("Skip the top __ results", 0, 111000, step=500)
-        bpm_slider = st.slider("Search BPM:", 0, 150, (0, 150))
+        bpm_slider = st.slider("Search BPM:", 0, 250, (0, 250))
 
     if not countries_selectbox:
         countries_2_filter = countries
