@@ -892,7 +892,7 @@ def filter_out_outlier_tags(temp_files: TempFileTracker):
             expr
             for key in schema
             if key != Track.id
-            if (expr := filter_tag(key)) is not None
+            if (expr := filter_tag(key, schema)) is not None
         ]))
 
     def unite_tags(lf: pl.LazyFrame, schema: pl.Schema) -> pl.LazyFrame:
