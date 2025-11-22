@@ -786,8 +786,15 @@ def section_tag_explorer():
         category_title = tag_manager.format_category(category)
         category_icon = tag_manager.config.icons_by_category.get(category)
         category_icon = f":{category_icon}:" if category_icon else None
+        category_metadata = tag_manager.config.metadata.get(category)
 
         with st.expander(f":small[Select {category_title}(s)]", icon=category_icon):
+            if category_metadata and (category_description := category_metadata.get('description')):
+                st.markdown(f"{category_description}")
+
+            if category_metadata and (category_comment := category_metadata.get('comment')):
+                st.markdown(category_comment)
+
             selected_tags.extend(
                 st.pills(f"**{category_title}**",
                          key=f"tag_explorer_category_{category}",

@@ -77,6 +77,8 @@ class _CategoryMetadata(TypedDict, total=False):
     color: HexColor
     hide_from_ui: bool | list[ShortTagName]
     strip_from_tracks: bool | list[ShortTagName]
+    description: str
+    comment: str
 
 
 class _KeywordsFile(TypedDict, total=False):
@@ -440,6 +442,7 @@ def load_relations(keywords_file: _KeywordsFile) -> TagRelations:
 @dataclass
 class KeywordData:
     """Contains all keyword-related settings."""
+    metadata: dict[CategoryName, _CategoryMetadata]
     colors_by_category: dict[CategoryName, HexColor]
     icons_by_category: dict[CategoryName, IconName]
     limits_by_tag: TagLimitsMatcher
@@ -464,6 +467,7 @@ class KeywordData:
     @classmethod
     def read_yaml_object(cls, keywords_file: _KeywordsFile) -> Self:
         """Load keyword data from a parsed YAML file."""
+        metadata = keywords_file.get('metadata') or {}
         colors = load_colors(keywords_file)
         icons = load_icons(keywords_file)
         limits = load_limits(keywords_file)
@@ -478,7 +482,8 @@ class KeywordData:
                    strip_from_tracks=strip_from_tracks,
                    relations=relations,
                    keywords_to_tags=alias_to_tags,
-                   keywords_to_excluded_tags=alias_to_negated_tags)
+                   keywords_to_excluded_tags=alias_to_negated_tags,
+                   metadata=metadata)
 
 
 def load_keyword_data() -> KeywordData:

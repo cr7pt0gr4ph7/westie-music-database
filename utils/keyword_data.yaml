@@ -73,7 +73,8 @@ metadata:
     icon: material/genres
     color: "#803df5" # Violet [lightTheme.violetColor]
   epoch:
-    icon: material/history_toggle_off
+    comment: "**Note:** The `epoch:` tags are extracted from playlist titles, and do not necessarily correspond to the actual release dates of the songs."
+    icon: material/hourglass_bottom
     color: "#00c0f2" # Turqouise
   mood:
     icon: material/comedy_mask # material/theater_comedy
