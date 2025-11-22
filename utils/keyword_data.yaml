@@ -329,6 +329,7 @@ keywords:
         - claude debussy
         - coldplay
         - conor maynard
+        - cookin' on 3 burners
         - craig david
         - cro
         - da vinci's notebook
@@ -340,6 +341,7 @@ keywords:
         - deepening blue
         - delta goodrem
         - demi lovato
+        - depeche mode
         - destiny's child
         - diplo
         - dnce
@@ -382,6 +384,7 @@ keywords:
             - glee cast
         - graham brown
         - greatest showman
+        - green day
         - h.e.r.
         - hans zimmer
         - harlem river drive
@@ -408,6 +411,7 @@ keywords:
         - jennifer lopez
         - jessica mauboy
         - ji chang wook
+        - jimi hendrix
         - joe satriani
         - john legend
         - john lindberg trio
@@ -435,6 +439,7 @@ keywords:
         - kiddo
         - kiiara
         - king melrose
+        - kungs
         - kutless
         - lana del rey
         - l.a. guns
@@ -483,7 +488,9 @@ keywords:
         - mike posner
         - miley cyrus
         - milow
-        - missy eliott
+        - missy elliott*:
+            - missy elliott
+            - missy eliott
         - missy higgins
         - mndsgn
         - montaigne
@@ -513,7 +520,7 @@ keywords:
         - olivia ong
         - onerepublic*:
             - one republic
-            - onerepulic
+            - onerepublic
         - orianthi
         - orishas
         - owl city
@@ -803,6 +810,9 @@ keywords:
     - polish-:
         - polish grammar
         - polish picnic
+    - russian:
+        - russian
+        - pусские
     - spanish:
         - spanish
         - espanol
@@ -927,6 +937,7 @@ keywords:
             - walzer
             - wiedeński # swedish: viennese
             - wiener walzer
+            - valčki # slowenian: waltzes
 
             # More ballroom-related keywords
             - abiball
@@ -937,6 +948,7 @@ keywords:
             - maiball
             - premierenball
             - standard/latein
+            - std/lat
             - tanz
             - tanz orchester
             - tanzmusik
@@ -946,6 +958,7 @@ keywords:
 
             # Wedding-related keywords
             - wedding*:
+                - bröllopsfest # swedish: wedding party
                 - esküvő # hungarian: wedding
                 - esküvő buli # hungarian: wedding party
                 - guest arrival music
@@ -956,6 +969,7 @@ keywords:
                 - hochzeitsgäste # german
                 - hochzeitstanz # german
                 - pierwszy taniec # polish: first dance
+                - poročni # slowenian: wedding dance
                 - reception
                 - reception music
                 - silberhochzeit # german
@@ -1001,6 +1015,7 @@ keywords:
             - 7-9 jahre
         - line dance:
             - line dance
+            - linedanse
         - pole dance:
             - pole dance
             - pole dancing
@@ -1037,6 +1052,10 @@ keywords:
             - kizomba
             - kizombeadas
             - urban kiz
+            - tarraxinha
+            - westkizsb*:
+                - "-not west coast swing"
+                - westkizsb
         - nightclub twostep:
             - nc2
             - nc2s
@@ -1259,6 +1278,7 @@ keywords:
         - background:
             - ambient
             - background
+            - bakgrundsmusik # swedish: background music
             - hintergrund
             - hintergrundmusik
             - lounge
@@ -1283,7 +1303,9 @@ keywords:
     # These can mean competition or difficulity levels
     - all-star:
         - all-star
+        - all-stars
         - all star
+        - all stars
         - as/champ songs
     - advanced:
         - adv
@@ -1355,18 +1377,24 @@ keywords:
         # chosen the following keywords by looking for playlists with
         # a vibe that matches those songs, and then selected keywords
         # based on their names.
-        - tłusty bit
-        - fat beat
         - badass
-        - swag/hip hop
-        - nasty
-        - the heavy one
-        - naughty naughty
-        - wcs songs to wiggle to
-        - wcs sex & dirty talk
-        - the dirty part of west coast
-        - night club vibes
+        - booty wurk # review
         - club beat
+        - fat beat
+        - guilty. # review
+        - feelin' dirty jams
+        - gangsta
+        - get low
+        - nasty
+        - naughty naughty
+        - night club vibes
+        - swag/hip hop
+        - the dirty part of west coast
+        - the heavy one
+        - tłusty bit
+        - twerk
+        - wcs sex & dirty talk
+        - wcs songs to wiggle to
         # The following keywords have been excluded because
         # they do not yield satisfactory results, see above.
         # - club
@@ -1982,11 +2010,14 @@ keywords:
     - swung:
         - swung
         - shuffle timing
+        - shuffle rythm
         - shuffle rhythm
+        - shuffle rhythmn
         - shuffled swing
         - clear swing beat
-        - swing rhythm
         - swing rythm
+        - swing rhythm
+        - swing rhythmn
     - ternary
     - staccato:
         - staccato
@@ -2275,6 +2306,7 @@ keywords:
         - weight transfers
   seasonal:
     - birthday:
+        - årsfest # swedish: birthday party
         - b-day
         - b'day
         - bday
@@ -2297,6 +2329,7 @@ keywords:
         - holidays
         - jinglebellswing
         - jullåtar # swedish: christmas songs
+        - julfest # swedish: christmas party
         - julmusik # swedish: christmas music
         - julmusiken # swedish: christmas music
         - merry holidays
@@ -2456,6 +2489,7 @@ keywords:
         - mes prefs # french: my favorites
         - mit star bewertet
         - starred
+        - oznaczone gwiazdką # polish: starred / "marked with an asterisk"
         - tykätyt # finnish: liked
         - mywcsfavs
         - wcsfavs
@@ -2486,6 +2520,7 @@ keywords:
         - anthems
         - bangers
         - bops
+        - classiques intemp # french: timeless classics
         - crowd pleaser
         - floor fillers
         - floor saver
@@ -2674,6 +2709,7 @@ keywords:
         - obscurify
         - my top songs
         - my top songs [year]
+        - deine top-songs
         - deine top-songs
         - deine top-songs [year]
         - default name:
@@ -3133,6 +3169,7 @@ keywords:
         - milanms
         - mms
         - milan modern swing
+        - milan swing
     - mission city swing+events:type:organization/dance:wcs/city:san francisco/country:usa: # ORG: Mission City Swing in San Francisco, USA
         - mcs
         - mission city
@@ -3517,6 +3554,7 @@ keywords:
     - west in honfleur+events:type:event/dance:wcs/country:france: # EVENT: West in Honfleur
     - west in lyon+events:type:event/dance:wcs/country:france: # EVENT: West in Lyon
         - west in lyon
+        - west in l'yonne
         - wil
     - west in nougat+events:type:event/dance:wcs/country:france: # EVENT: West in Nougat
         - west in nougat
@@ -3566,7 +3604,7 @@ keywords:
     - wny dance+events:type:organization/dance:wcs/country:usa: # ORG: WnY Dance in Marin, California
         - wny # WnY
     - xpress your swing+events:type:event/dance:wcs/country:france: # EVENT: Xpress Your Swing in Montpellier, France
-    - xpress+events:type:organization/dance: # XPRESS seems to be an organization
+    - xpress+events:type:organization/various dances: # XPRESS seems to be an organization
     - zouk sea+events:type:event/zouk/country:malaysia: # EVENT: Zouk SEA [year] in Malaysia
         - zouk sea
         - zouksea
