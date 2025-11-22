@@ -553,7 +553,8 @@ class TrackSet(BaseSet):
 
     def with_extra_columns(self):
         return self.with_columns(
-            pl.col(Track.beats_per_minute).fill_null(0.0),
+            pl.when(pl.col(Track.beats_per_minute).gt(0)).then(
+                pl.col(Track.beats_per_minute)).otherwise(pl.lit(None)),
             pl.when(pl.col(Track.id).is_not_null()).then(pl.concat_str(
                 pl.lit('https://open.spotify.com/track/'), Track.id)).alias(Track.url))
 
