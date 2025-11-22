@@ -5,6 +5,7 @@ from typing import Final, Literal, Self
 import polars as pl
 
 from utils.common.entities import Entity, PolarsExpr, SubEntity, field
+from utils.common.polars import sort_list_workaround
 
 
 class Stats(Entity):
@@ -375,8 +376,9 @@ class TagsData:
         return TagsData(self._data.list.filter(
             Tag.extract_category(TrackTag.tag.struct_field()).is_in(category)))
 
-    def sort_tags(self) -> Self:
-        return TagsData(self._data.list.eval(
+    def sort_by_frequency(self) -> Self:
+        return TagsData(sort_list_workaround(
+            self._data,
             pl.element().sort_by(TrackTag.matching_playlist_count.struct_field(),
                                  TrackTag.tag.struct_field(),
                                  descending=[True, False])))
