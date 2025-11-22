@@ -28,7 +28,7 @@ type PolarsExpr[T] = pl.Expr
 class Field[FieldName: LiteralString, FieldType: pl.DataType](str):
     @property
     def field_name(self) -> str:
-        return self
+        return str(self)
 
     @property
     def field_type(self) -> pl.DataType | type[pl.DataType]:
