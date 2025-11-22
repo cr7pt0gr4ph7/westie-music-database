@@ -455,6 +455,11 @@ class KeywordData:
     keywords_to_tags: dict[KeywordString, set[TagName]]
     keywords_to_excluded_tags: dict[KeywordString, set[TagName]]
 
+    def get_all_tags(self) -> set[TagName]:
+        result: set[TagName] = set()
+        result.update(*self.keywords_to_tags.values())
+        return result
+
     @classmethod
     def read_yaml_file(cls, file_name: str) -> KeywordData:
         """Load keyword data from a YAML file."""
