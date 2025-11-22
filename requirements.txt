@@ -1,6 +1,6 @@
 huggingface_hub
 streamlit
-polars==1.33.1
+polars==1.35.2
 psutil
 regex
 supabase
