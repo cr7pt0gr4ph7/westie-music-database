@@ -1558,7 +1558,7 @@ def section_song_distance():
     if not enable_song_distance:
         return
 
-    if not not st.toggle("Compare multiple songs"):
+    if not st.toggle("Compare multiple songs"):
         return
 
     def show_chart(chart_data):
