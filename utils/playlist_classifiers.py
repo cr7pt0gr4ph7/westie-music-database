@@ -12,7 +12,7 @@ from utils.keyword_data import load_keyword_data
 ###################
 
 
-treat_like_whitespace: Final = f'[ \-_.]+'
+treat_like_whitespace: Final = r'[ \-_.]+'
 
 
 def _create_regex_for_term(term: str) -> str:
