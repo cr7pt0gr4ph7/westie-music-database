@@ -791,13 +791,9 @@ def section_tag_explorer():
                          format_func=partial(tag_manager.format_tag, as_short_name=True),
                          selection_mode="multi"))
 
-    rank_exponent = st.slider("Exponent", 0.0, 5.0, 1.0)
-
-    # st.button("Search songs", key="search_songs_by_tags", type="primary", disabled=st.session_state["processing"])
-    if selected_tags:
+    if st.button("Search songs", key="search_songs_by_tags", type="primary", disabled=st.session_state["processing"]):
         tagged_songs_df = search_engine\
             .find_songs_by_tags(tag_names_exact=selected_tags,
-                                rank_exponent=rank_exponent,
                                 rank_in_results=True,
                                 limit=200)\
             .with_row_index(offset=1)\
@@ -809,78 +805,22 @@ def section_tag_explorer():
                 .alias(TrackTags.tag_frequency))\
             .collect(engine='streaming')
 
-        st.dataframe(tagged_songs_df.lazy()
-                    .with_columns(
-                            (pl.col("probability_1", "probability_2") / pl.col("probability_1", "probability_2").max()).name.suffix("_normalized")
-                    ).with_columns(
-                            pl.min_horizontal(pl.col("probability_1_normalized", "probability_2_normalized")).alias("probability_normalized_min"),
-                            pl.sum_horizontal(pl.col("probability_1_normalized", "probability_2_normalized")).alias("probability_normalized_sum"),
-                    ),
+        st.dataframe(tagged_songs_df,
                      column_order=[
+                         "index",
                          Track.name,
                          Track.artists,
-                         "counts",
-                         "count_1",
-                         "count_2",
-                         "probability_1",
-                         "probability_2",
-                         "probability_min",
-                         "probability_1_normalized",
-                         "probability_2_normalized",
-                         "probability_normalized_min",
-                         "probability_normalized_sum",
                          "ranks",
-                         "probability_sum",
-                         "probability_sqrt_sum",
-                         "asc_ranks_log_sum",
                          "ranks_percent",
                          "ranks_percent_sum",
                          "ranks_percent_sqrt_sum",
-                         "ranks_percent_weighted_sum",
+                         "ranks_percent_squared_sum",
                          "tag_frequency",
                          "matching_tags",
                          "matching_tags_count",
                          "matching_tags_score",
                          "matching_tags_sum",
-                     ],
-                     column_config={
-                         "counts": st.column_config.BarChartColumn(y_min=0,y_max=50)
-                     })
-
-        st.dataframe(
-            tagged_songs_df
-            .lazy()
-            .select(
-                pl.col("probability_1", "probability_2").mean().name.suffix("_mean"),
-                pl.col("probability_1", "probability_2").min().name.suffix("_min"),
-                pl.col("probability_1", "probability_2").max().name.suffix("_max"),
-                pl.col("probability_1", "probability_2").median().name.suffix("_median"),
-            ))
-
-        chart_df = tagged_songs_df\
-            .lazy()\
-            .select(pl.concat_str(Track.name, pl.lit(" - "), Track.artist_names).alias("track_title"),
-                    pl.col("counts").list.to_struct(upper_bound=2).struct.unnest())\
-            .group_by(pl.col("^field_.*$"))\
-            .agg(pl.col("field_0").count().alias("count"),
-                 pl.col("track_title"))\
-            .with_columns(pl.col("track_title").list.join(" · "),
-                          pl.col("^field_.*$").pipe(lambda x: x / (x+3)),
-                          pl.sum_horizontal(pl.col("^field_.*$").pipe(lambda x: x / (x+3))).alias("log_sum"))
-
-        st.scatter_chart(chart_df, x="field_0", y="field_1", size="log_sum", color="track_title")
-
-
-        chart_df = tagged_songs_df\
-            .lazy()\
-            .select(pl.concat_str(Track.name, pl.lit(" - "), Track.artist_names).alias("track_title"),
-                    pl.col("counts").list.to_struct(upper_bound=2).struct.unnest())\
-            .group_by(pl.col("^field_.*$"))\
-            .agg(pl.col("field_0").count().alias("count"),
-                 pl.col("track_title"))\
-            .with_columns(pl.col("track_title").list.join(" · "))
-
-        st.scatter_chart(chart_df, x="field_0", y="field_1", size="count", color="track_title")
+                     ])
 
     st.markdown("####")
 

@@ -1467,7 +1467,6 @@ class SearchEngine:
         self,
         *,
         tag_names_exact: list[str],
-        rank_exponent: float = 1.0,
         rank_in_results: bool = False,
         limit: int | None = None,
     ) -> pl.LazyFrame:
@@ -1498,13 +1497,9 @@ class SearchEngine:
                         .alias(Stats.playlist_count))\
                     .select(
                         Track.id,
-                        Stats.playlist_count(),
-                        Stats.playlist_count().rank(method="dense", descending=True).alias(f"rank"),
-                        Stats.playlist_count().rank(method="dense", descending=False).alias(f"asc_rank"))\
+                        Stats.playlist_count().rank(method="dense", descending=True).alias(f"rank"))\
                     .select(
                         Track.id,
-                        Stats.playlist_count().alias(f"count_{tag_name}"),
-                        pl.col("asc_rank").alias(f"asc_rank_{tag_name}"),
                         pl.col("rank").alias(f"rank_{tag_name}"),
                         pl.col("rank").max().alias(f"max_rank_{tag_name}"),
                         (pl.col("rank") / pl.col("rank").max()).alias(f"pct_rank_{tag_name}"))
@@ -1513,40 +1508,32 @@ class SearchEngine:
                     .join(tag_ranks, on=Track.id, how="left")
 
             matching_tracks = mt.select(
-                pl.exclude(r"^(pct_rank_|max_rank_|rank_|count_).*$"),
-                pl.concat_list(pl.col(r"^count_.*$")).alias("counts"),
-                pl.concat_list(pl.col(r"^rank_.*$")).alias("asc_ranks"),
+                pl.exclude(r"^(pct_rank_|max_rank_|rank_).*$"),
                 pl.concat_list(pl.col(r"^rank_.*$")).alias("ranks"),
                 pl.concat_list(pl.col(r"^pct_rank_.*$")).alias("ranks_percent"),
             ).with_columns(
-                pl.col("counts").list.to_struct(fields=lambda idx: f"count_{idx+1}", upper_bound=10).struct.unnest(),
-                pl.col("counts").list.eval(pl.element().pipe(lambda x: x / (x+3))).list.to_struct(fields=lambda idx: f"probability_{idx+1}", upper_bound=10).struct.unnest(),
-                pl.col("counts").list.eval(pl.element().pipe(lambda x: x / (x+3))).list.sum().alias("probability_sum"),
-                pl.col("counts").list.eval(pl.element().pipe(lambda x: x / (x+3))).list.min().alias("probability_min"),
-                pl.col("counts").list.eval(pl.element().pipe(lambda x: x / (x+3)).sqrt()).list.sum().alias("probability_sqrt_sum"),
-                pl.col("asc_ranks").list.eval((pl.element() + 1).log()).list.sum().alias("asc_ranks_log_sum"),
                 pl.col("ranks_percent").list.sum().alias("ranks_percent_sum"),
                 pl.col("ranks_percent").list.eval(pl.element().sqrt()).list.sum().alias("ranks_percent_sqrt_sum"),
-                pl.col("ranks_percent").list.eval(pl.element().pow(rank_exponent)
-                                                  ).list.sum().alias("ranks_percent_weighted_sum"),
+                pl.col("ranks_percent").list.eval(pl.element().pow(2)).list.sum().alias("ranks_percent_squared_sum"),
             )
 
         matching_tracks = matching_tracks\
             .with_columns(
-                pl.col("matching_tags_data").list.eval(TrackTag.tag.struct_field()).alias("matching_tags"),
-                pl.col("matching_tags_data").list.len().alias("matching_tags_count"),
-                pl.col("matching_tags_data").list.agg(
-                    TrackTag.matching_playlist_count.struct_field().sum()).alias("matching_tags_sum"),
-                pl.col("matching_tags_data").list.agg(TrackTag.matching_playlist_count.struct_field().sqrt().sum()).alias("matching_tags_score"))
-
-        # matching_tracks = matching_tracks\
-        #     .sort("matching_tags_count", "matching_tags_score", descending=True)
-
-        # matching_tracks = matching_tracks\
-        #     .sort("matching_tags_count", "ranks_percent_weighted_sum", descending=[True, False])
+                pl.col("matching_tags_data")
+                  .list.eval(TrackTag.tag.struct_field())
+                  .alias("matching_tags"),
+                pl.col("matching_tags_data")
+                  .list.len()
+                  .alias("matching_tags_count"),
+                pl.col("matching_tags_data")
+                  .list.agg(TrackTag.matching_playlist_count.struct_field().sum())
+                  .alias("matching_tags_sum"),
+                pl.col("matching_tags_data")
+                  .list.agg(TrackTag.matching_playlist_count.struct_field().sqrt().sum())
+                  .alias("matching_tags_score"))
 
         matching_tracks = matching_tracks\
-            .sort("matching_tags_count", "probability_min", "probability_sum", descending=[True, True, True])
+            .sort("matching_tags_count", "matching_tags_score", descending=True)\
 
         return matching_tracks\
             .slice(0, limit or None)
