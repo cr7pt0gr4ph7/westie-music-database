@@ -178,6 +178,9 @@ enable_song_distance = feature_flag('song_distance')
 # Feature flag to list containing playlists in the "Find a Song" section
 enable_show_containing_playlists = feature_flag('show_containing_playlists')
 
+# Feature flag to list common keywords in the "Find a Playlist" section
+enable_show_playlist_keywords = feature_flag('show_playlist_keywords')
+
 if "experimental" in st.query_params:
     st.markdown(
         """
@@ -187,6 +190,15 @@ if "experimental" in st.query_params:
         """)
 
     new_feature_flags = st.data_editor(feature_flags)
+
+    with st.container(horizontal=True):
+        if st.button("[Hide Developer Options]", type='tertiary'):
+            del st.query_params["experimental"]
+            st.rerun()
+
+        if st.button("[Clear]", type='tertiary'):
+            st.query_params.from_dict({"experimental":""})
+            st.rerun()
 
     flags_changed = False
     for flag in new_feature_flags:
@@ -739,7 +751,7 @@ def section_find_playlist():
     with col1:
         perform_search = st.button("Search playlists", type="primary", disabled=st.session_state["processing"])
     with col2:
-        show_common_keywords = st.toggle(
+        show_common_keywords = enable_show_playlist_keywords and st.toggle(
             "Show common keywords", help="Show common keywords in the names of the matched WCS playlists.")
 
     # if any(val for val in [playlist_input, song_input, dj_input]):
