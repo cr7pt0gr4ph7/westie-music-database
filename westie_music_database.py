@@ -778,7 +778,11 @@ def section_tag_explorer():
     categories = [
         "genre",
         "mood",
-        "topic"
+        "topic",
+        "language",
+        "epoch",
+        "seasonal",
+        # "level", # "level:" tags aren't clean enough yet
     ]
     selected_tags = []
 
