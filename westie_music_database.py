@@ -783,10 +783,12 @@ def section_tag_explorer():
     selected_tags = []
 
     for category in categories:
-        category_title = tag_manager.format_category(category)
+        category_metadata = tag_manager.config.metadata.get(category)
+        category_title = category_metadata.get('selector_title')\
+            or category_metadata.get('title')\
+            or tag_manager.format_category(category)
         category_icon = tag_manager.config.icons_by_category.get(category)
         category_icon = f":{category_icon}:" if category_icon else None
-        category_metadata = tag_manager.config.metadata.get(category)
 
         with st.expander(f":small[Select {category_title}(s)]", icon=category_icon):
             if category_metadata and (category_description := category_metadata.get('description')):
@@ -798,7 +800,7 @@ def section_tag_explorer():
             selected_tags.extend(
                 st.pills(f"**{category_title}**",
                          key=f"tag_explorer_category_{category}",
-                         options=tag_manager.get_tag_options(category=category),
+                         options=tag_manager.get_tag_options(category=category, for_selector=True),
                          format_func=partial(tag_manager.format_tag, as_short_name=True),
                          selection_mode="multi"))
 

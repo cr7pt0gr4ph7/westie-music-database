@@ -43,7 +43,13 @@ metadata:
     icon: material/music_note # material/palette material/brush material/format_paint
   #######
   seasonal:
+    selector_title: Theme
     icon: material/local_florist
+    hide_from_selector:
+      - autumn
+      - new year's eve
+      - spring
+      - winter
   playlist:
     icon: material/queue_music
     strip_from_tracks:

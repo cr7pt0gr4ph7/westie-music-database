@@ -76,7 +76,10 @@ class _CategoryMetadata(TypedDict, total=False):
     icon: IconName
     color: HexColor
     hide_from_ui: bool | list[ShortTagName]
+    hide_from_selector: list[ShortTagName]
     strip_from_tracks: bool | list[ShortTagName]
+    title: str
+    selector_title: str
     description: str
     comment: str
 
@@ -328,7 +331,7 @@ class TagNameMatcher(NamedTuple):
         )
 
 
-def load_filters(keywords_file: _KeywordsFile, field_name: str) -> TagNameMatcher:
+def load_filters(keywords_file: _KeywordsFile, field_name: str) -> TagNameMatcher | None:
     metadata = keywords_file.get('metadata') or {}
     filter_spec = {category: metadata[category].get(field_name)
                    for category in metadata
@@ -447,6 +450,7 @@ class KeywordData:
     icons_by_category: dict[CategoryName, IconName]
     limits_by_tag: TagLimitsMatcher
     hide_from_ui: TagNameMatcher
+    hide_from_selector: TagNameMatcher
     strip_from_tracks: TagNameMatcher
     relations: TagRelations
     keywords_to_tags: dict[KeywordString, set[TagName]]
@@ -473,12 +477,14 @@ class KeywordData:
         limits = load_limits(keywords_file)
         hide_from_ui = load_filters(keywords_file, 'hide_from_ui')
         strip_from_tracks = load_filters(keywords_file, 'strip_from_tracks')
+        hide_from_selector = load_filters(keywords_file, 'hide_from_selector')
         relations = load_relations(keywords_file)
         alias_to_tags, alias_to_negated_tags = load_aliases(keywords_file, category_as_tag=False)
         return cls(colors_by_category=colors,
                    icons_by_category=icons,
                    limits_by_tag=limits,
                    hide_from_ui=hide_from_ui,
+                   hide_from_selector=hide_from_selector,
                    strip_from_tracks=strip_from_tracks,
                    relations=relations,
                    keywords_to_tags=alias_to_tags,

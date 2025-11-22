@@ -1175,10 +1175,11 @@ class TagManager:
 
         return category.title()
 
-    def get_tag_options(self, *, or_empty: bool = False, or_untagged: bool = False, all_tags: bool = True, category: str = '') -> list[TagName]:
+    def get_tag_options(self, *, or_empty: bool = False, or_untagged: bool = False, all_tags: bool = True, category: str = '', for_selector: bool = False) -> list[TagName]:
         tags = self.tags_df.lazy()\
             .filter(pl.col(Tag.short_name).is_not_null(),
                     pl.lit(True) if all_tags else ~self.config.hide_from_ui.matches(Tag.name()),
+                    pl.lit(True) if not for_selector else ~self.config.hide_from_selector.matches(Tag.name()),
                     pl.lit(True) if not category else Tag.category().eq(category))\
             .sort(Tag.name)\
             .collect()[Tag.name]\
