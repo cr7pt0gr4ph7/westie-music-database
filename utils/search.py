@@ -1467,6 +1467,7 @@ class SearchEngine:
         self,
         *,
         tag_names_exact: list[str],
+        rank_in_results: bool = False,
         limit: int | None = None,
     ) -> pl.LazyFrame:
         # Do not perform search if tag_names_exact is None or empty, as that returns too many entries
@@ -1480,40 +1481,41 @@ class SearchEngine:
                 .alias("matching_tags_data"))\
             .filter(pl.col("matching_tags_data").list.len() == len(set(tag_names_exact)))\
 
-        mt = matching_tracks
-        for tag_name in set(tag_names_exact):
-            tag_ranks = matching_tracks\
-                .select(
-                    Track.id,
-                    TrackTags.tags_data()
-                    .list.agg(
-                        pl.element()
-                        .filter(TrackTag.tag.struct_field().eq(tag_name))
-                        .pipe(TrackTag.matching_playlist_count.struct_field)
-                        .first())
-                    .fill_null(0)
-                    .alias(Stats.playlist_count))\
-                .select(
-                    Track.id,
-                    Stats.playlist_count().rank(method="dense", descending=True).alias(f"rank"))\
-                .select(
-                    Track.id,
-                    pl.col("rank").alias(f"rank_{tag_name}"),
-                    pl.col("rank").max().alias(f"max_rank_{tag_name}"),
-                    (pl.col("rank") / pl.col("rank").max()).alias(f"pct_rank_{tag_name}"))
+        if rank_in_results:
+            mt = matching_tracks
+            for tag_name in set(tag_names_exact):
+                tag_ranks = matching_tracks\
+                    .select(
+                        Track.id,
+                        TrackTags.tags_data()
+                        .list.agg(
+                            pl.element()
+                            .filter(TrackTag.tag.struct_field().eq(tag_name))
+                            .pipe(TrackTag.matching_playlist_count.struct_field)
+                            .first())
+                        .fill_null(0)
+                        .alias(Stats.playlist_count))\
+                    .select(
+                        Track.id,
+                        Stats.playlist_count().rank(method="dense", descending=True).alias(f"rank"))\
+                    .select(
+                        Track.id,
+                        pl.col("rank").alias(f"rank_{tag_name}"),
+                        pl.col("rank").max().alias(f"max_rank_{tag_name}"),
+                        (pl.col("rank") / pl.col("rank").max()).alias(f"pct_rank_{tag_name}"))
 
-            mt = mt\
-                .join(tag_ranks, on=Track.id, how="left")
+                mt = mt\
+                    .join(tag_ranks, on=Track.id, how="left")
 
-        matching_tracks = mt.select(
-            pl.exclude(r"^(pct_rank_|max_rank_|rank_).*$"),
-            pl.concat_list(pl.col(r"^rank_.*$")).alias("ranks"),
-            pl.concat_list(pl.col(r"^pct_rank_.*$")).alias("ranks_percent"),
-        ).with_columns(
-            pl.col("ranks_percent").list.sum().alias("ranks_percent_sum")
-        )
+            matching_tracks = mt.select(
+                pl.exclude(r"^(pct_rank_|max_rank_|rank_).*$"),
+                pl.concat_list(pl.col(r"^rank_.*$")).alias("ranks"),
+                pl.concat_list(pl.col(r"^pct_rank_.*$")).alias("ranks_percent"),
+            ).with_columns(
+                pl.col("ranks_percent").list.sum().alias("ranks_percent_sum")
+            )
 
-        return matching_tracks\
+        matching_tracks = matching_tracks\
             .with_columns(
                 pl.col("matching_tags_data")
                   .list.eval(TrackTag.tag.struct_field())
@@ -1526,8 +1528,12 @@ class SearchEngine:
                   .alias("matching_tags_sum"),
                 pl.col("matching_tags_data")
                   .list.agg(TrackTag.matching_playlist_count.struct_field().sqrt().sum())
-                  .alias("matching_tags_score"))\
+                  .alias("matching_tags_score"))
+
+        matching_tracks = matching_tracks\
             .sort("matching_tags_count", "matching_tags_score", descending=True)\
+
+        return matching_tracks\
             .slice(0, limit or None)
 
     def find_random_songs(
