@@ -772,6 +772,7 @@ keywords:
   dance:
     # West Coast Swing
     - wcs:
+        - "-not west coast swing"
         - wc
         - wcs
         - wcs1
@@ -823,13 +824,14 @@ keywords:
         - swouk
         - swoukable
         - zwouk
-
-    - wcs-:
-        - non-wcs
-        - not wcs
-        - '"not" west coast'
+        - west/lindy
 
     - not west coast swing:
+        - wcs-:
+          - non-wcs
+          - not wcs
+          - '"not" west coast'
+
         - east coast swing:
             - ecs
             - east coast swing
@@ -841,6 +843,7 @@ keywords:
         - lindy hop:
             - lindy
             - lindy hop
+            - west/lindy
 
         - ballroom / latin:
             # Ballroom & Latin
@@ -2523,6 +2526,8 @@ keywords:
         - kids
         - kinder
         - kinderserien
+        - kinderkarneval
+        - kinderkarnevall
         - toddler
         #
         - hörspiele
@@ -2969,7 +2974,7 @@ keywords:
         - liberty
         - liberty swing
     - longhorn westies+organization/dance:wcs/country:usa: # ORG: Longhorn Westies is a WCS Dance Club at the University of Texas at Austin
-    - lollapalooza+event/various/germany/usa+playlist:unrelated: # EVENT: LOLLA - GERMANY/USA
+    - lollapalooza+event/various/country:germany/country:usa+playlist:unrelated: # EVENT: LOLLA - GERMANY/USA
         - lolla
         - lollapalooza
     - love & swing+event/dance:wcs/country:france: # EVENT: LOVE & SWING [year] in Bordeaux, Frane
@@ -3287,7 +3292,7 @@ keywords:
     - swingvasion+event/dance:wcs/country:new zealand: # EVENT: Swingvasion
     - swingvester+event/dance:wcs/country:austria: # EVENT: Swingvester
     - switchmas+party/dance:wcs/country:germany: # PARTY: Switchmas by Super Secret Moves in Nürnberg, Germany
-    - switchxperience+event/dance:wcs/germany+paris: # EVENT: SwitchX in Berlin and Paris
+    - switchxperience+event/dance:wcs/country:germany+country:france: # EVENT: SwitchX in Berlin and Paris
         - switch experience
         - switch x
         - switch x perience
