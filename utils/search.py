@@ -77,7 +77,7 @@ from utils.common.filters import create_date_filter, create_text_filter, or_filt
 from utils.common.stats import count_n_unique
 from utils.keyword_data import CategoryName, HexColor, KeywordData, ShortTagName, TagName, load_keyword_data, split_tag
 from utils.playlist_classifiers import extract_date_strings_from_name, extract_date_types_from_name
-from utils.tables import Playlist, PlaylistOwner, PlaylistStats, PlaylistTags, PlaylistTrack, Stats, Tag, Track, TrackAdjacent, TrackLyrics, TrackTag, TrackTags
+from utils.tables import Playlist, PlaylistOwner, PlaylistStats, PlaylistTags, PlaylistTrack, Stats, Tag, TagsData, Track, TrackAdjacent, TrackLyrics, TrackTag, TrackTags
 
 
 ####################
@@ -1517,23 +1517,41 @@ class SearchEngine:
                 pl.col("ranks_percent").list.eval(pl.element().pow(2)).list.sum().alias("ranks_percent_squared_sum"),
             )
 
+        matching_tags_data: Final = TagsData(pl.col("matching_tags_data"))
         matching_tracks = matching_tracks\
             .with_columns(
-                pl.col("matching_tags_data")
-                  .list.eval(TrackTag.tag.struct_field())
-                  .alias("matching_tags"),
-                pl.col("matching_tags_data")
-                  .list.len()
-                  .alias("matching_tags_count"),
-                pl.col("matching_tags_data")
-                  .list.agg(TrackTag.matching_playlist_count.struct_field().sum())
-                  .alias("matching_tags_sum"),
-                pl.col("matching_tags_data")
-                  .list.agg(TrackTag.matching_playlist_count.struct_field().sqrt().sum())
-                  .alias("matching_tags_score"))
+                matching_tags_data
+                .compute_confidence_scores()
+                .tags_data())\
+            .with_columns(
+                (
+                    matching_tags_data
+                    .tags_with_frequencies()
+                    .alias("matching_tags")
+                ),
+                (
+                    matching_tags_data
+                    .tags_count()
+                    .alias("matching_tags_count")
+                ),
+                (
+                    matching_tags_data.tags_data()
+                    .list.agg(TrackTag.matching_playlist_count.struct_field().sum())
+                    .alias("matching_tags_sum")
+                ),
+                (
+                    matching_tags_data.tags_data()
+                    .list.agg(TrackTag.confidence.struct_field().min())
+                    .alias("matching_tags_min_score")
+                ),
+                (
+                    matching_tags_data.tags_data()
+                    .list.agg(TrackTag.confidence.struct_field().mean())
+                    .alias("matching_tags_mean_score")
+                ))
 
         matching_tracks = matching_tracks\
-            .sort("matching_tags_count", "matching_tags_score", descending=True)\
+            .sort("matching_tags_count", "matching_tags_min_score", "matching_tags_mean_score", descending=True)\
 
         return matching_tracks\
             .slice(0, limit or None)

@@ -344,15 +344,26 @@ class TrackTag(Entity):
     matching_playlist_count: Final = Stats.playlist_count.alias("matching_playlist_count")
     """How many playlists with the tag contain the track."""
 
+    confidence: Final = field("confidence", pl.Float32)
+    """How confident are we that this tag is correct between 0 and 1 (inclusive)."""
+
     tag: Final = Tag.name
     """The name of the tag."""
 
     @staticmethod
-    def format():
+    def format_frequency():
         return pl.concat_str(
             TrackTag.tag.struct_field(),
             pl.lit(" ("),
             TrackTag.matching_playlist_count.struct_field(),
+            pl.lit(")"))
+
+    @staticmethod
+    def format_confidence():
+        return pl.concat_str(
+            TrackTag.tag.struct_field(),
+            pl.lit(" ("),
+            TrackTag.confidence.struct_field(),
             pl.lit(")"))
 
     class Tag(SubEntity[Tag]):
@@ -383,6 +394,15 @@ class TagsData:
                                  TrackTag.tag.struct_field(),
                                  descending=[True, False])))
 
+    def compute_confidence_scores(self) -> Self:
+        return TagsData(self._data.list.eval(
+            pl.element().struct.with_fields(
+                TrackTag.matching_playlist_count.struct_field().pipe(
+                    lambda x: x/(x + 3)).alias(TrackTag.confidence.field_name))))
+
+    def tags_count(self) -> pl.Expr:
+        return self._data.list.len()
+
     def tags_data(self) -> pl.Expr:
         return self._data
 
@@ -401,8 +421,13 @@ class TagsData:
 
     def tags_with_frequencies(self) -> pl.Expr:
         return self._data\
-            .list.eval(TrackTag.format())\
-            .alias('tag_frequency')
+            .list.eval(TrackTag.format_frequency())\
+            .alias(TrackTags.tag_frequency)
+
+    def tags_with_confidences(self) -> pl.Expr:
+        return self._data\
+            .list.eval(TrackTag.format_confidence())\
+            .alias('tag_confidence')
 
 
 class TrackTags(Entity):
