@@ -804,7 +804,12 @@ def section_tag_explorer():
                          format_func=partial(tag_manager.format_tag, as_short_name=True),
                          selection_mode="multi"))
 
-    if st.button("Search songs", key="search_songs_by_tags", type="primary", disabled=st.session_state["processing"]):
+    perform_search = st.button("Search songs", key="search_songs_by_tags",
+                               type="primary", disabled=st.session_state["processing"])
+
+    if perform_search and not selected_tags:
+        st.markdown(f":small[**No Search Results** \u2012 Select one or more tags before performing the search.]")
+    elif perform_search:
         tag_str = " ".join([f":gray-badge[{t}]" for t in selected_tags])
         st.markdown(f":small[**Songs tagged with**] {tag_str}")
 
@@ -854,7 +859,12 @@ def section_tag_insights():
         return
 
     st.markdown(f"\n\n\n#### Common Tags for Playlists:")
-    st.markdown(f"Disclaimer: Insights are based on a [manually defined list]({keyword_file_url}) of tags and aliases that is then used to extract keywords from playlist titles, and may not be accurate or representative of reality.")
+    st.markdown(
+        f"""
+        Disclaimer: Insights are based on a [manually defined list]({keyword_file_url}) of tags
+        and aliases that is then used to extract keywords from playlist titles, and may not be
+        accurate or representative of reality.
+        """)
 
     tags_df = load_tags_data()
     tag_category_input = st.selectbox("Only show tags in category:",
