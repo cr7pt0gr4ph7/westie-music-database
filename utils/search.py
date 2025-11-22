@@ -1553,6 +1553,13 @@ class SearchEngine:
                 ))
 
         matching_tracks = matching_tracks\
+            .with_columns(
+                pl.when(pl.col(Track.beats_per_minute).gt(0)).then(
+                    pl.col(Track.beats_per_minute)).otherwise(pl.lit(None)),
+                pl.when(pl.col(Track.id).is_not_null()).then(pl.concat_str(
+                    pl.lit('https://open.spotify.com/track/'), Track.id)).alias(Track.url))
+
+        matching_tracks = matching_tracks\
             .sort("matching_tags_count", "matching_tags_min_score", "matching_tags_mean_score", descending=True)\
 
         return matching_tracks\
