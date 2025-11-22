@@ -29,6 +29,10 @@ pl.Config.set_tbl_rows(100).set_fmt_str_lengths(100)
 pl.enable_string_cache()  # for Categoricals
 # st.text(f"{avail_threads}")
 
+github_branch = "main"
+github_repo = "cr7pt0gr4ph7/westie-music-database"
+keyword_file_url = f"https://github.com/{github_repo}/blob/{github_branch}/utils/keyword_data.yaml"
+
 # Only check once per session
 if "pull_data" not in st.session_state or st.session_state["pull_data"]:
     # Automatically pull the data from HuggingFace if we're running on
@@ -817,6 +821,16 @@ def section_tag_explorer():
                          "matching_tags_sum",
                      ])
 
+    st.markdown(
+        f"""
+        Song tags are derived based on the playlists in which a song is contained.
+
+        See the [keyword definition file]({keyword_file_url}) on GitHub to learn
+        about the keywords that we currently recognize, and the tags they are assigned to.
+        A lot of effort has went into making sure that playlists are tagged as accurately
+        as possible, but there's only so much data that can be extracted from short playlist titles.
+        """)
+
     st.markdown("####")
 
 
@@ -828,7 +842,7 @@ def section_tag_insights():
         return
 
     st.markdown(f"\n\n\n#### Common Tags for Playlists:")
-    st.text(f"Disclaimer: Insights are based on a manually defined list of tags and aliases that is then used to extract keywords from playlist titles, and may not be accurate or representative of reality.")
+    st.markdown(f"Disclaimer: Insights are based on a [manually defined list]({keyword_file_url}) of tags and aliases that is then used to extract keywords from playlist titles, and may not be accurate or representative of reality.")
 
     tags_df = load_tags_data()
     tag_category_input = st.selectbox("Only show tags in category:",
