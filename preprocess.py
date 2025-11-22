@@ -8,7 +8,6 @@ import polars as pl
 
 from utils.additional_data import actual_wcs_djs, queer_artists, poc_artists
 from utils.common.aggregation import rolling_fixed
-from utils.common.polars import lazy_pivot
 from utils.common.temp_files import TempFileTracker, with_temp_files
 from utils.keyword_data import extract_category, load_keyword_data
 from utils.playlist_classifiers import extract_date_strings_from_name, extract_tags_from_name
