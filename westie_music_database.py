@@ -805,6 +805,9 @@ def section_tag_explorer():
                          selection_mode="multi"))
 
     if st.button("Search songs", key="search_songs_by_tags", type="primary", disabled=st.session_state["processing"]):
+        tag_str = " ".join([f":gray-badge[{t}]" for t in selected_tags])
+        st.markdown(f":small[**Songs tagged with**] {tag_str}")
+
         tagged_songs_df = search_engine\
             .find_songs_by_tags(tag_names_exact=selected_tags,
                                 limit=200)\
