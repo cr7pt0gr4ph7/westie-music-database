@@ -1469,6 +1469,8 @@ keywords:
         - late nights
         - late nite
         - latenight
+        - latenigt
+        - latenigts
         - latenite
         - wcs*:
             - "+dance:wcs"
@@ -1905,7 +1907,9 @@ keywords:
         - shuffled swing
         - clear swing beat
     - ternary
-    - staccato
+    - staccato:
+        - staccato
+        - stakkato
     - legato
     - upbeat and downbeat:
         - clear down up beat
@@ -2518,8 +2522,10 @@ keywords:
         - podcasts
         - schlaflieder
         #
+        - baby shower
         - bachelorette
         - bobfahrerlied
+        - choir music
         - concert
         - dog walk
         - drinking*:
@@ -2535,6 +2541,7 @@ keywords:
             - meditation
             - meditations
             - meditációk # meditations
+        - morgenkreis
         - oktoberfest
         - religious*:
             - christ
@@ -2606,15 +2613,28 @@ keywords:
     - avalon # there a cities in multiple countries named avalon
     - berlin # germany
     - böblingen # germany
-    - bratislava # slowakia
+    - bodø # norway
+    - bratislava: # slowakia
+        - bratislava
+        - bratislavaparty
+        - bratislavaparty2
+        - bratislavajune18
+        - bratislavamärz18
     - bristol # uk
     - brno # czechia
     - calpe # spain (calp)
+    - den hague: # netherlands
+        - den haag
+        - den hague
     - denver # usa
     - dunedin # new zealand
     - edmonton # canada
     - farnham # uk
     - garda # italy
+    - kraków: # poland
+        - krakau
+        - krakow
+        - kraków
     - lille # france
     - london # uk
     - madrid # spain
@@ -2636,6 +2656,7 @@ keywords:
     - seabeck # usa
     - seattle # usa
     - solec # poland
+    - stavanger # norway
     - syracuse # usa
     - timisoara # romania
     - ulm # germany
@@ -2666,10 +2687,10 @@ keywords:
     - omj # 43 playlists # PARTY: OMJ
     - papillon # 11 playlists # LOCATION?: Papillon
     - tatarska # 8 playlists # PARTY: polish: tartar sauce, tartarian, republic of tatarstan
-    - the kårner # 20 playlists # PARTY?/ORG?: The Kårner
+    - the kårner # 20 playlists # PARTY?/ORG?/LOCATION?: The Kårner
     - the mamalist # 35 playlists # playlist series on spotify, not a party AFAICT
     - zonawcs # 25 playlists # ZonaWCS
-    - westival # there are multiple events with this name
+    - westival+event/dance:wcs/country:unclear: # there are multiple events with this name
     ###
     - żaczek+party/?/country:poland: # PARTY probably # polish: little girl
     ###
@@ -2695,7 +2716,7 @@ keywords:
         - aiw
         - aix on west
     - aloha+event/dance:wcs/country:usa: # EVENT: Aloha on Hawaii
-    - arnic: # EVENT?: [ArNic]
+    - arnic+event/various/country:unclear: # EVENT?: [ArNic]
         - arnic
         - "[arnic]"
     - asia open+event/dance:wcs/country:singapore: # EVENT: Asia Open
@@ -2727,7 +2748,6 @@ keywords:
     - avignon city swing+event/dance:wcs/country:france: # EVENT: Avignon City Swing
     - baltic swing+event/dance:wcs/country:poland: # EVENT: Baltic Swing [year]
     - bavarian open+event/dance:wcs/country:germany: bavarian open
-    - bcsdc
     - berlin swing revolution+event/dance:wcs/country:germany: # EVENT: Berlin Swing Revolution [year]
         - berlin swing revolution
     - blackout friday+other/unknown/country:unclear:
@@ -2747,6 +2767,10 @@ keywords:
         - brtidgetown swing
         # maybe: - bts
     - bristol swing fiesta+event/dance:wcs/country:uk: # EVENT: Bristol Swing Fiesta
+    - british columbia swing dance club+organization/dance:wcs/country:usa: # ORG: British Columbia Swing Dance Club in USA
+        - bc swing dance club
+        - british columbia swing dance club
+        - bcsdc
     - brivi swing+other/dance:wcs/country:hungary: # EVENT?/PARTY?/ORG?: BriVi Buli (Hungarian: "BriVi Party")
         - brivi
         - brivi buli
@@ -2761,7 +2785,7 @@ keywords:
     - candy swing+party/dance:lindy hop/country:germany+werk36: # PARTY: Candy Swing - Lindy Hop Party by weRK36
         - candy swing
     - capital swing+event/dance:wcs/country:usa: # EVENT: Capital Swing in Sacramento, California
-    - cds
+    - cds+dance:wcs/country:usa: # EVENT: CDS in USA
     - centre social dance+organization/various/country:usa: # ORG: Centre Social Dance in State College, Pennsylvania, USA
         - centre social dance
         - centre_social_dance
@@ -3092,7 +3116,8 @@ keywords:
     - scandinavian open+event/dance:wcs/country:sweden: # EVENT: Scandinavian Open in Stockholm, Sweden
         - scandinavian open
         - snow_
-        - snow_06_11_2022
+        # - snow_06_11_2022
+        # - snow_03_11_2022_part2
         - snow friday
         - snow saturday
         - snow sunday
