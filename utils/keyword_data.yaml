@@ -74,6 +74,7 @@ metadata:
     strip_from_tracks: true
   #######
   language:
+    comment: "**Note:** The `language:` tags are extracted from playlist titles, and do not necessarily correspond to the actual language(s) of the songs."
     icon: material/translate # material/language
   genre:
     icon: material/genres
