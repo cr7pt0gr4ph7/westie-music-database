@@ -1339,7 +1339,10 @@ keywords:
 
     # Difficulty levels
     - easy
-    - hard
+    - hard: # TODO: "hard" tagging is currently all over the place and very imprecise
+        - hard
+    - hard-:
+        - hard breaks
     - pro
     - difficult
     - complex
@@ -2830,6 +2833,7 @@ keywords:
     - omj # 43 playlists # PARTY: OMJ
     - ordenshuset+events:type:location/dance:wcs/country:sweden: # LOCATION: Ordenshuset (Monastery) in ?
     - papillon # 11 playlists # LOCATION?: Papillon
+    - swing in capital
     - swing studio # 19 playlists # PARTY?/ORG?/LOCATION?: Swing Studio
     - tatarska # 8 playlists # PARTY: polish: tartar sauce, tartarian, republic of tatarstan
     - the kårner # 20 playlists # PARTY?/ORG?/LOCATION?: The Kårner
@@ -2845,6 +2849,7 @@ keywords:
     ###
     - barka
     ###
+    - brasília swing brasil
     - dancing by the docks: # EVENT/PARTY?
         - dancing by the docks
         - dancing on the docks
