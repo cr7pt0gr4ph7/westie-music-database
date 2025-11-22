@@ -1127,8 +1127,8 @@ def compute_tag_correlations(temp_files: TempFileTracker):
         .pivot(TrackTag.tag,
                index=Track.id,
                values=TrackTag.matching_playlist_count,
-               aggregate_function="first")#\
-        # .with_columns(pl.exclude(Track.id).fill_null(0))
+               aggregate_function="first")  # \
+    # .with_columns(pl.exclude(Track.id).fill_null(0))
 
     temp_file = temp_files.register_for_deletion(TEMP_DATA_DIR + 'temp_track_tags_as_columns.parquet')
     write_to_parquet_file(tags_as_columns.lazy(), temp_file)
@@ -1165,10 +1165,6 @@ def compute_tag_correlations(temp_files: TempFileTracker):
         batch_storage='in-memory',
         output_name=TAG_CORRELATIONS_DATA_FILE,
     )
-
-    correlations = scan_parquet_file(DATA_DIR + "data_tag_correlations.parquet")
-
-    print(correlations.collect(engine='streaming'))
 
 
 def compute_playlist_wcs_score():
