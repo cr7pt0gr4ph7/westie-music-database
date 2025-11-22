@@ -217,7 +217,7 @@ keywords:
     - likely:
         - "\u2012" # figure dash
         - "\u2013" # en dash
-        - "\u2140" # em dash
+        - "\u2014" # em dash
         - "\u2e3a" # double em dash
     - any:
         - 3oh!3
