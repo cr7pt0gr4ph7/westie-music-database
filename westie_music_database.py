@@ -159,11 +159,47 @@ st.link_button("Help fill in country info!",
                url='https://docs.google.com/spreadsheets/d/1YQaWwtIy9bqSNTXR9GrEy86Ix51cvon9zzHVh7sBi0A/edit?usp=sharing')
 
 
+feature_flags: dict[str, bool] = {}
+
+
+def feature_flag(name: str, default: bool = False) -> bool:
+    flag_name = f"feature.{name}"
+    result = default or st.query_params.get(flag_name) in ["1", "yes", "on", "true"]
+    feature_flags[flag_name] = result
+    return result
+
+
 # Feature flag to enable the "Random Song" section
-enable_random_song = False
+enable_random_song = feature_flag('random_song')
 
 # Feature flag to enable the "Song distance" section
-enable_song_distance = False
+enable_song_distance = feature_flag('song_distance')
+
+# Feature flag to list containing playlists in the "Find a Song" section
+enable_show_containing_playlists = feature_flag('show_containing_playlists')
+
+if "experimental" in st.query_params:
+    st.markdown(
+        """
+        ####
+        #### Feature flags for Developers 🚧
+        **Use at your own risk!**
+        """)
+
+    new_feature_flags = st.data_editor(feature_flags)
+
+    flags_changed = False
+    for flag in new_feature_flags:
+        if feature_flags[flag] != new_feature_flags[flag]:
+            flags_changed = True
+            if new_feature_flags[flag]:
+                st.query_params[flag] = "1"
+            else:
+                del st.query_params[flag]
+
+    if flags_changed:
+        st.rerun()
+
 
 if enable_random_song:
     st.markdown(f"#### ")
@@ -492,7 +528,9 @@ def section_find_song():
                 TrackTags.playlist_counts_per_tag: st.column_config.LineChartColumn(y_min=0)
             })
 
-        if song_search_df.shape[0] <= 3:
+        if enable_show_containing_playlists and song_search_df.shape[0] <= 3:
+            st.markdown("Playlists containing one or more of the songs above:")
+
             playlists_with_song = search_engine.data.playlists\
                 .select(Playlist.id, Playlist.name)\
                 .join(search_engine.data.playlist_tracks.select(Playlist.id, Track.id)
