@@ -15,10 +15,9 @@ import time
 
 from utils.common.columns import pull_columns_to_front
 from utils.common.logging import log_query
-from utils.keyword_data import extract_category
 from utils.pull_data import automatically_pull_data_if_needed
 from utils.search import SearchEngine, TagManager
-from utils.tables import Playlist, PlaylistOwner, PlaylistStats, PlaylistTags, PlaylistTrack, Stats, Tag, Track, TrackAdjacent, TrackLyrics, TrackTag, TrackTags
+from utils.tables import Playlist, PlaylistOwner, PlaylistStats, PlaylistTags, PlaylistTrack, Stats, Tag, TagsData, Track, TrackAdjacent, TrackLyrics, TrackTag, TrackTags
 
 # As mentioned in the streamlit docs pyplot doesn't work well with threads,
 # so use a lock to protect it (as recommeded by the streamlit documentation)
@@ -421,52 +420,30 @@ def section_find_song():
         results_df = song_search_df.lazy()\
             .with_columns(
                 pl.col(Playlist.name).list.head(30),
-                TrackTags.tags_data()
-                .list.filter(extract_category(TrackTag.tag.struct_field())
-                             .is_in(["genre", "mood", "tempo", "level", "topic"]))
-                .list.eval(
-                    pl.element().sort_by(TrackTag.matching_playlist_count.struct_field(),
-                                         TrackTag.tag.struct_field(),
-                                         descending=[True, False]))
-                .list.eval(pl.concat_str(
-                    TrackTag.tag.struct_field(),
-                    pl.lit(" ("),
-                    TrackTag.matching_playlist_count.struct_field(),
-                    pl.lit(")")))
-                .alias('tag_frequency'),
-                TrackTags.tags_data()
-                .list.filter(extract_category(TrackTag.tag.struct_field())
-                             .is_in(["genre", "mood", "tempo", "level", "topic"]))
-                .list.eval(
-                    pl.element().sort_by(TrackTag.matching_playlist_count.struct_field(),
-                                         TrackTag.tag.struct_field(),
-                                         descending=[True, False]))
-                .list.eval(TrackTag.matching_playlist_count.struct_field())
-                .alias(TrackTags.playlist_counts_per_tag),
-                pl.col('adjacent_tags_data')
-                .list.filter(extract_category(TrackTag.tag.struct_field())
-                             .is_in(["genre", "mood", "tempo", "level", "topic"]))
-                .list.eval(
-                    pl.element().sort_by(TrackTag.matching_playlist_count.struct_field(),
-                                         TrackTag.tag.struct_field(),
-                                         descending=[True, False]))
-                .list.eval(pl.concat_str(
-                    TrackTag.tag.struct_field(),
-                    pl.lit(" ("),
-                    TrackTag.matching_playlist_count.struct_field(),
-                    pl.lit(")")))
-                .alias('adjacent_tag_frequency'))\
+                (
+                    TagsData(TrackTags.tags_data())
+                    .filter(category=["genre", "mood", "tempo", "level", "topic"])
+                    .sort_by_frequency()
+                    .tags_with_frequencies()
+                    .alias(TrackTags.tag_frequency)
+                ),
+                (
+                    TagsData(TrackTags.tags_data())
+                    .filter(category=["genre", "mood", "tempo", "level", "topic"])
+                    .sort_by_frequency()
+                    .playlist_counts_per_tag()
+                    .alias(TrackTags.playlist_counts_per_tag)
+                ),
+                (
+                    TagsData(pl.col('adjacent_tags_data'))
+                    .filter(category=["genre", "mood", "tempo", "level", "topic"])
+                    .sort_by_frequency()
+                    .tags_with_frequencies()
+                    .alias('adjacent_tag_frequency')
+                ))\
             .rename({Track.country: 'country'})\
             .drop(Track.id, Track.release_date, Track.region,
                   Playlist.matched_terms_count)\
-            .select((cs.all()
-                    - Playlist.matching_columns()
-                    - PlaylistTrack.matching_columns()
-                    - PlaylistOwner.matching_columns()
-                    - cs.by_name(TrackTags.tags_data)
-                    - cs.by_name('adjacent_tags_data'))
-                    | cs.by_name(Playlist.name)
-                    | cs.by_name(PlaylistOwner.name))\
             .with_row_index(offset=1)\
             .collect(engine="streaming")
 
@@ -477,7 +454,7 @@ def section_find_song():
                 Track.name,
                 Track.artists,
                 TrackTags.tags,
-                'tag_frequency',
+                TrackTags.tag_frequency,
                 TrackTags.playlist_counts_per_tag,
                 'adjacent_tag_frequency',
                 Track.url,
@@ -485,7 +462,7 @@ def section_find_song():
                 Stats.dj_count,
                 'hit_terms',
                 Track.beats_per_minute,
-                'matching_playlist_count',
+                Playlist.matching_playlist_count,
                 Track.has_queer_artist,
                 Track.has_poc_artist,
                 Playlist.name,
@@ -810,15 +787,11 @@ def section_tag_explorer():
                                 limit=200)\
             .with_row_index(offset=1)\
             .with_columns(
-                TrackTags.tags_data()
-                .list.filter(extract_category(TrackTag.tag.struct_field())
-                             .is_in(["genre", "mood", "tempo", "level", "topic"]))
-                .list.eval(pl.concat_str(
-                    TrackTag.tag.struct_field(),
-                    pl.lit(" ("),
-                    TrackTag.matching_playlist_count.struct_field(),
-                    pl.lit(")")))
-                .alias('tag_frequency'))\
+                TagsData(TrackTags.tags_data())
+                .filter(category=["genre", "mood", "tempo", "level", "topic"])
+                .sort_by_frequency()
+                .tags_with_frequencies()
+                .alias(TrackTags.tag_frequency))\
             .collect(engine='streaming')
 
         st.dataframe(tagged_songs_df,
