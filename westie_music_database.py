@@ -778,6 +778,7 @@ def section_tag_explorer():
     categories = [
         "genre",
         "mood",
+        "timing",
         "topic",
         "language",
         "epoch",
