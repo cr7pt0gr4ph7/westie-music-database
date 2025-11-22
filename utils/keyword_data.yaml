@@ -2656,6 +2656,7 @@ keywords:
             - kinderserien
         - kinderkarneval
         - kinderkarnevall
+        - kinderweihnachtsfeier
         - toddler
         #
         - baby shower
@@ -2709,7 +2710,6 @@ keywords:
         - obscurify
         - my top songs
         - my top songs [year]
-        - deine top-songs
         - deine top-songs
         - deine top-songs [year]
         - default name:
@@ -2854,6 +2854,7 @@ keywords:
     - westie nights # PARTY?
     - dance lab
     - dansfest
+    - mafia du swing
     - melanie # 22 playlists # misc stuff
     - trivia # PARTY?
     - wieczorek
@@ -3073,7 +3074,7 @@ keywords:
         - groovy tuesday
         - groovy tuesdays
         - groovy tuesday's
-    - halloween swing thing+events/dance:wcs/country:usa: # EVENT: Halloween SwingThing in California
+    - halloween swing thing+events:type:event/dance:wcs/country:usa: # EVENT: Halloween SwingThing in California
         - halloween swing thing
         - halloween swingthing
         - hst
