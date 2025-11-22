@@ -72,18 +72,3 @@ def lazy_pivot(
         ).alias(value)
         for value in unique_on_values
     ).collect()
-
-
-def list_to_columns(
-    col: IntoExpr,
-    *,
-    on: pl.Expr,
-    unique_on_values: Sequence[Any],
-    values: pl.Expr | None = None,
-    aggregate_function: PivotAgg | None = None,
-):
-    col = into_expr(col)
-    values = pl.lit(None) if values is None else values
-
-    for n in unique_on_values:
-        yield col.list.filter(on == n).list.agg(get_aggregate_expression(values, aggregate_function)).alias(n)
