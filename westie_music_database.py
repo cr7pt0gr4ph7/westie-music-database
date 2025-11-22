@@ -836,11 +836,13 @@ def section_tag_explorer():
                          Track.artists,
                          "tag_frequency",
                          "matching_tags",
+                         Track.url,
                          "matching_tags_count",
                          "matching_tags_min_score",
                          "matching_tags_mean_score",
                          "matching_tags_sum",
-                     ])
+                     ],
+                     column_config=link_columns)
 
     st.markdown(
         f"""
