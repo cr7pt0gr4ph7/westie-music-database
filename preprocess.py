@@ -1,5 +1,5 @@
 """Methods for pre-processing the data into more efficient formats at build time."""
-from typing import Callable, Final, Literal
+from typing import Any, Callable, Final, Literal
 import math
 import os
 import time
