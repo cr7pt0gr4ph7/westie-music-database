@@ -568,40 +568,6 @@ if playlist_locator_toggle:
                                        'anti_playlist_input': anti_playlist_input2,
                                        })
 
-        # 420 owners have enough playlists to uniquely identify their date style
-        # 593 owners have playlists with dates
-        # leaving 593 - 420 = 173 owners with still ambigous date styles
-
-        # If playlists contain references to weekdays, we can also discard
-        # dates that do not match the given weekday, to further narrow down
-        # the likely format of the playlist.
-
-        # Also, we can use metadata like the creation date of the playlist
-        # to narrow down the year / discard interpretations that do not seem
-        # to match year indicated by the metadata +/- 1
-
-        # Additionally, to decide between day vs. month first, we can use
-        # statistical analysis, to see which field has the smaller distribution
-        # of numbers - that is likely to be the year field.
-
-        unambiguous = search_engine.find_date_formats_by_dj(only_unique_date_formats=True).collect()
-
-        owner_date_formats_df = search_engine.find_date_formats_by_dj(
-            # country=...,
-            dj_name=dj_input,
-            dj_exclude_by_ids=unambiguous,
-            playlist_include=playlist_input,
-            playlist_exclude=anti_playlist_input2,
-            sort_by=Stats.date_format_counts,
-            descending=True,
-            limit=None,
-        )
-
-        print(owner_date_formats_df)
-
-        st.dataframe(owner_date_formats_df.collect(engine='streaming'),
-                     column_config={Playlist.url: st.column_config.LinkColumn()})
-
         # TODO: Expose additional query parameters in the UI
         playlist_search_df = search_engine.find_playlists(
             song_name=song_input,
@@ -628,7 +594,6 @@ if playlist_locator_toggle:
                              Stats.artist_count, Track.name)
                      .collect(engine='streaming'),
                      column_config={Playlist.url: st.column_config.LinkColumn()})
-
         st.session_state["processing"] = False
     st.markdown(f"#### ")
 
