@@ -1512,7 +1512,9 @@ class SearchEngine:
                 pl.concat_list(pl.col(r"^rank_.*$")).alias("ranks"),
                 pl.concat_list(pl.col(r"^pct_rank_.*$")).alias("ranks_percent"),
             ).with_columns(
-                pl.col("ranks_percent").list.sum().alias("ranks_percent_sum")
+                pl.col("ranks_percent").list.sum().alias("ranks_percent_sum"),
+                pl.col("ranks_percent").list.eval(pl.element().sqrt()).list.sum().alias("ranks_percent_sqrt_sum"),
+                pl.col("ranks_percent").list.eval(pl.element().pow(2)).list.sum().alias("ranks_percent_squared_sum"),
             )
 
         matching_tracks = matching_tracks\

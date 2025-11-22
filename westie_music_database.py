@@ -805,7 +805,9 @@ def section_tag_explorer():
 
     if st.button("Search songs", key="search_songs_by_tags", type="primary", disabled=st.session_state["processing"]):
         tagged_songs_df = search_engine\
-            .find_songs_by_tags(tag_names_exact=selected_tags, limit=200)\
+            .find_songs_by_tags(tag_names_exact=selected_tags,
+                                rank_in_results=True,
+                                limit=200)\
             .with_row_index(offset=1)\
             .with_columns(
                 TrackTags.tags_data()
@@ -827,6 +829,8 @@ def section_tag_explorer():
                          "ranks",
                          "ranks_percent",
                          "ranks_percent_sum",
+                         "ranks_percent_sqrt_sum",
+                         "ranks_percent_squared_sum",
                          "tag_frequency",
                          "matching_tags",
                          "matching_tags_count",
