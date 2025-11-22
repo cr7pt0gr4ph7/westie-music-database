@@ -232,6 +232,7 @@ keywords:
         - after the fire
         - ajeet kaur
         - akalex
+        - akon
         - al basile
         - alabama shakes
         - alain pérez
@@ -244,6 +245,7 @@ keywords:
         - alex somers
         - alfredo de angelis
         - ali gatie
+        - alice merton
         - alicia keys
         - alina baraz
         - alizée
@@ -275,6 +277,7 @@ keywords:
         - aphex twin
         - ariana grande
         - armando manzanero
+        - armin van buuren
         - art blakey quintet
         - artic monkeys
         - arturo o'farrill
@@ -284,6 +287,7 @@ keywords:
         - barbra streisand
         - bastille
         - beatles
+        - benny goodman
         - bethel music
         - betty who
         - beyonce*:
@@ -332,6 +336,7 @@ keywords:
         - darius rucker
         - daughtry
         - david guetta
+        - death cab for cutie
         - deepening blue
         - delta goodrem
         - demi lovato
@@ -372,9 +377,13 @@ keywords:
         - gil scott-heron
         - gipsy kings
         - glass animals
+        - glee cast*:
+            - glee
+            - glee cast
         - graham brown
         - greatest showman
         - h.e.r.
+        - hans zimmer
         - harlem river drive
         - helge schneider
         - herbert grönemeyer
@@ -446,6 +455,7 @@ keywords:
         - lizzo
         - lmfao
         - lonestar
+        - lorde
         - luke bryan
         - machine gun kelly
         - maggie rogers
@@ -460,8 +470,11 @@ keywords:
         - marvin gaye
         - mary j. blige
         - mary mary
+        - max raabe
         - medialuna
-        - meghan trainor
+        - meghan trainor*:
+            - megan trainor
+            - meghan trainor
         - michael bublé
         - michael jackson
         - michael ray
@@ -475,7 +488,11 @@ keywords:
         - mndsgn
         - montaigne
         - mr. mister
-        - mumford sons
+        - mumford & sons*:
+            - mumford
+            - mumford & sons
+            - mumford and sons
+            - mumford sons
         - muse
         - nat king cole
         - nathan east
@@ -580,11 +597,13 @@ keywords:
         - the who
         - tiësto
         - tim mcgraw
+        - tina turner
         - trampoline
         - travis scott
         - twenty one pilots*:
             - twenty one pilots
             - twenty one pilots setlist
+        - tyler ward
         - usher
         - vince gill
         - vision fiberoptics
@@ -620,6 +639,7 @@ keywords:
         - apr
         - april # german / english
         - avril # french
+        - huhti # finnish
     - may:
         - may
         - mai # german
@@ -757,6 +777,9 @@ keywords:
         - german
         - germanmusic
         - deutsch
+        - deutsche
+        - deutscher
+        - deutsches
         - deutschhiphop
     - german-:
         - german open
@@ -766,7 +789,20 @@ keywords:
         - italiano
     - italian-:
         - italian open
-    - korean
+    - japanese:
+        - japanese
+    - korean:
+        - korean
+    - korean-:
+        - korean open
+    - polish:
+        - polskie
+        - polish
+        - polnisch
+        - polnische
+    - polish-:
+        - polish grammar
+        - polish picnic
     - spanish:
         - spanish
         - espanol
@@ -805,6 +841,7 @@ keywords:
 
         - "(W)est coast swing"
         - best coast swing
+        - favwcs
         - flavio.marinewcs
         - masterwcs
         - mediumwestie
@@ -838,6 +875,9 @@ keywords:
             - east coast swing
             - eastcoastswing
 
+        - fusion:
+            - fusion
+
         - jitterbug:
             - jitterbug
 
@@ -860,6 +900,7 @@ keywords:
             - ft
             - foxtrot
             - foxtrott
+            - lawa
             - lw
             - langsamer walzer
             - slow waltz
@@ -879,9 +920,13 @@ keywords:
             - tango
             - argentino
             - milonga
+            - milongas
             - ww
+            - walc wiedeński # swedish: viennese waltz
             - waltz
             - walzer
+            - wiedeński # swedish: viennese
+            - wiener walzer
 
             # More ballroom-related keywords
             - abiball
@@ -910,11 +955,13 @@ keywords:
                 - hochzeits-songs # german
                 - hochzeitsgäste # german
                 - hochzeitstanz # german
+                - pierwszy taniec # polish: first dance
                 - reception
                 - reception music
                 - silberhochzeit # german
                 - weddind # misspelling
                 - wedding
+                - wesele # polish
 
         # Unrelated solo dancing
         - ballet*:
@@ -923,12 +970,24 @@ keywords:
         - bollywood
         - fitness*:
             - cyclebar
+            - cyclebeatz
+            - cyclebeatzz
+            - cyclebeatzzz
+            - cyclebeatzzzz
             - crossfit
             - fitdance
+            - fitdankbaby
             - fitness
+            - ladystyle & heels
+            - heels pole
             - strong(her)
             - zumba
         - flamenco
+        - medieval dance
+        - irish dance
+        - irish dancing
+        - tap dance
+        - tap dancing
         - hardstyle
         - jumpstyle
         - kids*:
@@ -1242,6 +1301,8 @@ keywords:
         - champs
         - champions
         - as/champ songs
+    - champions-:
+        - uk champs # EVENT: UK WCS Championships
     - intermediate:
         - comp_int
         - int
@@ -1383,6 +1444,7 @@ keywords:
         - klassik
         - klassisk
         - orchestra
+        - orchestral
         - orchestral works
         - orcehstral works
         - orchestrated
@@ -1420,7 +1482,15 @@ keywords:
         - not lowfi but same vibes
     - lo-fi-:
         - not lowfi
-    - remixes
+    - remixes:
+        - mashups
+        - remixes
+    - shanties*:
+        - +playlist:unrelated
+        - shanties
+    - work songs*:
+        - +playlist:unrelated
+        - work songs
     - techno:
         - techno
         - täkkno
@@ -1432,6 +1502,7 @@ keywords:
         - movie music
         - movie ost
         - movie score
+        - movie themes
         - ost drama
         - tv themes
     - vaporwave # there is a single large playlist with over 2000 tracks
@@ -1516,10 +1587,6 @@ keywords:
     - violins:
         - violins
         - violinos
-
-    # The following terms probably need further investigation.
-    # Some of them seem to define "musical feels".
-    - fusion # imprecise
   epoch:
     # These classifications are based on time frames instead of genres
     - 1920s:
@@ -1631,6 +1698,7 @@ keywords:
     - chill-:
         - suspense
     - epic
+    - dramatic
     - happy:
         - happy
         - good mood:
@@ -1917,6 +1985,8 @@ keywords:
         - shuffle rhythm
         - shuffled swing
         - clear swing beat
+        - swing rhythm
+        - swing rythm
     - ternary
     - staccato:
         - staccato
@@ -2127,6 +2197,10 @@ keywords:
         - rhythn
         - rhythmn
         - rhythms
+    - spins & turns:
+        - spins
+        - spins & turns
+        - spins and turns
     - structure # imprecise - discard?
     - styling:
         - follower style
@@ -2146,6 +2220,7 @@ keywords:
         - technik # german: technique
         - technika # polish/lituanian/?: technique
     - tempo changes:
+        - speed changes
         - tempo change
         - tempo changes
         - tempo changing
@@ -2193,6 +2268,11 @@ keywords:
     - walks-:
         - hot girl walks
         - walks away
+    - weight transfer:
+        - weight shift
+        - weight t
+        - weight transfer
+        - weight transfers
   seasonal:
     - birthday:
         - b-day
@@ -2217,6 +2297,8 @@ keywords:
         - holidays
         - jinglebellswing
         - jullåtar # swedish: christmas songs
+        - julmusik # swedish: christmas music
+        - julmusiken # swedish: christmas music
         - merry holidays
         - mistletoe
         - mistletoes
@@ -2294,6 +2376,7 @@ keywords:
         - "☃️"
         - "❄️"
         - winter
+        - sweater weather
   playlist:
     - ordered-:
         - not ordered
@@ -2376,6 +2459,7 @@ keywords:
         - tykätyt # finnish: liked
         - mywcsfavs
         - wcsfavs
+        - favwcs
 
     - dislikes:
         - dislike
@@ -2496,6 +2580,7 @@ keywords:
         - requests
         - sugestões # portugese (brasilian): suggestions
         - suggestions
+        - propozycje # polish: suggestions
         - request song
         - request songs
         - kundenwünsche # region: customer requests
@@ -2503,6 +2588,8 @@ keywords:
     # e.g. "2024 Finds", "Newer finds"
     - discoveries:
         # - explore # Most matching playlists are called "Explore 5/15/23" and are party playlists...
+        - discoveries
+        - découvertes # french: discoveries
         - find
         - findings
         - finds
@@ -2513,6 +2600,8 @@ keywords:
             - new wcs
         - nuzică nouă # romanian: new music
         - muzica noua # romanian: new music
+        - my music radar
+        - music radar
 
     # Playlists with the following in their name are collections
     # created by users that indicate a very subjective sorting.
@@ -2526,14 +2615,13 @@ keywords:
         - hip hop choreos
         - kids
         - kinder
-        - kinderserien
+        - kinderserien*:
+            - bibi & tina
+            - bibi und tina
+            - kinderserien
         - kinderkarneval
         - kinderkarnevall
         - toddler
-        #
-        - hörspiele
-        - podcasts
-        - schlaflieder
         #
         - baby shower
         - bachelorette
@@ -2564,6 +2652,7 @@ keywords:
             - kinderkirche
             - kirche
             - lead me to the cross
+        - spiritual
         - roadtrip*:
             - drive
             - night drive
@@ -2598,6 +2687,7 @@ keywords:
             - ma playlist n°
             - LPlaylistul meu
             - LPlaylistul meu nr.
+            - uusi soittolista # finnish: new playlist
         - songs for [name]
         - lieder für [name] # german: songs for [name]
         - låtar till [name] # finnish: songs for [name]
@@ -2690,14 +2780,19 @@ keywords:
     - esdc # 25 playlists # ESDC
     - explore # 65 playlists # PARTY (when appearing next to a date)
     - fnpl # 33 playlists # FNPL - event or org, google search yields no results
+    - gammlia # 6 playlists # PARTY
     - gm # 8 playlists # PARTY: GM # imprecise
     - hb # 28 playlists # HB / HB Lesson
     - impreza # 47 playlists
     - infinity # 17 playlists # PARTY (when appearing next to a date)
+    - kadanse # 4 playlists # EVENT
+    - kv # Probably an event, but not sure which one
     - lbb # 4 playlists # PARTY?/LOCATION?/DJ?: LBB
     - mambita # 11 playlists # PARTY or LOCATION
+    - mercury cafe # 2 playlists # PARTY or LOCATION
     - mdj # 15 playlists # PARTY: MDJ
     - omj # 43 playlists # PARTY: OMJ
+    - ordenshuset+events:type:location/dance:wcs/country:sweden: # LOCATION: Ordenshuset (Monastery) in ?
     - papillon # 11 playlists # LOCATION?: Papillon
     - swing studio # 19 playlists # PARTY?/ORG?/LOCATION?: Swing Studio
     - tatarska # 8 playlists # PARTY: polish: tartar sauce, tartarian, republic of tatarstan
@@ -2947,6 +3042,9 @@ keywords:
         - halloween swingthing
         - hst
     - harmonyswing+events:type:event/dance:wcs/country:germany: # EVENT: Harmony Swing workshop weekend in Nürnberg, Germany
+        - harmony swing
+        - harmonyswing
+        - harmony # when followed by a date
     - hike & dance+events:type:event/dance:wcs/country:switzerland: # EVENT: Hike & Dance in Switzerland
         - hike & dance
         - hike&dance
@@ -2954,6 +3052,8 @@ keywords:
         - hill city swing
         - hcs
     - house of west+events:type:party/dance:wcs/country:usa: # PARTY: House of West in New York, USA
+    - hungarian open+events:type:event/dance:wcs/country:hungary: # EVENT: Hungarian Open in Hungary
+        - hungarian open
     - idance+events:type:organization/various dances/country:usa: # ORG: iDance - mainly online lessons?
     - intensiv' experience+events:type:event/dance:wcs/country:unclear: # EVENT?: Intensiv' Experience
     - ivra+events:type:organization/various dances/country:sweden: # 4 playlists # ORG: Ivra Arts Centre in Göteborg, Sweden
@@ -3218,6 +3318,8 @@ keywords:
     - summer swing camp: # EVENT: SummerSwingCamp - there are multiple events with this title
         - summer swing camp
         - summerswingcamp
+    - sundance swing+events:type:party/dance:wcs/country:usa: # PARTY: Sundance Swing by Sundance Saloon in San Francisco, USA
+        - sundance swing
     - sunday & swing+events:type:party/various dances/country:unclear: # PARTY: Sunday & Swing - there are multiple parties with this name
     - sunday swing+events:type:party/various dances/country:unclear: # PARTY: Sunday Swing - there are multiple parties with this name
     - sunset swing+events:type:party/dance:wcs/country:usa: # PARTY: Sunset Swing at Omni Dance Studios in Oakland, California
@@ -3318,6 +3420,8 @@ keywords:
     - tanzbrunnen+events:type:location/various dances/country:unclear: # LOCATION: Tanzbrunnen (there are multiple locations with this name, also not always WCS)
     - tanzes+events:type:organization/various dances/country:germany: # ORG: TanzEs dance studio in Esslingen, Germany
     - tanzloft+events:type:organization/various dances/country:germany: # ORG: Tanzloft in Germany
+    - tanzschule max7+events:type:organization/various dances/country:germany: # ORG: Tanzschule Max7 in Bonn, Germany
+        - max7
     - tb swing+events:type:organization/dance:wcs/country:norway: # ORG: TB Swing aka. Trond WCS in Tønsberg, Norway
     - tc rebels: # ?: TC Rebels
         - tc rebels
@@ -3373,6 +3477,9 @@ keywords:
     - uptown swing+events:type:event/dance:wcs/country:sweden: # EVENT: UpTown Swing in Stockholm, Sweden
         - uptown
         - up town swing
+    - uk championships+events:type:event/dance:wcs/country:uk: # EVENT: UK West Coast Swing Chamionships
+        - uk champs
+        - uk championships
     - ukrainian open+events:type:event/dance:wcs/country:ukraine: # EVENT: Ukrainian Open [year]
         - ukrainian open
         - ua open
