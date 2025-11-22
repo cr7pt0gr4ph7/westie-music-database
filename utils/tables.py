@@ -1,9 +1,10 @@
 """Provides typed column name constants."""
-from typing import Final, Literal, overload
+from collections.abc import Collection
+from typing import Final, Literal, Self
 
 import polars as pl
 
-from utils.common.entities import Entity, SubEntity, field
+from utils.common.entities import Entity, PolarsExpr, SubEntity, field
 
 
 class Stats(Entity):
@@ -289,8 +290,51 @@ class Tag(Entity):
     song_count = Stats.song_count
     """How many songs have this tag."""
 
+    type CategoryName = str
+    """Tag category name (e.g. `genre`, `events`)."""
+
+    type ShortTagName = str
+    """Short tag name without category (e.g. `pop`, `french open`)."""
+
+    type TagName = str
+    """Full tag name with category (e.g. `genre:pop`, `events:french open`)."""
+
     type SortFields = Literal["playlist_count", "song_count", "tag", "category", "full_tag"]
     """Fields that tags can be sorted on."""
+
+    @staticmethod
+    def format_tag(category: CategoryName, short_name: ShortTagName) -> TagName:
+        return f'{category}:{short_name}'
+
+    @staticmethod
+    def format_tag_if_needed(category: CategoryName, short_name: ShortTagName) -> TagName:
+        return (short_name if ':' in short_name
+                else Tag.format_tag(category, short_name))
+
+    @staticmethod
+    def split_tag(name: TagName) -> tuple[CategoryName, ShortTagName | None]:
+        parts = name.split(':', 1)
+        return ((parts[0], parts[1]) if len(parts) >= 2
+                else (parts[0], None))
+
+    @staticmethod
+    def format_tag_expr(category: PolarsExpr[CategoryName], short_name: PolarsExpr[ShortTagName]) -> PolarsExpr[TagName]:
+        return pl.concat_str(category, pl.lit(':'), short_name)
+
+    @staticmethod
+    def split_tag_expr(tag_name: PolarsExpr[TagName]) -> pl.Expr:
+        return tag_name\
+            .cast(pl.String)\
+            .str.splitn(':', 2)\
+            .struct.rename_fields([Tag.category, Tag.short_name])
+
+    @staticmethod
+    def extract_category(tag_name: PolarsExpr[TagName]) -> PolarsExpr[CategoryName]:
+        return Tag.split_tag_expr(tag_name).struct.field(Tag.category)
+
+    @staticmethod
+    def extract_tag(tag_name: PolarsExpr[TagName]) -> PolarsExpr[ShortTagName | None]:
+        return Tag.split_tag_expr(tag_name).struct.field(Tag.short_name)
 
 
 class TrackTag(Entity):
@@ -301,6 +345,14 @@ class TrackTag(Entity):
 
     tag: Final = Tag.name
     """The name of the tag."""
+
+    @staticmethod
+    def format():
+        return pl.concat_str(
+            TrackTag.tag.struct_field(),
+            pl.lit(" ("),
+            TrackTag.matching_playlist_count.struct_field(),
+            pl.lit(")"))
 
     class Tag(SubEntity[Tag]):
         name: Final = Tag.name
@@ -313,6 +365,44 @@ class TrackTag(Entity):
         playlist_percent: Final = field("track.playlist_percent", pl.Float32)
 
 
+class TagsData:
+    _data: pl.Expr
+
+    def __init__(self, tags_data: pl.Expr | None = None):
+        self._data = tags_data if tags_data is not None else TrackTags.tags_data()
+
+    def filter(self, category: Collection[str]) -> Self:
+        return TagsData(self._data.list.filter(
+            Tag.extract_category(TrackTag.tag.struct_field()).is_in(category)))
+
+    def sort_tags(self) -> Self:
+        return TagsData(self._data.list.eval(
+            pl.element().sort_by(TrackTag.matching_playlist_count.struct_field(),
+                                 TrackTag.tag.struct_field(),
+                                 descending=[True, False])))
+
+    def tags_data(self) -> pl.Expr:
+        return self._data
+
+    def alias(self, name: str) -> pl.Expr:
+        return self._data.alias(name)
+
+    def tags(self) -> pl.Expr:
+        return self._data\
+            .list.eval(pl.element().struct.field(TrackTag.tag))\
+            .alias(TrackTags.tags)
+
+    def playlist_counts_per_tag(self) -> pl.Expr:
+        return self._data\
+            .list.eval(pl.element().struct.field(TrackTag.matching_playlist_count))\
+            .alias(TrackTags.playlist_counts_per_tag)
+
+    def tags_with_frequencies(self) -> pl.Expr:
+        return self._data\
+            .list.eval(TrackTag.format())\
+            .alias('tag_frequency')
+
+
 class TrackTags(Entity):
     """Represents the tags of a song."""
 
@@ -321,6 +411,9 @@ class TrackTags(Entity):
 
     playlist_counts_per_tag: Final = field("playlist_counts_per_tag", pl.List(pl.UInt32))
     """How often each tag is associated with this song. Has same length and order as `tags`."""
+
+    tag_frequency: Final = field("tag_frequency", pl.List(pl.String))
+    """Tags with associated playlist count formatted as a list of strings."""
 
     tags_data: Final = field("tags_data", pl.List(pl.Struct({
         TrackTag.tag: TrackTag.tag.field_type,
@@ -336,43 +429,13 @@ class TrackTags(Entity):
         yield TrackTags.extract_tags()
         yield TrackTags.extract_playlist_counts_per_tag()
 
-    @overload
     @staticmethod
-    def extract_tags() -> pl.Expr:
-        pass
-
-    @overload
-    @staticmethod
-    def extract_tags(expr: pl.Expr) -> pl.Expr:
-        pass
+    def extract_tags(tags_data_expr: pl.Expr | None = None) -> pl.Expr:
+        return TagsData(tags_data_expr).tags().alias(TrackTags.tags)
 
     @staticmethod
-    def extract_tags(expr: pl.Expr | None = None) -> pl.Expr:
-        if expr is None:
-            expr = TrackTags.tags_data()
-
-        return expr\
-            .list.eval(pl.element().struct.field(TrackTag.tag))\
-            .alias(TrackTags.tags)
-
-    @overload
-    @staticmethod
-    def extract_playlist_counts_per_tag():
-        pass
-
-    @overload
-    @staticmethod
-    def extract_playlist_counts_per_tag(expr: pl.Expr):
-        pass
-
-    @staticmethod
-    def extract_playlist_counts_per_tag(expr: pl.Expr | None = None):
-        if expr is None:
-            expr = TrackTags.tags_data()
-
-        return expr\
-            .list.eval(pl.element().struct.field(TrackTag.matching_playlist_count))\
-            .alias(TrackTags.playlist_counts_per_tag)
+    def extract_playlist_counts_per_tag(tags_data_expr: pl.Expr | None = None):
+        return TagsData(tags_data_expr).playlist_counts_per_tag().alias(TrackTags.playlist_counts_per_tag)
 
 
 class PlaylistTags(Entity):

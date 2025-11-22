@@ -24,13 +24,13 @@ from utils.tables import Tag, TrackTag
 type KeywordString = str
 """Keyword string to be matched (e.g. `popular music`, `fowcs`)."""
 
-type CategoryName = str
+type CategoryName = Tag.CategoryName
 """Tag category name (e.g. `genre`, `events`)."""
 
-type ShortTagName = str
+type ShortTagName = Tag.ShortTagName
 """Short tag name without category (e.g. `pop`, `french open`)."""
 
-type TagName = str
+type TagName = Tag.TagName
 """Full tag name with category (e.g. `genre:pop`, `events:french open`)."""
 
 type HexColor = str
@@ -41,37 +41,31 @@ type IconName = str
 
 
 def format_tag(category: CategoryName, short_name: ShortTagName) -> TagName:
-    return f'{category}:{short_name}'
+    return Tag.format_tag(category, short_name)
 
 
 def format_tag_if_needed(category: CategoryName, short_name: ShortTagName) -> TagName:
-    return (short_name if ':' in short_name
-            else format_tag(category, short_name))
+    return Tag.format_tag_if_needed(category, short_name)
 
 
 def split_tag(name: TagName) -> tuple[CategoryName, ShortTagName | None]:
-    parts = name.split(':', 1)
-    return ((parts[0], parts[1]) if len(parts) >= 2
-            else (parts[0], None))
+    return Tag.split_tag(name)
 
 
 def format_tag_expr(category: PolarsExpr[CategoryName], short_name: PolarsExpr[ShortTagName]) -> PolarsExpr[TagName]:
-    return pl.concat_str(category, pl.lit(':'), short_name)
+    return Tag.format_tag_expr(category, short_name)
 
 
 def split_tag_expr(tag_name: PolarsExpr[TagName]) -> pl.Expr:
-    return tag_name\
-        .cast(pl.String)\
-        .str.splitn(':', 2)\
-        .struct.rename_fields([Tag.category, Tag.short_name])
+    return Tag.split_tag_expr(tag_name)
 
 
 def extract_category(tag_name: PolarsExpr[TagName]) -> PolarsExpr[CategoryName]:
-    return split_tag_expr(tag_name).struct.field(Tag.category)
+    return Tag.extract_category(tag_name)
 
 
 def extract_tag(tag_name: PolarsExpr[TagName]) -> PolarsExpr[ShortTagName | None]:
-    return split_tag_expr(tag_name).struct.field(Tag.short_name)
+    return Tag.extract_tag(tag_name)
 
 
 ####################
