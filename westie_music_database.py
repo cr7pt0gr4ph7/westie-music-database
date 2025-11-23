@@ -814,16 +814,25 @@ def section_find_playlist():
                          .sort(Stats.playlist_count, descending=True)
                          .collect(engine='streaming'))
 
-        st.dataframe(df
-                     .select(Playlist.name, PlaylistTags.tags, Playlist.url, PlaylistOwner.name,
-                             Playlist.matched_terms,
-                             Playlist.matching_song_count, Stats.song_count,
-                             PlaylistStats.wcs_song_count, PlaylistStats.wcs_song_percent,
-                             Stats.artist_count, Track.name)
-                     .collect(engine='streaming'),
-                     column_config={**link_columns,
-                                    PlaylistTags.tags: tag_manager.get_column_config(PlaylistTags.tags),
-                                    PlaylistStats.wcs_song_percent: st.column_config.ProgressColumn()})
+        st.dataframe(df.collect(engine='streaming'),
+                     column_order=[
+                         Playlist.name,
+                         PlaylistTags.tags,
+                         Playlist.url,
+                         PlaylistOwner.name,
+                         Playlist.matched_terms,
+                         Playlist.matching_song_count,
+                         Stats.song_count,
+                         PlaylistStats.wcs_song_count,
+                         PlaylistStats.wcs_song_percent,
+                         Stats.artist_count,
+                         Track.name
+                     ],
+                     column_config={
+                         **link_columns,
+                         PlaylistTags.tags: tag_manager.get_column_config(PlaylistTags.tags),
+                         PlaylistStats.wcs_song_percent: st.column_config.ProgressColumn()
+                     })
         st.session_state["processing"] = False
 
     st.markdown(f"#### ")
