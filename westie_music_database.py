@@ -903,6 +903,10 @@ def section_tag_explorer():
         about the keywords that we currently recognize, and the tags they are assigned to.
         A lot of effort has went into making sure that playlists are tagged as accurately
         as possible, but there's only so much data that can be extracted from short playlist titles.
+
+        As a general recommendation, searching for 1 - 3 tags works well.
+        Using too many tags or very exotic tag combinations on the other hand will
+        exclude so much of the dataset that what remains is bascially only noise.
         """)
 
     st.markdown("####")
