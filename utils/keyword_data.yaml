@@ -105,6 +105,9 @@ relations:
           - "mood:high energy"
           - "mood:funky"
   - opposites:
+      - "genre:blues"
+      - "dance:blues"
+  - opposites:
       - "topic:vocals"
       - "genre:instrumental"
   - opposites:
@@ -1360,17 +1363,75 @@ keywords:
         - b l u e s
         - soulfunkblues
     - blues-:
-        - blues dance
         - fusion
         - no blues
         - non-blues
         - not blues
+        - except blues
         - rhythm & blues
         - slow blues/fast contemp
-        # The following playlist is about blues as a dance style,
-        # not blues as a music genre, and contains effectively no tracks
+        # The following playlist contains a mix of different genres
+        - id:4oTTVwCdBlDFdxy1rC8hxv # Blues Class
+        # The following playlists are about blues as a dance style,
+        # not blues as a music genre, and contain effectively no tracks
         # that we would consider as "Blues" in the WCS sense of the word.
+    - dance:blues*:
+        - +dance:blues
+        - -blues
+        - fusion*:
+            - +dance:fusion
+            - blues to fusion transition
+            - blues fuse
+        - wcs*:
+            - +dance:wcs
+            - wcs/blues
+            - westcoast/blues
+            - zouk*:
+              - +dance:zouk
+              - blues/wcs/zouk
+        - blues melanie1
+        - blues melanie2
+        - blues/expressive dance
+        - blues dance
+        - slow blues
+        - wolny blues # polish: slow blues
+        - slow blues. boogie, wcs
         - blues @ cybertron
+        - blues-ideen für eure hochzeit
+        - id:000FUDCZMshGPFDSJqY0HN # Blues and cafe chill
+        - id:0btrdItu1LO2OZ8rdBhlHg # Blues WCS
+        - id:0EkQrDzpKPhkWkO6E00vN7 # Blues BK
+        - id:67QmI8DOUGMAcoNBAQhcVY # Blues
+        - id:1EJCH5YHumD2WQR894LzYa # bluesy
+        - id:1EUrd7HxlrqCH59xokIcna # Juke and Drag Blues
+        - id:67hBaZVcpX0KYsDpKgR1cO # Wolny Blues # polish: slow blues
+        - id:70ghOoYTTY8W2StzAZRqZ6 # blues pull list
+        - id:3mpQ5724AzvNZp2FBXeeQF # Blues / swing
+        - id:6CHyaRzucQ5jkxx6KRpc28 # Jan 31 2020 Blues Theme
+        - id:7LVR83GD9rREv8RatAmOJO # West Coast Swing Blues (now just named WCS)
+        - id:1w81waAy3X0BfZNLeP1swP # 20231228 Blues
+        - id:6hn4XvBbIxiiUOGWDKk02n # Blues (now just named WEST COAST SWING LOKOBAILE)
+        - id:1l1Q8zCUse2vAzriruZk42 # [...not found...]
+        - id:7nC7nVr8RUtZLXjED1epx0 # Tingalow Episode VI: Return of the Blues
+        - id:1FRt7tFWaHegE0BAAYsaAW # blues
+        - id:3yhZzxFMDCtMmbC0iRBKs2 # swingin the blues (now named Outdoor Social 29.08)
+        - id:5KUFcPT9qGX8VyHHjMFvTv # Beautiful Blues
+        - id:4Oyhp2uWZxbHCiKxHeH6M2 # blues moves
+        - id:2J3RlhUM3lDTYQoEBzJRqN # Social Blues NOV23
+        - id:4JDticVjR0XdXrz7dcyRoL # Blues to turk
+        - id:78REKJzPvwdgfOOvGHaC1L # Blues - Swung (now named UTS Friday 01:30-03:30)
+        - id:0sQoKpGCbIC8n25rQxcuRM # Westcoast/blues
+        - id:319Dm7i6qTFQvlyqiIxF3g # Blues
+        - id:19pOqWEO5eOmPPhWuhanVo # Blues - Sock Hop 2018
+        - id:3pgOsdrIl1kcCZcNyCfTqC # Tuesday with blues
+        - id:6MQft5Cyvn3W5vXVJucyD4 # Blues for the Soul # review
+        - id:3bgvcWS3FQbtugEV2Ux6SS # Blues
+        - id:4VzW9RmPMS7RVvp1gmpCG5 # Blues Lesson
+        - id:7nfgDiUUivByTAxuqErb2L # Dec 10/12 informal blues
+        - id:2HMM2SPVMCWYssjO4XxlKq # Light blues 1-3-14
+        - id:3sJCBnbb3g038Wr7ALjYXz # #Alt.Blues PartyUp!
+        - id:5WwByr5g446z5pBGzVqPhB # Tine's WCS Blues Collection (now named Sina 2)
+        - id:5e1fqCDHDSkonZv0FQTksL # Blues
     - bluesy
     - club:
         # The word "Club" by itself does not yield any consistent result,

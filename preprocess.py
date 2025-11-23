@@ -767,7 +767,16 @@ def process_playlist_and_song_tags():
     playlists_tokenized = playlists.select(
         pl.col(Playlist.id),
         pl.col(Playlist.name),
-        pl.col(Playlist.name).pipe(extract_tags_from_name).alias(PlaylistTags.tags),
+        # For some exceptional cases, it is possible to match on
+        # playlist IDs instead of playlist names. One particularly
+        # hard case solved by this are "Blues WCS" playlists that
+        # can be either dance:wcs+genre:blues or dance:wcs+dance:blues.
+        pl.concat_str(
+            pl.lit("id:"),
+            pl.col(Playlist.name),
+            pl.lit(" "),
+            pl.col(Playlist.name),
+        ).pipe(extract_tags_from_name).alias(PlaylistTags.tags),
     )
 
     write_to_parquet_file(playlists_tokenized, PLAYLIST_TAGS_DATA_FILE)
