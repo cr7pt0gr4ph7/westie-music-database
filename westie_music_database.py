@@ -732,16 +732,24 @@ def section_find_playlist():
     if not playlist_locator_toggle:
         return
 
-    playlist_col1, playlist_col2 = st.columns(2)
-    with playlist_col1:
+    col1, col2 = st.columns(2)
+    with col1:
         song_and_artist_input = st.text_input("Contains the song (use `song|artist` to filter by artist):")
+    with col2:
+        dj_input = st.text_input("DJ name:")
+
+    col1, col2 = st.columns(2)
+    with col1:
         playlist_input = st.text_input("Playlist name:")
+    with col2:
+        anti_playlist_input2 = st.text_input("Not in playlist name: ")
+
+    col1, col2 = st.columns(2)
+    with col1:
         tag_input = st.multiselect("Has tags:",
                                    options=tag_manager.get_tag_options(or_untagged=True),
                                    format_func=tag_manager.format_tag)
-    with playlist_col2:
-        dj_input = st.text_input("DJ name:")
-        anti_playlist_input2 = st.text_input("Not in playlist name: ")
+    with col2:
         anti_tag_input = st.multiselect("Does not have tags:",
                                         options=tag_manager.get_tag_options(or_untagged=True),
                                         format_func=tag_manager.format_tag)
