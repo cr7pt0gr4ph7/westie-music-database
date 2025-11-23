@@ -383,9 +383,16 @@ class TagsData:
     def __init__(self, tags_data: pl.Expr | None = None):
         self._data = tags_data if tags_data is not None else TrackTags.tags_data()
 
-    def filter(self, category: Collection[str]) -> Self:
-        return TagsData(self._data.list.filter(
-            Tag.extract_category(TrackTag.tag.struct_field()).is_in(category)))
+    def filter(self, tag: Collection[str] | None = None, category: Collection[str] | None = None) -> Self:
+        filters = []
+
+        if tag is not None:
+            filters.append(TrackTag.tag.struct_field().is_in(tag))
+
+        if category is not None:
+            filters.append(Tag.extract_category(TrackTag.tag.struct_field()).is_in(category))
+
+        return TagsData(self._data.list.filter(*filters))
 
     def sort_by_frequency(self) -> Self:
         return TagsData(sort_list_workaround(

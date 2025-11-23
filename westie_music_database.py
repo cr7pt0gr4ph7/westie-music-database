@@ -1061,7 +1061,28 @@ def section_tag_insights():
                             tag_exclude=anti_tag_input)\
             .with_row_index(offset=1)
 
-        st.dataframe(tagged_playlists_df)
+        if tag_input != TagManager.UNTAGGED:
+            mean_confidences = search_engine.data.playlist_tracks\
+                .join(tagged_playlists_df, how="semi", on=Playlist.id)\
+                .join(search_engine.data.tracks.select(Track.id, TrackTags.tags_data),
+                    how="left", on=Track.id)\
+                .group_by(Playlist.id)\
+                .agg(TagsData(TrackTags.tags_data())
+                     .filter(tag=[tag_input])
+                     .compute_confidence_scores()
+                     .tags_data()
+                     .list.agg(TrackTag.confidence.struct_field().first())
+                     .mean()
+                     .alias('mean_confidence'))
+
+            tagged_playlists_df = tagged_playlists_df\
+                .join(mean_confidences, how='left', on=Playlist.id)
+
+        st.dataframe(tagged_playlists_df,
+                     column_config={
+                         **link_columns,
+                         # "mean_confidence": st.column_config.ProgressColumn(min_value=0.0, max_value=1.0),
+                     })
 
         st.markdown(f"Songs tagged with _{tag_input}_:")
 
