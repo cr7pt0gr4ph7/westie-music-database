@@ -181,6 +181,9 @@ enable_show_containing_playlists = feature_flag('show_containing_playlists')
 # Feature flag to list common keywords in the "Find a Playlist" section
 enable_show_playlist_keywords = feature_flag('show_playlist_keywords')
 
+# Feature flag to show possibly related tags in the "Explore Songs by Tags" section
+enable_show_related_tags = feature_flag('show_related_tags')
+
 if "experimental" in st.query_params:
     st.markdown(
         """
@@ -197,7 +200,7 @@ if "experimental" in st.query_params:
             st.rerun()
 
         if st.button("[Clear]", type='tertiary'):
-            st.query_params.from_dict({"experimental":""})
+            st.query_params.from_dict({"experimental": ""})
             st.rerun()
 
     flags_changed = False
@@ -894,6 +897,46 @@ def section_tag_explorer():
                          "matching_tags_sum",
                      ],
                      column_config=link_columns)
+
+        # Show tags that are possibly related, and which we could possibly
+        # recommend to the user. Determining the algorithm for choosing
+        # the "best"/"most interesting" tags to recommend is currently
+        # a work in progress.
+        if enable_show_related_tags:
+            interesting_tags = search_engine\
+                .find_songs_by_tags(tag_names_exact=selected_tags)\
+                .select(
+                    pl.col('matching_tags_min_score'),
+                    TagsData(TrackTags.tags_data())
+                    .filter(category=categories)
+                    .compute_confidence_scores()
+                    .tags_data()
+                    .list.filter(~TrackTag.tag.struct_field().is_in(selected_tags)))\
+                .explode(TrackTags.tags_data())\
+                .select(
+                    pl.col('matching_tags_min_score'),
+                    TrackTags.tags_data().struct.unnest())\
+                .with_columns(
+                    pl.min_horizontal(pl.col('matching_tags_min_score'), TrackTag.confidence()))\
+                .filter(
+                    TrackTag.tag().is_not_null())\
+                .group_by(TrackTag.tag)\
+                .agg(pl.len().alias(Stats.song_count),
+                    TrackTag.confidence().mean().alias('confidence_average'),
+                    TrackTag.confidence().sum().alias('confidence_sum'),
+                    TrackTag.confidence().pow(2).sum().alias('confidence_pow2_sum'),
+                    TrackTag.confidence().max().alias('confidence_max'),
+                    pl.col('matching_tags_min_score').sum().alias('combined_confidence_sum'),
+                    pl.col('matching_tags_min_score').max().alias('combined_confidence_max'))\
+                .with_columns(
+                    (pl.col('confidence_sum') * pl.col('confidence_max')).alias('confidence_score'))\
+                .sort('confidence_sum', descending=True).with_row_index('confidence_sum_index', offset=1)\
+                .sort('confidence_score', descending=True).with_row_index('confidence_score_index', offset=1)\
+                .sort('combined_confidence_sum', descending=True).with_row_index('combined_confidence_sum_index', offset=1)\
+                .sort('combined_confidence_max', descending=True).with_row_index('combined_confidence_max_index', offset=1)\
+                .sort('confidence_average', 'confidence_sum')
+
+            st.dataframe(interesting_tags)
 
     st.markdown(
         f"""

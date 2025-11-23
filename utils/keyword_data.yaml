@@ -106,7 +106,9 @@ relations:
           - "mood:funky"
   - opposites:
       - "genre:blues"
-      - "dance:blues"
+      - group:
+          - "dance:blues"
+          - "dance:fusion"
   - opposites:
       - "topic:vocals"
       - "genre:instrumental"
