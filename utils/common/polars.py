@@ -26,7 +26,7 @@ def sort_list_workaround(expr: pl.Expr, sort_by_expr: pl.Expr) -> pl.Expr:
     if use_workaround:
         # Workaround: Ensure the list is never empty by temporarily appending
         #             a `null` entry that is removed after sorting.
-        return pl.concat_list([expr, pl.lit(None)])\
+        return pl.concat_list([expr, pl.lit(None, pl.dtype_of(expr).list.inner_dtype())])\
             .list.eval(sort_by_expr)\
             .list.drop_nulls()
     else:
