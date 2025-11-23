@@ -1025,9 +1025,6 @@ def section_tag_insights():
             ax.axis('off')
             st.pyplot(fig)
 
-    tags, full_tags, tag_colors = tag_manager.get_tags_with_colors()
-    categories, category_colors = tag_manager.get_categories_with_colors()
-
     st.dataframe(filtered_tags_df, column_config={
                  Tag.category: tag_manager.get_column_config(Tag.category),
                  Tag.short_name: tag_manager.get_column_config(Tag.short_name),
