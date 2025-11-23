@@ -877,24 +877,24 @@ def section_tag_explorer():
             .with_row_index(offset=1)\
             .with_columns(
                 TagsData(TrackTags.tags_data())
-                .filter(category=["genre", "mood", "tempo", "level", "topic"])
+                .filter(category=["genre", "mood", "tempo", "level", "topic", "seasonal"])
                 .sort_by_frequency()
                 .tags_with_frequencies()
-                .alias(TrackTags.tag_frequency))\
+                .alias('all_tags'))\
             .collect(engine='streaming')
 
         st.dataframe(tagged_songs_df,
                      column_order=[
-                         "index",
+                         'index',
                          Track.name,
                          Track.artists,
-                         "tag_frequency",
-                         "matching_tags",
+                         'matching_tags',
+                         'all_tags',
                          Track.url,
-                         "matching_tags_count",
-                         "matching_tags_min_score",
-                         "matching_tags_mean_score",
-                         "matching_tags_sum",
+                         'matching_tags_count',
+                         'matching_tags_min_score',
+                         'matching_tags_mean_score',
+                         'matching_tags_sum',
                      ],
                      column_config=link_columns)
 
