@@ -401,8 +401,8 @@ class PlaylistFilter:
         elif include_matched_terms:
             matching_playlists = matching_playlists\
                 .with_columns(
-                    pl.lit([]).cast(pl.List(pl.String)).alias(Playlist.matched_terms),
-                    pl.lit(0).alias(Playlist.matched_terms_count))
+                    pl.lit([], pl.List(pl.String)).alias(Playlist.matched_terms),
+                    pl.lit(0, pl.UInt32).alias(Playlist.matched_terms_count))
 
         return PlaylistSet(
             included_playlists=matching_playlists,
