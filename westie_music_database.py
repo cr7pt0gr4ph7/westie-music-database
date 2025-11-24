@@ -834,8 +834,18 @@ def section_find_playlist():
 
     col1, col2 = st.columns(2)
     with col1:
-        is_social_input = st.checkbox("Only social/party setlists")
-        has_date_input = st.checkbox("Only dated playlists")
+        is_social_input = st.checkbox(
+            "Only social/party setlists",
+            help="Only display playlists that have likely been played as-is at a party/social/other occasion.")
+
+        has_date_input = st.checkbox(
+            "Only dated playlists",
+            help=("Only display playlists that have a date "
+                  "(like `YYYY-MM-DD`, `dd.mm.`YYYY`, etc.) in their name"))
+
+        not_just_a_date_input = st.checkbox(
+            "Not just a date",
+            help="Exclude playlists whose name only consists of a date, and nothing else.")
     with col2:
         min_song_count_input = st.number_input("Contains at least __ tracks", 0, None, 0)
 
@@ -869,8 +879,8 @@ def section_find_playlist():
             dj_name_exclude=not_dj_input,
             playlist_include=playlist_input,
             playlist_exclude=not_playlist_input,
-            playlist_is_social_set=is_social_input,
-            playlist_has_date_in_title=has_date_input,
+            playlist_is_social_set=is_social_input or None,
+            playlist_has_date_in_title=has_date_input or None,
             min_song_count=min_song_count_input,
             playlist_stats_in_result=True,
             tag_include=tag_input,
@@ -884,6 +894,7 @@ def section_find_playlist():
 
         df = (playlist_search_df
               # .filter(~Playlist.is_social_set())
+              .filter(pl.lit(True) if not not_just_a_date_input else ~Playlist.name().is_in(Playlist.extracted_dates()))
               .with_columns(Playlist.name, PlaylistTags.tags, Playlist.url, PlaylistOwner.name,
                             Playlist.matching_song_count, Stats.artist_count, Track.name)
               .sort(PlaylistStats.wcs_song_count, nulls_last=True, descending=True))
