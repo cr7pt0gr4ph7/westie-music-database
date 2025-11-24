@@ -86,6 +86,10 @@ metadata:
   mood:
     icon: material/comedy_mask # material/theater_comedy
     color: "#29b09d" # Blue-Green [blueGreen80]
+  structure:
+    selector_title: Musical Structure
+    icon: material/label
+    color: "#ffabab" # Light Red [red40]
   tempo:
     icon: material/speed
   timing:
@@ -766,7 +770,6 @@ keywords:
         - sonntag # german
         - söndag # swedish
   language:
-    - chinese
     - english:
         - english
         - englisch
@@ -776,54 +779,60 @@ keywords:
         - non english
         - non-english
         - not english
-    - french:
-        - francophones
-        - französische
-        - french
-        - francais
-        - français
-        - francaise
-        - française
-    - french-:
-        - french open
-    - german:
-        - german
-        - germanmusic
-        - deutsch
-        - deutsche
-        - deutscher
-        - deutsches
-        - deutschhiphop
-    - german-:
-        - german open
-    - italian:
-        - italian
-        - italiane
-        - italiano
-    - italian-:
-        - italian open
-    - japanese:
-        - japanese
-    - korean:
-        - korean
-    - korean-:
-        - korean open
-    - polish:
-        - polskie
-        - polish
-        - polnisch
-        - polnische
-    - polish-:
-        - polish grammar
-        - polish picnic
-    - russian:
-        - russian
-        - pусские
-        - Русские
-    - spanish:
-        - spanish
-        - espanol
-    - swedish
+    - not english:
+        - non english
+        - non-english
+        #
+        - chinese
+        - english-
+        - french:
+            - francophones
+            - französische
+            - french
+            - francais
+            - français
+            - francaise
+            - française
+        - french-:
+            - french open
+        - german:
+            - german
+            - germanmusic
+            - deutsch
+            - deutsche
+            - deutscher
+            - deutsches
+            - deutschhiphop
+        - german-:
+            - german open
+        - italian:
+            - italian
+            - italiane
+            - italiano
+        - italian-:
+            - italian open
+        - japanese:
+            - japanese
+        - korean:
+            - korean
+        - korean-:
+            - korean open
+        - polish:
+            - polskie
+            - polish
+            - polnisch
+            - polnische
+        - polish-:
+            - polish grammar
+            - polish picnic
+        - russian:
+            - russian
+            - pусские
+            - Русские
+        - spanish:
+            - spanish
+            - espanol
+        - swedish
   dance:
     # West Coast Swing
     - wcs:
@@ -1013,22 +1022,24 @@ keywords:
         - fitness*:
             # We should review the two playlist owners (Raquel Cordero Perry and DJ Derbear)
             # that account for nearly all of the fitness playlists in our dataset
+            - crossfit
             - cyclebar
             - cyclebeatz
             - cyclebeatzz
             - cyclebeatzzz
             - cyclebeatzzzz
-            - crossfit
+            - cycleclassic
             - fitdance
             - fitdankbaby
             - fitness
-            - ladystyle & heels
             - heels pole
+            - ladystyle & heels
+            - sculptcyclefusion
             - strong(her)
             - strong(her).
-            - stronger5
             - stronger.as.
             - stronger.together.
+            - stronger5
             - zumba
         - flamenco
         - medieval dance
@@ -1382,6 +1393,8 @@ keywords:
         - débutants # french: beginners
         - iniciante # portugese (brazilian): beginner
         - kezdő # hungarian: beginner
+        - nybegynnervenlig # swedish: beginner-friendly
+        - nybörjare # swedish: beginner
     - champions:
         - champs
         - champions
@@ -1407,7 +1420,9 @@ keywords:
     - hard-:
         - hard breaks
     - pro
-    - difficult
+    - difficult:
+        - difficult
+        - svåra # swedish: difficult
     - complex
     - simple
   genre:
@@ -1571,6 +1586,7 @@ keywords:
         - hip hop
         - hiphop
         - hip-hop
+        - hip/hop
     - hip hop-:
         - no hip hop
         - non-hip-nop
@@ -1587,6 +1603,7 @@ keywords:
         - rnb
         - r&b
         - rhythm & blues
+        - r'n'b
     - rock:
         - rock
         - soft rock
@@ -1831,6 +1848,7 @@ keywords:
     - classics: classics
     - nostalgia:
         - nostalgia
+        - nostalgic
         - nostalgie # german: nostalgia
         - nosztalgia # hungarian: nostalgia
     - oldies:
@@ -2076,6 +2094,7 @@ keywords:
         - langsam
         - lassú # hungarian: slow
         - lent # catalanian: slow
+        - lents
         - s l o w
         - slooooooooow
         - slooooooooower
@@ -2158,11 +2177,17 @@ keywords:
         - swing rhythm
         - swing rhythmn
     - ternary
-    - staccato:
-        - staccato
-        - stakkato
-        - sharp beat # review
-    - legato
+    - staccato/legato:
+      - leg/stac
+      - legato/staccato
+      - stac/leg
+      - staccato/legato
+      - staccato:
+          - staccato
+          - stakkato
+          - sharp beat # review
+      - legato:
+          - legato
     - upbeat and downbeat:
         - clear down up beat
         - up beat down beat
@@ -2170,7 +2195,7 @@ keywords:
         - upbeat emphasis
         - downbeat emphasis
     - wrong time signature # investigate
-  topic:
+  structure:
     - 12 bar:
         - 12 bar
         - 6x8 blues
@@ -2209,6 +2234,25 @@ keywords:
     - 48 counts:
         - 48 count
         - 48 counts
+    - intro:
+        - 16 count intro
+        - 32 count intro
+        - long intro
+        - with intro
+        - intro musicality # review
+        - musicality intro # review
+        - slow start
+        - long intro:
+            - long intro
+            - long intros
+            - intro long
+            - intro longue
+        - long intro-:
+            - long intro workshop # review
+    - intro-:
+        - cours d'intro
+        - intro ride
+  topic:
     - accents:
         - accent
         - accenting # review
@@ -2292,24 +2336,6 @@ keywords:
     - intensity:
         - intensité
         - intensity
-    - intro:
-        - 16 count intro
-        - 32 count intro
-        - long intro
-        - with intro
-        - intro musicality # review
-        - musicality intro # review
-        - slow start
-        - long intro:
-            - long intro
-            - long intros
-            - intro long
-            - intro longue
-        - long intro-:
-            - long intro workshop # review
-    - intro-:
-        - cours d'intro
-        - intro ride
     - lyrical:
         - lyrical
         - lyrcical
@@ -2333,13 +2359,24 @@ keywords:
         - far east movement
     - musicality:
         - changement musical # changement musical (tempo, instrument...)
+        - couleur musique # french: music color
+        - layering
+        - layers
         - muscality
         - music theory
+        - musical brainstorm
         - musical mastery
         - musical moments
+        - landing moments
+        - musical textures
+        - musicalidade # portugese: musicality
+        - musicalità # italian: musicality
         - musicalité
         - musicality
+        - musicallity
+        - musiikintulkinta # finnish: music interpretation
         - musikalität # german: musicality
+        - musikalitet # danish: musicality
         - musiklitet
         - музыкальность # russian: musicality
     - complex phrasing:
@@ -2386,9 +2423,11 @@ keywords:
     - structure # imprecise - discard?
     - styling:
         - follower style
+        - follows stylimg
         - leader style
         - styling
         - stilyng # misspelling
+        - stylimg # misspelling
     - stretching:
         - stretch
         - streching
@@ -2458,6 +2497,7 @@ keywords:
         - weight transfers
   seasonal:
     - birthday:
+        - anniversaires # french: birthdays
         - årsfest # swedish: birthday party
         - b-day
         - b'day
@@ -2549,6 +2589,8 @@ keywords:
         - hallowen
         - halloween
         - spooky
+        - spookyfriday22
+        - spookysunday22
     - spring: # todo: remove event titles from matches
         - spring
         - primavera # french / portugese: spring
@@ -3007,6 +3049,7 @@ keywords:
     - infinity # 17 playlists # PARTY (when appearing next to a date)
     - kadanse # 4 playlists # EVENT
     - kv # Probably an event, but not sure which one
+    - ladc # 13 playlists # PARTY?: LADC # probably in France
     - lbb # 4 playlists # PARTY?/LOCATION?/DJ?: LBB
     - mambita # 11 playlists # PARTY or LOCATION
     - mercury cafe # 2 playlists # PARTY or LOCATION
@@ -3372,6 +3415,7 @@ keywords:
         - missioncity
         - missioncityswing
     - monterey swingfest+events:type:event/dance:wcs/country:usa: # EVENT: Monterey SwingFest
+        - monterey # review
         - monterey swingfest
         - monterey swing fest
     - montreal westie fest+events:type:event/dance:wcs/country:canada: # EVENT: Montreal Westie Fest in Montreal, Canada
@@ -3442,6 +3486,7 @@ keywords:
         - phillyswing
         - phillyswing22
         - philly swing classic
+        - philly westie
         # - psc # could also be paris swing classic
     - portland swing dance club+events:type:organization/dance:wcs/country:usa:
         - portland swing dance club
@@ -3455,7 +3500,9 @@ keywords:
         - resolution swing
     - rideau swing collective+events:type:organization/dance:wcs/country:canada: # ORG: Rideau Swing Collective in Ottawa, Canada
     - riga summer swing+events:type:event/dance:wcs/country:latvia: # EVENT: Riga Summer Swing in Riga, Latvia
-    - rocketwesties+events:type:organization/dance:wcs/country:usa: # ORG: Rocket Westies - Huntsville's West Coast Swing dance community
+    - rocket westies+events:type:organization/dance:wcs/country:usa: # ORG: Rocket Westies - Huntsville's West Coast Swing dance community
+        - rocket westies
+        - rocketwesties
     - rogue valley westies+events:type:organization/dance:wcs/country:usa: # ORG: Rogue Valley Westies in Oregon, USA
     - rolling swing+events:type:event/dance:wcs/country:france: # EVENT: Rolling Swing in France
     - rose city swing+events:type:event/dance:wcs/country:usa: # EVENT: Rose City Swing
@@ -3574,6 +3621,10 @@ keywords:
     - swing central+events:type:organization/dance:wcs/country:new zealand: # ORG: Swing Central dance studio in Wellington, New Zealand
     - swing city chicago+events:type:event/dance:wcs/country:usa: # EVENT: Swing City Chicago [year]
     - swing crush+events:type:event/dance:wcs/country:usa: # EVENT: Swing Crush
+    - swing dance mania+events:type:event/dance:wcs/country:usa: # EVENT: Swing Dance Mania in Cincinatti, Ohio, USA
+        - sdm
+        - swing dance mania
+        - swingdancemania
     - swing dance alley+organization+events:type:location/dance:wcs/country:usa: # ORG/LOCATION: Swing Dance Alley in Syracuse, USA
         - swing dance alley
         - steve ryan dance
@@ -3587,6 +3638,9 @@ keywords:
     - swing fling+events:type:event/dance:wcs/country:usa: # EVENT: Swing Fling in Washington DC
         - swing fling
         - swingfling
+    - swing n cincy+events:type:organization/dance:wcs/country:usa: # ORG: Swing N Cincy in Cincinatti, Ohio, USA
+        - swing n cincy
+        - swing in cincy
     - swing n groove
     - swing n sway
     - swing of music+events:type:event/dance:wcs/country:austria: # EVENT: Swing of Music in Wels, Austria
@@ -3770,6 +3824,7 @@ keywords:
         - west family
         - west family festival
     - westie gala+events:type:event/dance:wcs/country:sweden: # EVENT: Westie Gala in Stockholm, Sweden
+        - westie gala
     - west in honfleur+events:type:event/dance:wcs/country:france: # EVENT: West in Honfleur
     - west in lyon+events:type:event/dance:wcs/country:france: # EVENT: West in Lyon
         - west in lyon
@@ -3839,6 +3894,13 @@ keywords:
     - westlv+events:type:organization/dance:wcs/country:israel: # EVENT?: WesTLV - WCS School in Tel Aviv, Israel
     - westy welsh+events:type:event/dance:wcs/country:france: # EVENT: Westy Welsh
     - wild & free festival+events:type:event/playlist:unrelated/country:croatia: # EVENT: Wild & Free Festival in Croatia (EDM festival series)
+    - wild westies roc+events:type:organization/dance:wcs/country:usa: # ORG: Wild Westies ROC in Rochester, New York, USA
+        - wild westies roc
+        # - wild westie # review
+    - wild wild westie+events:type:event/dance:wcs/country:usa: # EVENT: Wild Wild Westie in Dallas, Texas, USA
+        - wild wild westie
+        - meech n' friends
+        - meech'n'friends
     - wny dance+events:type:organization/dance:wcs/country:usa: # ORG: WnY Dance in Marin, California
         - wny # WnY
     - xpress your swing+events:type:event/dance:wcs/country:france: # EVENT: Xpress Your Swing in Montpellier, France
