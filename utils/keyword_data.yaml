@@ -823,6 +823,7 @@ keywords:
     - spanish:
         - spanish
         - espanol
+    - swedish
   dance:
     # West Coast Swing
     - wcs:
@@ -904,6 +905,7 @@ keywords:
 
         - lindy hop:
             - lindy
+            - lindyable
             - lindy hop
             - west/lindy
 
@@ -1830,6 +1832,7 @@ keywords:
     - nostalgia:
         - nostalgia
         - nostalgie # german: nostalgia
+        - nosztalgia # hungarian: nostalgia
     - oldies:
         - oldie
         - oldies
@@ -2311,6 +2314,7 @@ keywords:
         - lyrical
         - lyrcical
         - lyrique # french: lyrical
+        - lyrisk # danish: lyrical
     - lyrics
     - lyrics-:
         - no lyrics
@@ -2637,6 +2641,8 @@ keywords:
         - favourites
         - favs
         - i like
+        - kedvenceink # hungarian: our favorites
+        - kedvencek # hungarian: favorites
         - lieblings lieder # german: favorite songs
         - lieblings songs # german: favorite songs
         - lieblingslieder # german: favorite songs
@@ -2644,8 +2650,9 @@ keywords:
         - liked
         - mes prefs # french: my favorites
         - mit star bewertet
-        - starred
         - oznaczone gwiazdką # polish: starred / "marked with an asterisk"
+        - starred
+        - suosikit # finnish: favorites
         - tykätyt # finnish: liked
         - mywcsfavs
         - wcsfavs
@@ -2975,6 +2982,7 @@ keywords:
     - vancouver # canada
     - warsaw: # poland
         - warsaw
+        - warszawa
         - warszawski
         - warschau
     - wichita # usa
@@ -3350,7 +3358,7 @@ keywords:
         - midwest friday
         - midwest saturday
         - midwest sunday
-        - mwf # MWF [year]
+        - mwf # MWF [year] # could also be Montreal Westie Fest
     - milan modern swing+events:type:event/dance:wcs/country:italy:
         - milanms2024
         - milanms
@@ -3366,6 +3374,10 @@ keywords:
     - monterey swingfest+events:type:event/dance:wcs/country:usa: # EVENT: Monterey SwingFest
         - monterey swingfest
         - monterey swing fest
+    - montreal westie fest+events:type:event/dance:wcs/country:canada: # EVENT: Montreal Westie Fest in Montreal, Canada
+        - +city:montreal
+        - montreal westie fest
+        # - mwf # could also be midwest westie fest
     - mooseland swing+events:type:event/dance:wcs/country:sweden: # EVENT: Mooseland Swing in Sweden
     - mountain magic dance convention+events:type:event/various dances/country:usa: # EVENT: Mountain Magic Dance Convention [year] - WCS, Country 2-Step, Hustle, Nightclub 2-Step, Line Dance
         - mountain magic
@@ -3778,6 +3790,8 @@ keywords:
         - westie wisdom
         - westie wisdom2024
     - westie's angels+events:type:event/dance:wcs/country:france: # EVENT: Westie's Angels in France
+        - westie's angels
+        - westies angels
     - westieval+events:type:event/dance:wcs/country:unclear: # EVENT: Westieval - multiple events have this name?
         - westieval
         - 9westieval
