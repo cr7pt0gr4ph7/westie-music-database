@@ -270,6 +270,7 @@ class PlaylistFilter:
     playlist_tag_include: TextFilter = ''
     playlist_tag_exclude: TextFilter = ''
     playlist_is_social_set: bool = False
+    playlist_has_date_in_title: bool = False
     min_song_count: int | None = None
     max_song_count: int | None = None
 
@@ -319,7 +320,8 @@ class PlaylistFilter:
             or self.match_excluded_playlist is not None\
             or self.match_tag is not None\
             or self.match_excluded_tag is not None\
-            or self.playlist_is_social_set
+            or self.playlist_is_social_set\
+            or self.playlist_has_date_in_title
 
     def filter_playlists(self, playlists: PlaylistSet, *, include_matched_terms: bool) -> PlaylistSet:
         """Filter the specified playlists to only include playlists matching this filter."""
@@ -328,6 +330,10 @@ class PlaylistFilter:
         if self.playlist_is_social_set:
             matching_playlists = matching_playlists.filter(
                 pl.col(Playlist.is_social_set))
+
+        if self.playlist_has_date_in_title:
+            matching_playlists = matching_playlists.filter(
+                pl.col(Playlist.extracted_dates).list.len().gt(0))
 
         if self.match_playlist is not None:
             matching_playlists = matching_playlists.filter(
@@ -1733,6 +1739,8 @@ class SearchEngine:
         playlist_tag_exclude: TextFilter = '',
         min_song_count: int | None = None,
         max_song_count: int | None = None,
+        playlist_is_social_set: bool | None = None,
+        playlist_has_date_in_title: bool | None = None,
         #
         # Result options
         #
@@ -1775,6 +1783,8 @@ class SearchEngine:
             playlist_tag_exclude=playlist_tag_exclude,
             min_song_count=min_song_count,
             max_song_count=max_song_count,
+            playlist_is_social_set=playlist_is_social_set,
+            playlist_has_date_in_title=playlist_has_date_in_title,
         )
 
         #####################
