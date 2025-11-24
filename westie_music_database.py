@@ -836,6 +836,8 @@ def section_find_playlist():
     with col1:
         is_social_input = st.checkbox("Only social/party setlists")
         has_date_input = st.checkbox("Only dated playlists")
+    with col2:
+        min_song_count_input = st.number_input("Contains at least __ tracks", 0, None, 0)
 
     col1, col2 = st.columns(2)
     with col1:
@@ -853,6 +855,9 @@ def section_find_playlist():
                                        'anti_dj_input': not_dj_input,
                                        'playlist_input': playlist_input,
                                        'anti_playlist_input': not_playlist_input,
+                                       'is_social_input': is_social_input,
+                                       'has_date_input': has_date_input,
+                                       'min_song_count_input': min_song_count_input,
                                        })
 
         # TODO: Expose additional query parameters in the UI
@@ -866,6 +871,7 @@ def section_find_playlist():
             playlist_exclude=not_playlist_input,
             playlist_is_social_set=is_social_input,
             playlist_has_date_in_title=has_date_input,
+            min_song_count=min_song_count_input,
             playlist_stats_in_result=True,
             tag_include=tag_input,
             tag_exclude=not_tag_input,
