@@ -662,7 +662,7 @@ def section_find_song():
                       how='semi', on=Track.id)\
                 .join(search_engine.data.playlists.select(Playlist.id, Playlist.name),
                       how='inner', on=Playlist.id)\
-                .select(Playlist.name, PlaylistTrack.number, 'tracks')
+                .select(Playlist.name, PlaylistTrack.number, 'tracks', Playlist.url)
 
             st.dataframe(surrounding_tracks)
 
