@@ -890,7 +890,8 @@ def section_find_playlist():
                          .sort(Stats.playlist_count, descending=True)
                          .collect(engine='streaming'))
 
-        st.dataframe(df.collect(engine='streaming'),
+        st.dataframe(df
+                     .collect(engine='streaming'),
                      column_order=[
                          Playlist.name,
                          PlaylistTags.tags,
@@ -902,13 +903,14 @@ def section_find_playlist():
                          PlaylistStats.wcs_song_count,
                          PlaylistStats.wcs_song_percent,
                          Stats.artist_count,
-                         Track.name
+                         Track.name,
                      ],
                      column_config={
                          **link_columns,
                          PlaylistTags.tags: tag_manager.get_column_config(PlaylistTags.tags),
                          PlaylistStats.wcs_song_percent: st.column_config.ProgressColumn()
                      })
+
         st.session_state["processing"] = False
 
     st.markdown(f"#### ")
@@ -1015,12 +1017,12 @@ def section_tag_explorer():
                     TrackTag.tag().is_not_null())\
                 .group_by(TrackTag.tag)\
                 .agg(pl.len().alias(Stats.song_count),
-                    TrackTag.confidence().mean().alias('confidence_average'),
-                    TrackTag.confidence().sum().alias('confidence_sum'),
-                    TrackTag.confidence().pow(2).sum().alias('confidence_pow2_sum'),
-                    TrackTag.confidence().max().alias('confidence_max'),
-                    pl.col('matching_tags_min_score').sum().alias('combined_confidence_sum'),
-                    pl.col('matching_tags_min_score').max().alias('combined_confidence_max'))\
+                     TrackTag.confidence().mean().alias('confidence_average'),
+                     TrackTag.confidence().sum().alias('confidence_sum'),
+                     TrackTag.confidence().pow(2).sum().alias('confidence_pow2_sum'),
+                     TrackTag.confidence().max().alias('confidence_max'),
+                     pl.col('matching_tags_min_score').sum().alias('combined_confidence_sum'),
+                     pl.col('matching_tags_min_score').max().alias('combined_confidence_max'))\
                 .with_columns(
                     (pl.col('confidence_sum') * pl.col('confidence_max')).alias('confidence_score'))\
                 .sort('confidence_sum', descending=True).with_row_index('confidence_sum_index', offset=1)\
@@ -1138,7 +1140,7 @@ def section_tag_insights():
             mean_confidences = search_engine.data.playlist_tracks\
                 .join(tagged_playlists_df, how="semi", on=Playlist.id)\
                 .join(search_engine.data.tracks.select(Track.id, TrackTags.tags_data),
-                    how="left", on=Track.id)\
+                      how="left", on=Track.id)\
                 .group_by(Playlist.id)\
                 .agg(TagsData(TrackTags.tags_data())
                      .filter(tag=[tag_input])
@@ -1152,6 +1154,26 @@ def section_tag_insights():
                 .join(mean_confidences, how='left', on=Playlist.id)
 
         st.dataframe(tagged_playlists_df,
+                     column_order=[
+                         'index',
+                         Playlist.name,
+                         PlaylistOwner.name,
+                         PlaylistTags.tags,
+                         Playlist.country,
+                         Playlist.region,
+                         Playlist.extracted_dates,
+                         Playlist.is_social_set,
+                         PlaylistOwner.is_wcs_dj,
+                         Stats.song_count,
+                         Stats.artist_count,
+                         Track.name,
+                         Playlist.matching_song_count,
+                         Playlist.matching_song_percent,
+                         Playlist.matched_terms,
+                         PlaylistStats.wcs_song_count,
+                         PlaylistStats.total_song_count,
+                         PlaylistStats.wcs_song_percent,
+                     ],
                      column_config={
                          **link_columns,
                          # "mean_confidence": st.column_config.ProgressColumn(min_value=0.0, max_value=1.0),
@@ -1167,21 +1189,28 @@ def section_tag_insights():
             .with_row_index(offset=1)\
             .collect(engine='streaming')
 
-        st.dataframe(tagged_songs_df.select(pull_columns_to_front(
-                                            Track.name,
-                                            Track.artists,
-                                            TrackTag.tag,
-                                            TrackTag.matching_playlist_count,
-                                            TrackTag.Tag.playlist_percent,
-                                            TrackTag.Tag.playlist_count,
-                                            TrackTag.Track.playlist_percent,
-                                            TrackTag.Track.playlist_count)),
-                     column_config={TrackTag.tag: tag_manager.get_column_config(TrackTag.tag),
-                                    TrackTag.matching_playlist_count: st.column_config.NumberColumn('#'),
-                                    TrackTag.Tag.playlist_count: st.column_config.NumberColumn('# tag'),
-                                    TrackTag.Tag.playlist_percent: st.column_config.ProgressColumn('% tag'),
-                                    TrackTag.Track.playlist_count: st.column_config.NumberColumn('# track'),
-                                    TrackTag.Track.playlist_percent: st.column_config.ProgressColumn('% track')})
+        st.dataframe(tagged_songs_df,
+                     column_order=[
+                         'index',
+                         Track.name,
+                         Track.artists,
+                         TrackTag.tag,
+                         TrackTag.matching_playlist_count,
+                         TrackTag.Tag.playlist_percent,
+                         TrackTag.Tag.playlist_count,
+                         TrackTag.Track.playlist_percent,
+                         TrackTag.Track.playlist_count,
+                         Track.url,
+                     ],
+                     column_config={
+                         **link_columns,
+                         TrackTag.tag: tag_manager.get_column_config(TrackTag.tag),
+                         TrackTag.matching_playlist_count: st.column_config.NumberColumn('#'),
+                         TrackTag.Tag.playlist_count: st.column_config.NumberColumn('# tag'),
+                         TrackTag.Tag.playlist_percent: st.column_config.ProgressColumn('% tag'),
+                         TrackTag.Track.playlist_count: st.column_config.NumberColumn('# track'),
+                         TrackTag.Track.playlist_percent: st.column_config.ProgressColumn('% track'),
+                     })
 
         tagged_songs_df = tagged_songs_df\
             .limit(500)\
@@ -1208,7 +1237,30 @@ def section_tag_insights():
                 descending=True)\
             .with_row_index(offset=1)
 
-        st.dataframe(similar_playlists_df)
+        st.dataframe(similar_playlists_df,
+                     column_order=[
+                         'index',
+                         Playlist.name,
+                         PlaylistOwner.name,
+                         Playlist.matching_song_count,
+                         Playlist.matching_song_percent,
+                         PlaylistTags.tags,
+                         Playlist.country,
+                         Playlist.region,
+                         Playlist.extracted_dates,
+                         Playlist.is_social_set,
+                         PlaylistOwner.is_wcs_dj,
+                         Stats.song_count,
+                         Stats.artist_count,
+                         Track.name,
+                         PlaylistStats.wcs_song_count,
+                         PlaylistStats.total_song_count,
+                         PlaylistStats.wcs_song_percent,
+                     ],
+                     column_config={
+                         **link_columns,
+                         # "mean_confidence": st.column_config.ProgressColumn(min_value=0.0, max_value=1.0),
+                     })
 
 
 @st.cache_data
