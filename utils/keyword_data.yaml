@@ -845,6 +845,7 @@ keywords:
         - west coast swaaang
         - west coast swing
         - west cost swing
+        - west toast swing
         - westcoast
         - westcoast swing
         - westcoastswing
@@ -968,6 +969,9 @@ keywords:
             - standard/latein
             - std/lat
             - tanz
+            - tanz in den mai*:
+                - tanz in den mai
+                - tidm # TidM
             - tanz orchester
             - tanzmusik
             - tanzorchester
@@ -1153,7 +1157,6 @@ keywords:
         - group # "group class"
         - group class
         - kurs
-        - kursussocial
         - l1
         - l2
         - l3
@@ -1254,14 +1257,18 @@ keywords:
 
     # Parties
     - party:
+        - anfängersocial
         - buli # Hungarian: Party
+        - brivi buli
         - open air
         - guinguette # french: open-air café
         - outdoor
         - party
         - plein air
+        - kursussocial
         - practica
         - practice # - comp practice?
+        - practis
         - practise
         - praktis
         - pratique
@@ -1663,6 +1670,7 @@ keywords:
         - no percussion
     - late night:
         - ambient
+        - dance late
         - ln
         - lns
         - late nigt's
@@ -2163,6 +2171,7 @@ keywords:
         - 48 counts
     - accents:
         - accent
+        - accenting # review
         - accents
     - action / reaction
     - barre
@@ -2434,6 +2443,7 @@ keywords:
         - santa swing
         - swingmas
         - switchmas
+        - wcxmas
         - weihnachten # german: christmas
         - weihnachtslieder # german: christmas songs
         - westiemas
@@ -2860,7 +2870,10 @@ keywords:
     - denver # usa
     - dunedin # new zealand
     - edmonton # canada
-    - farnham # uk
+    - farnham: # uk
+        - farham
+        - farnham
+        - farmham
     - garda # italy
     - kraków: # poland
         - krakau
@@ -2891,9 +2904,15 @@ keywords:
     - syracuse # usa
     - timisoara # romania
     - ulm # germany
-    - umeå # sweden
+    - umeå: # sweden
+        - umea
+        - umeå
     - tokyo # japan
     - vancouver # canada
+    - warsaw: # poland
+        - warsaw
+        - warszawski
+        - warschau
     - wichita # usa
     - wrocław # poland
   events:
@@ -3603,6 +3622,9 @@ keywords:
         - ucswing # UCSwing
         - ucwdc # EVENT:? ucswing winter dance camp?
     - umea westie weekend+events:type:event/dance:wcs/country:sweden: # EVENT: Umeå Westie Weekend in Umeå, Sweden
+        - umea
+        - umeå
+        - umeå dansfestival
         - umeå westie weekend
         - umea westie weekend
         - uww
