@@ -15,6 +15,7 @@ import time
 
 from utils.common.columns import pull_columns_to_front
 from utils.common.logging import log_query
+from utils.common.polars import is_in_range
 from utils.keyword_data import split_tag
 from utils.playlist_classifiers import contains_bpm_in_name
 from utils.pull_data import automatically_pull_data_if_needed
@@ -863,6 +864,7 @@ def section_find_playlist():
         min_song_count_input = st.number_input("Contains at least __ tracks", 0, None, 0)
         wcs_song_percent_input = st.slider("Contains __ % WCS songs", 0, 100, (0, 100),
                                            step=1, format="%u %%")
+        tag_count_input = st.slider("Has __ tags", 0, 100, (0, 100))
 
     col1, col2 = st.columns(2)
     with col1:
@@ -884,6 +886,9 @@ def section_find_playlist():
                                        'has_date_input': has_date_input,
                                        'min_song_count_input': min_song_count_input,
                                        })
+
+        if tag_count_input[1] == 100:
+            tag_count_input = (tag_count_input[0], None)
 
         # TODO: Expose additional query parameters in the UI
         playlist_search_df = search_engine.find_playlists(
@@ -925,6 +930,11 @@ def section_find_playlist():
         if not_has_bpm_input:
             playlist_search_df = playlist_search_df\
                 .filter(~contains_bpm_in_name(Playlist.name()))
+
+        if tag_count_input != (0, None):
+            playlist_search_df = playlist_search_df\
+                .filter(is_in_range(PlaylistTags.tags().list.len().fill_null(pl.lit(0, pl.UInt32)),
+                                    tag_count_input))
 
         df = (playlist_search_df
               # .filter(~Playlist.is_social_set())
