@@ -810,15 +810,17 @@ def section_find_playlist():
 
     col1, col2 = st.columns(2)
     with col1:
-        song_and_artist_input = st.text_input("Contains the song (use `song|artist` to filter by artist):")
+        song_input = st.text_input("Contains the song:")
+        artist_input = st.text_input("Contains the artist:")
     with col2:
         dj_input = st.text_input("DJ name:")
+        not_dj_input = st.text_input("Exclude DJ name:")
 
     col1, col2 = st.columns(2)
     with col1:
         playlist_input = st.text_input("Playlist name:")
     with col2:
-        anti_playlist_input2 = st.text_input("Not in playlist name: ")
+        not_playlist_input = st.text_input("Not in playlist name: ")
 
     col1, col2 = st.columns(2)
     with col1:
@@ -826,13 +828,14 @@ def section_find_playlist():
                                    options=tag_manager.get_tag_options(or_untagged=True),
                                    format_func=tag_manager.format_tag)
     with col2:
-        anti_tag_input = st.multiselect("Does not have tags:",
-                                        options=tag_manager.get_tag_options(or_untagged=True),
-                                        format_func=tag_manager.format_tag)
+        not_tag_input = st.multiselect("Does not have tags:",
+                                       options=tag_manager.get_tag_options(or_untagged=True),
+                                       format_func=tag_manager.format_tag)
 
-    song_and_artist_input = song_and_artist_input.split("|")
-    song_input = song_and_artist_input[0] if len(song_and_artist_input) > 0 else ''
-    artist_input = song_and_artist_input[1] if len(song_and_artist_input) > 1 else ''
+    col1, col2 = st.columns(2)
+    with col1:
+        is_social_input = st.checkbox("Only social/party setlists")
+        has_date_input = st.checkbox("Only dated playlists")
 
     col1, col2 = st.columns(2)
     with col1:
@@ -845,9 +848,11 @@ def section_find_playlist():
     if perform_search:
         st.session_state["processing"] = True
         log_query("Search playlists", {'song_input': song_input,
+                                       'artist_input': artist_input,
                                        'dj_input': dj_input,
+                                       'anti_dj_input': not_dj_input,
                                        'playlist_input': playlist_input,
-                                       'anti_playlist_input': anti_playlist_input2,
+                                       'anti_playlist_input': not_playlist_input,
                                        })
 
         # TODO: Expose additional query parameters in the UI
@@ -856,11 +861,14 @@ def section_find_playlist():
             artist_name=artist_input,
             # country=...,
             dj_name=dj_input,
+            dj_name_exclude=not_dj_input,
             playlist_include=playlist_input,
-            playlist_exclude=anti_playlist_input2,
+            playlist_exclude=not_playlist_input,
+            playlist_is_social_set=is_social_input,
+            playlist_has_date_in_title=has_date_input,
             playlist_stats_in_result=True,
             tag_include=tag_input,
-            tag_exclude=anti_tag_input,
+            tag_exclude=not_tag_input,
             tracks_in_result=True,
             tracks_limit=30,
             sort_by=None,

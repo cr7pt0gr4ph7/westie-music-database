@@ -1731,6 +1731,7 @@ class SearchEngine:
         #
         country: TextFilter = '',
         dj_name: TextFilter = '',
+        dj_name_exclude: TextFilter = '',
         playlist_include: TextFilter = '',
         playlist_exclude: TextFilter = '',
         tag_include: TextFilter = '',
@@ -1777,6 +1778,7 @@ class SearchEngine:
         playlist_filter = PlaylistFilter(
             country=country,
             dj_name=dj_name,
+            dj_name_exclude=dj_name_exclude,
             playlist_include=playlist_include,
             playlist_exclude=playlist_exclude,
             playlist_tag_include=playlist_tag_include,
