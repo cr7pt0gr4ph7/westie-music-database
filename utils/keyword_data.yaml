@@ -280,6 +280,7 @@ keywords:
         - anthony ramos
         - anton karas
         - aphex twin
+        - aretha franklin
         - ariana grande
         - armando manzanero
         - armin van buuren
@@ -677,7 +678,7 @@ keywords:
         - sept
         - september # german / english
         - septembre # french
-        - setembro # portugese (brasilian)
+        - setembro # portugese
     - october:
         - oct
         - october
@@ -818,6 +819,7 @@ keywords:
     - russian:
         - russian
         - pусские
+        - Русские
     - spanish:
         - spanish
         - espanol
@@ -840,6 +842,8 @@ keywords:
         - wsc
         - west coast
         - west coasts
+        - west coastable
+        - west coastin
         - west coastin'
         - west coast dance
         - west coast swaaang
@@ -1020,6 +1024,7 @@ keywords:
             - heels pole
             - strong(her)
             - strong(her).
+            - stronger5
             - stronger.as.
             - stronger.together.
             - zumba
@@ -1109,9 +1114,10 @@ keywords:
             - bachazouk
             - lambazouk
             - zouk
-            - zouksea
             - zoukable
             - zoukables
+            - zoukish
+            - zouksea
             - swouk
             - swoukable
             - zwouk
@@ -1123,6 +1129,7 @@ keywords:
         - comp
         - comp_int
         - competition
+        - competitions
         - comps
         - compsongs
         - contest # unrelated?
@@ -1143,6 +1150,7 @@ keywords:
         - spotlights
         - strictly
         - wsdc
+        - コンペ # japanse: competition
     # Classes
     - class:
         - bootcamp:
@@ -1234,6 +1242,10 @@ keywords:
     # Shows
     - show:
         - demo
+        - démo # french: demo
+        - démonstration # french: demonstration
+        - demos
+        - demosongs
         - show
         - pokaż # polish: show
         - uppvisning # swedish: show
@@ -1243,9 +1255,13 @@ keywords:
         - warmup
         - warmups
         - warm up
+        - warm upp
+        - warm uppp
+        - warm upppp
         - warm-up
         - echauffement # french: warm-up
         - échauffement # french: warm-up
+        - uppvärmning # swedish: warm-up
 
     # Cool down
     - cool down:
@@ -1282,6 +1298,7 @@ keywords:
         - stuggi
         - swięta towarzyski # polish: social holiday
         - westiesocial
+        - ソーシャル # japanese: social
 
     # Training?
     - training:
@@ -1301,7 +1318,15 @@ keywords:
         - rally
 
     # Further investigation needed
-    - choreo: choreo
+    - choreo:
+        - choreo
+        - choreoo
+        - choreooo
+        - choreography
+        - choreos
+        - chorée # french: choreography
+        - choree # french: choreography
+        - コレオ # japanese: choreography
     - weekly: weekly
 
     # Party phases
@@ -1344,9 +1369,13 @@ keywords:
         - advanced
     - beginners:
         - beg
+        - begginer
+        - begginner
         - beginner
         - beginners
         - friendly
+        - anfänger # german: beginner(s)
+        - einsteiger # german: beginner(s)
         - débutant # french: beginner
         - débutants # french: beginners
         - iniciante # portugese (brazilian): beginner
@@ -1391,6 +1420,7 @@ keywords:
         - blues-y
         - b l u e s
         - soulfunkblues
+        - Блюзы # russian: blues
     - blues-:
         - fusion
         - no blues
@@ -1490,7 +1520,8 @@ keywords:
         - swag/hip hop
         - the dirty part of west coast
         - the heavy one
-        - tłusty bit
+        - tłuste bity # polnish: fat bits
+        - tłusty bit # polnish: fat bit
         - twerk
         - wcs sex & dirty talk
         - wcs songs to wiggle to
@@ -1789,6 +1820,7 @@ keywords:
         - contemporary # slow contemorary
         - contemporanee
         - contemporain # french
+        - comptemporain
         - contemporaneo # italian
         - wcscontemporary
     - modern: modern # imprecise
@@ -2040,6 +2072,7 @@ keywords:
         - downtempo
         - langsam
         - lassú # hungarian: slow
+        - lent # catalanian: slow
         - s l o w
         - slooooooooow
         - slooooooooower
@@ -2067,9 +2100,11 @@ keywords:
         - slowwcs
         - wcslow
         - wcs_extra_slow
+        - ゆっくり # japanese: slow
     - medium:
         - medium speed
         - medium tempo
+        - medel # swedish: medium
         - medeltempo
         - mid tempo
         - midtempo
@@ -2123,6 +2158,7 @@ keywords:
     - staccato:
         - staccato
         - stakkato
+        - sharp beat # review
     - legato
     - upbeat and downbeat:
         - clear down up beat
@@ -2176,7 +2212,9 @@ keywords:
         - accents
     - action / reaction
     - barre
-    - basic
+    - basic:
+        - basic
+        - ベーシッ # japanese: basic
     - basics
     - body movement: # see if we can split this up further
         - intrabody
@@ -2216,6 +2254,10 @@ keywords:
         - contrast
         - contraste # french
         - contrasting
+    - creativity:
+        - creative
+        - creativity
+        - créativité
     - dancing fast n slow
     - drills:
         - drill
@@ -2293,8 +2335,9 @@ keywords:
         - musical moments
         - musicalité
         - musicality
-        - musikalität
+        - musikalität # german: musicality
         - musiklitet
+        - музыкальность # russian: musicality
     - complex phrasing:
         - not 8 beat aligned
         - phrase change not on the 8 count
@@ -2330,10 +2373,12 @@ keywords:
         - rhythn
         - rhythmn
         - rhythms
+        - リズムトレーニング # japanese: rhythm training
     - spins & turns:
         - spins
         - spins & turns
         - spins and turns
+        - spinntensive
     - structure # imprecise - discard?
     - styling:
         - follower style
@@ -2395,6 +2440,7 @@ keywords:
     - walks:
         - double triple
         - doubletripletiming
+        - walking
         - walks
         - walk walk
         - step step
@@ -2422,6 +2468,7 @@ keywords:
         - "🤶🏻"
         - "🧑🏻‍🎄"
         - christmas
+        - christmas23
         - christmastime
         - god jul
         - holiday
@@ -2520,6 +2567,8 @@ keywords:
     - ordered:
         - decreasing
         - increasing
+        - avtagende # norwegian: decreasing
+        - stigende # norwegian: increasing
         - from fast to slow
         - from fastest to slowest
         - from slow to fast
@@ -2558,7 +2607,8 @@ keywords:
             - decr bpm
             - decreasing bpm
             - sortiert nach bpm
-            - "tempo: lugnt - medel" # swedish: tempo: calm/easy - medium
+            - avtagende hastighet # norwegian: decreasing speed
+            - stigende hastighet # norwegian: increasing speed
         - ordered by danceability:
             - ordered by danceability
             - sorted by danceability
@@ -2587,7 +2637,10 @@ keywords:
         - favourites
         - favs
         - i like
-        - lieblings lieder
+        - lieblings lieder # german: favorite songs
+        - lieblings songs # german: favorite songs
+        - lieblingslieder # german: favorite songs
+        - lieblingssongs # german: favorite songs
         - liked
         - mes prefs # french: my favorites
         - mit star bewertet
@@ -2716,12 +2769,13 @@ keywords:
     - audience requests:
         # - new # but not "new years", "new playlist", "new day"
         - requests
-        - sugestões # portugese (brasilian): suggestions
+        - sugestões # portugese: suggestions
         - suggestions
         - propozycje # polish: suggestions
         - request song
         - request songs
-        - kundenwünsche # region: customer requests
+        - kundenwünsche # german: customer requests
+        - リクエスト # japanese: request
 
     # e.g. "2024 Finds", "Newer finds"
     - discoveries:
@@ -2834,6 +2888,8 @@ keywords:
             - LPlaylistul meu
             - LPlaylistul meu nr.
             - uusi soittolista # finnish: new playlist
+            - הפלייליסט שלי מס' # hebrew: my playlist #
+            - פלייליסט מס' # hebrew: playlist no.
         - songs for [name]
         - lieder für [name] # german: songs for [name]
         - låtar till [name] # finnish: songs for [name]
@@ -3085,6 +3141,8 @@ keywords:
         - countdown boston
         - countdown swing
         - countdown swing boston
+        - countdownswing
+        - countdownswingboston
     - cukr push+events:type:party/dance:wcs/country:slowenia: # PARTY: Cukr Push in Ljubljana, Slowenia
     - dance boston+events:type:organization/dance:wcs/country:usa: # ORG: Dance Boston
         - danceboston
@@ -3117,6 +3175,9 @@ keywords:
     - do your own swing+events:type:organization/dance:wcs/country:usa: # ORG: Do Your Own Swing in San Jose, California
         - do your own swing
         - dyos
+    - dutch open+events:type:event/dance:wcs/country:netherlands: # EVENT: Dutch Open in Venray, Netherlands
+        - dutch open
+        - dutchopen
     - d-town swing+events:type:event/dance:wcs/country:germany: # EVENT: D-Town Swing in Germany
         - d-town
         - dtown
@@ -3246,6 +3307,8 @@ keywords:
         - lolla
         - lollapalooza
     - love & swing+events:type:event/dance:wcs/country:france: # EVENT: LOVE & SWING [year] in Bordeaux, Frane
+        - love & swing
+        - love and swing
     - lyon à la maison+events:type:party/dance:wcs/country:france: # 2 playlists # PARTY: Lyon à la Maison
     - madison west coast swing club+events:type:organization/dance:wcs/country:usa: # ORG: Madison West Coast Swing Club
         - madison west coast swing club
@@ -3254,6 +3317,7 @@ keywords:
         - madjam
         - mad jam
         - mid atlantic dance jam
+        - madjam2023thursnightwelcomeparty
     - med in swing+events:type:event/dance:wcs/country:france: # EVENT: Med In Swing at the Côte d'Azur in France
         - med in swing
         - medinswing
@@ -3297,6 +3361,8 @@ keywords:
         - mcs
         - mission city
         - mission city swing
+        - missioncity
+        - missioncityswing
     - monterey swingfest+events:type:event/dance:wcs/country:usa: # EVENT: Monterey SwingFest
         - monterey swingfest
         - monterey swing fest
@@ -3320,7 +3386,7 @@ keywords:
         - new zealand open
         - nz open
         - nzo
-    - neverland swing+events:type:event/dance:wcs/country;netherlands: # EVENT: NeverlandSwing in the Netherlands
+    - neverland swing+events:type:event/dance:wcs/country:netherlands: # EVENT: NeverlandSwing in the Netherlands
         - nls # could also be next level swing
         - neverland
         - neverlandswing
@@ -3398,8 +3464,9 @@ keywords:
     - scandinavian open+events:type:event/dance:wcs/country:sweden: # EVENT: Scandinavian Open in Stockholm, Sweden
         - scandinavian open
         - snow_
-        # - snow_06_11_2022
-        # - snow_03_11_2022_part2
+        - snow_03_11_2022_part1
+        - snow_03_11_2022_part2
+        - snow_06_11_2022
         - snow friday
         - snow saturday
         - snow sunday
@@ -3444,6 +3511,8 @@ keywords:
         - shoreline saturday
         - shoreline sunday
     - sharky swing+events:type:party/dance:wcs/country:usa: # PARTY: Sharky Swing in San Jose, California
+        - sharky swing
+        - sharkyswing
     - showme showdown+events:type:party/dance:wcs/country:usa: # EVENT: Showme Showdown - now called Gateway Swing Classic
         - showme
         - showme showdown
@@ -3541,6 +3610,7 @@ keywords:
         - swingle bell rock
     - swingmany+events:type:event/dance:wcs/country:germany: # EVENT: Swingmany in Frankfurt, Germany
         - swingmany
+    - swingolicious+events:type:event/dance:wcs/country:unclear: # EVENT?: SwingOLicious # Google yields no meaningful results
     - swingsation+events:type:event/dance:wcs/country:australia: # EVENT: Swingsation in Australia
         - swingsation
     - swingside invitational+events:type:event/dance:wcs/country:belgium: # EVENT: Swingside Invitational in Belgium
@@ -3550,10 +3620,16 @@ keywords:
     - swingtacular+events:type:event/dance:wcs/country:usa: # EVENT: Swingtacular [year] in Burlingame, California
         - swingtac
         - swingtacular
+        - swingtac23
+        - swingting2504
+        - swingtingaug24
+        - swingtingmay24
+        - swingtingoct24
+    - swingterfell+events:type:event/dance:wcs/country:northern ireland: # EVENT: Swingterfell in Northern Ireland
     - swingtimate+events:type:event/dance:wcs/country:australia: # EVENT: Swingtimate
     - swingtime denver+events:type:organization/dance:wcs/country:usa: # ORG: Swingtime Denver
         - swingtime
-        # - wow # SHOW: WoW / World of West Coast Swing during the SwingTime WCS event in Denver, USA
+        # - wow # SHOW: WoW / World of West Coast Swing during the SwingTime WCS event in Denver, USA?
     - swingting+events:type:event/dance:wcs/country:uk: # EVENT: SwingTing in Manchester (discontinued)
         - swingting
         - swingtingapr
@@ -3568,6 +3644,7 @@ keywords:
     - switchxperience+events:type:event/dance:wcs/country:germany+country:france: # EVENT: SwitchX in Berlin and Paris
         - switch experience
         - switch x
+        - switch xp
         - switch x perience
         - switch xperience
         - switchx
@@ -3662,7 +3739,9 @@ keywords:
         - summer nights westival
         - warsaw summer nights
         - wsnw
-    - wcnights ny+events:type:party/dance:wcs/city:new york/country:usa: # 1 playlist # PARTY: WCNights in New York
+    - wcnights+events:type:party/dance:wcs/city:new york/country:usa: # 1 playlist # PARTY: WCNights in New York
+        - wcnights # review
+        - wcnights ny
     - wcsa # ?: WCSA | West Coast Swing Amsterdam?
     - wcsr # ?: WCSR
     - wcstuesday+events:type:party/dance:wcs/country:unclear: # PARTY: WCSTuesday
@@ -3705,11 +3784,28 @@ keywords:
     - westiebos+events:type:organization/dance:wcs/country:usa: # ORG: WestieBOS in Watertown, Massachusetts
     - westiemate+events:type:party/dance:wcs/country:japan: # PARTY: Westiemate in Japan
     - westiewaves+events:type:event/dance:wcs/country:unclear: # ?: WestieWaves
+        - westiewaves
+        - westiewaves01
+        - westiewaves02
+        - westiewaves03
+        - westiewaves04
+        - westiewaves05
+        - westiewaves06
+        - westiewaves07
+        - westiewaves08
+        - westiewaves09
+        - westiewaves10
+        - westiewaves11
+        - westiewaves12
     - westieweekend+events:type:event/dance:wcs/country:unclear: # ?: WestieWeekend
     - westieval+events:type:event/dance:wcs/country:unclear: # EVENT, multiple events have this in their name
     - westmas+events:type:party/dance:wcs/country:poland: # PARTY: WESTmas by Ania & Damian in Wrocław, Poland
     - westowy karnawał+events:type:party/dance:wcs/country:poland: # PARTY: polish: western carnival
+        - westowy karnawał
+        - karnawał westowy
     - westowy sylewester+events:type:party/dance:wcs/country:poland: # PARTY: polish: western sylwester
+        - westowy sylewester
+        - sylewester westowy
     - westy nantes+events:type:event/dance:wcs/country:france: # EVENT: Westy Nantes
     - wicked westie+events:type:organization/dance:wcs/country:usa: # ORG: Wicked Westie in Atlanta
     - windy city westies+events:type:organization/dance:wcs/country:usa: # ORG: Windy City Westies in Illinois, USA
