@@ -159,30 +159,34 @@ st.link_button("Help fill in country info!",
                url='https://docs.google.com/spreadsheets/d/1YQaWwtIy9bqSNTXR9GrEy86Ix51cvon9zzHVh7sBi0A/edit?usp=sharing')
 
 
-feature_flags: dict[str, bool] = {}
+feature_flags: dict[str, (bool, str)] = {}
 
 
-def feature_flag(name: str, default: bool = False) -> bool:
+def feature_flag(name: str, default: bool = False, help: str = "") -> bool:
     flag_name = f"feature.{name}"
     result = default or st.query_params.get(flag_name) in ["1", "yes", "on", "true"]
-    feature_flags[flag_name] = result
+    feature_flags[flag_name] = (result, help)
     return result
 
+enable_random_song = feature_flag(
+    'random_song',
+    help="Enable the \"Random Song\" section.")
 
-# Feature flag to enable the "Random Song" section
-enable_random_song = feature_flag('random_song')
+enable_song_distance = feature_flag(
+    'song_distance',
+    help="Enable the \"Song distance\" section.")
 
-# Feature flag to enable the "Song distance" section
-enable_song_distance = feature_flag('song_distance')
+enable_show_containing_playlists = feature_flag(
+    'show_containing_playlists',
+    help="List containing playlists in the \"Find a Song\" section.")
 
-# Feature flag to list containing playlists in the "Find a Song" section
-enable_show_containing_playlists = feature_flag('show_containing_playlists')
+enable_show_playlist_keywords = feature_flag(
+    'show_playlist_keywords',
+    help="List common keywords in the \"Find a Playlist\" section.")
 
-# Feature flag to list common keywords in the "Find a Playlist" section
-enable_show_playlist_keywords = feature_flag('show_playlist_keywords')
-
-# Feature flag to show possibly related tags in the "Explore Songs by Tags" section
-enable_show_related_tags = feature_flag('show_related_tags')
+enable_show_related_tags = feature_flag(
+    'show_related_tags',
+    help="Show possibly related tags in the \"Explore Songs by Tags\" section.")
 
 if "experimental" in st.query_params:
     st.markdown(
@@ -192,22 +196,39 @@ if "experimental" in st.query_params:
         **Use at your own risk!**
         """)
 
-    new_feature_flags = st.data_editor(feature_flags)
+    new_feature_flags = st.data_editor([
+        {"name": flag, "value": feature_flags[flag][0], "help": feature_flags[flag][1]}
+        for flag in feature_flags
+    ], num_rows="fixed", disabled=[
+        "name",
+        "help",
+    ], column_order=[
+        "name",
+        "help",
+        "value",
+    ], column_config={
+        "name": st.column_config.TextColumn("Feature Flag"),
+        "value": st.column_config.CheckboxColumn("Enabled"),
+        "help": st.column_config.TextColumn("Description"),
+    })
 
     with st.container(horizontal=True):
-        if st.button("[Hide Developer Options]", type='tertiary'):
+        if st.button("[Hide Developer Options]", type='tertiary',
+                     help="Hide this table and remove the `?experimental` parameter from the URL."):
             del st.query_params["experimental"]
             st.rerun()
 
-        if st.button("[Clear]", type='tertiary'):
+        if st.button("[Clear]", type='tertiary',
+                     help="Reset all feature flags back to their defaults."):
             st.query_params.from_dict({"experimental": ""})
             st.rerun()
 
     flags_changed = False
-    for flag in new_feature_flags:
-        if feature_flags[flag] != new_feature_flags[flag]:
+    for row in new_feature_flags:
+        flag = row["name"]
+        if (old_value := feature_flags[flag][0]) != (new_value := row["value"]):
             flags_changed = True
-            if new_feature_flags[flag]:
+            if new_value:
                 st.query_params[flag] = "1"
             else:
                 del st.query_params[flag]

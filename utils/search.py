@@ -1421,6 +1421,10 @@ class SearchEngine:
                               (TrackTag.Track.playlist_percent() - pl.col('other.track.playlist_percent').fill_null(0))
                               .alias('diff.track.playlist_percent'))\
 
+        track_tags = track_tags.with_columns(
+            pl.when(pl.col(Track.id).is_not_null()).then(pl.concat_str(
+                pl.lit('https://open.spotify.com/track/'), Track.id)).alias(Track.url))
+
         if sort_by:
             track_tags = track_tags\
                 .sort(sort_by, descending=descending)\
