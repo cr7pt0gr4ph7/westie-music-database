@@ -241,10 +241,13 @@ if enable_random_song:
     st.markdown(f"#### ")
     st.markdown(f"#### Random Song")
 
-    st.dataframe(search_engine.find_random_songs(playlist_count_range=(20, 800),
-                                                 dj_count_range=(20, 300),
-                                                 limit=1)
-                 .select(Track.name, Track.artists, Track.url),
+    random_song = search_engine\
+        .find_random_songs(playlist_count_range=(20, 800),
+                           dj_count_range=(20, 300),
+                           limit=1)\
+        .collect(engine="streaming")
+
+    st.dataframe(random_song.select(Track.name, Track.artists, Track.url),
                  column_config=link_columns)
 
 # @st.cache_data
