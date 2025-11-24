@@ -697,6 +697,7 @@ keywords:
         - december
         - decembre # french
         - deciembre # spanish?
+        - desember # norwegian
         - dez # german
         - dezember # german
         - diciembre # spanish
@@ -827,8 +828,7 @@ keywords:
             - polish picnic
         - russian:
             - russian
-            - pусские
-            - Русские
+            - русские
         - spanish:
             - spanish
             - espanol
@@ -1230,6 +1230,7 @@ keywords:
                 - intensivdag
                 - intensive
                 - intensivos
+                - intesnive # misspelling
             - all level
             - open level
             - stages # french: workshops
@@ -1339,6 +1340,8 @@ keywords:
         - choreos
         - chorée # french: choreography
         - choree # french: choreography
+        - koreo # danish: choreo
+        - koreografi # danish: choreography
         - コレオ # japanese: choreography
     - weekly: weekly
 
@@ -1433,6 +1436,18 @@ keywords:
         - not blues
     - blues:
         - blues
+        - blues2
+        - bluesie # finnish: blues
+        - bluesies # finnish: blues?
+        - bluesiies # finnish: blues?
+        - bluessies # finnish: blues?
+        - bluestunti # finnish: blues lesson
+        - blusik # finnish: blues?
+        - bluetensive
+        - bluevement
+        - bluues
+        - bluuues
+        - bluuuues
         - bluesy
         - blues-y
         - b l u e s
@@ -1649,6 +1664,19 @@ keywords:
 
     # Review these
     - bossa nova
+    - disney:
+        - disney
+        - wcs*:
+            - +dance:wcs
+            - wcs disney
+            - disney wcs
+    - edm:
+        - edm # EDM
+        - edms # EDMs
+    - electronic:
+        - electro
+        - electronic
+        - electronical
     - indie
     - latino
     - lo-fi:
@@ -1687,10 +1715,13 @@ keywords:
     # These aren't exactly music genres, but have a very
     # similar meaning in the context of West Coast Swing
     - acoustic:
+        - accoustic
+        - accoustics
+        - accustic # misspelling
         - acoustic
         - acoustics
-        - accoustics
-        - accoustic
+        - acustic # misspelling
+        - aucustic # misspelling
         - unplugged
     - covers:
         - cover
@@ -1882,6 +1913,7 @@ keywords:
     - dramatic
     - happy:
         - happy
+        - glad energi # danish: happy energy
         - good mood:
             - good mood
             - gute laune
@@ -2253,59 +2285,68 @@ keywords:
         - cours d'intro
         - intro ride
   topic:
-    - accents:
-        - accent
-        - accenting # review
-        - accents
-    - action / reaction
-    - barre
-    - basic:
-        - basic
-        - ベーシッ # japanese: basic
-    - basics
-    - body movement: # see if we can split this up further
-        - intrabody
-        - sharp movement
-        - body movement
-        - body moves
-        - body isolation
-        - bodymovement
-        - isolation
-        - what body part is this
-        - upper body
-        - upper body workshop
-        - body awareness
-        - earth my body
-        - body barre
-        - body talk
-    - body waves:
-        - body roll
-        - body rolls
-        - body wave
-        - body waves
-    - breaks:
-        - breaks
-        - hit the break
-        - hits & breaks
-        - stopsnbreaks
-        - stops
-    - call and response:
-        - call
-        - response
-        - call & response
-        - call and response
-    - closed position:
-        - close position
-        - closed position
-    - contrast:
-        - contrast
-        - contraste # french
-        - contrasting
-    - creativity:
-        - creative
-        - creativity
-        - créativité
-    - dancing fast n slow
+    - musical properties*:
+        - accents:
+            - accent
+            - accenting # review
+            - accents
+        - breaks:
+            - breaks
+            - hit the break
+            - hits & breaks
+            - stopsnbreaks
+            - stops
+            - strong break
+            - strong breaks
+        - call and response:
+            - call
+            - response
+            - call & response
+            - call and response
+        - contrast:
+            - contrast
+            - contraste # french
+            - contrasting
+        - creativity:
+            - creative
+            - creativity
+            - créativité
+        - complex phrasing:
+            - not 8 beat aligned
+            - phrase change not on the 8 count
+        - phrasing:
+            - qualities*:
+                - energy changes # review
+                - feeling/intensity changes
+                - intensity changes
+                - mood change # review
+                - zmiana nastroju # polish: mood change
+                - level change # review
+                - style change
+            - fraasit # estonian: phrase
+            - perfect phasing
+            - phase change
+            - phase changes
+            - phasechange
+            - phasechanges
+            - phasing
+            - phrase
+            - phrase change
+            - phrase changes
+            - phrasechange
+            - phrasechanges
+            - phrased
+            - phrases
+            - phrasing
+            - songs that build
+    - tempo changes:
+        - speed changes
+        - tempo change
+        - tempo changes
+        - tempo changing
+        - songs that change tempo
+        - changeing tempo
+
     - drills:
         - drill
         - drills
@@ -2319,10 +2360,62 @@ keywords:
         - walking drills:
             - walking drill
             - walking drills
-    - footwork:
-        - footwork
-        - fun w feet
-        - fun with feet
+
+    - lesson topics*:
+        - body movement: # see if we can split this up further
+            - intrabody
+            - sharp movement
+            - body movement
+            - body moves
+            - body isolation
+            - bodymovement
+            - isolation
+            - isolations
+            - what body part is this
+            - upper body
+            - upper body workshop
+            - body awareness
+            - earth my body
+            - body barre
+            - body talk
+        - body waves:
+            - body roll
+            - body rolls
+            - body wave
+            - body waves
+        - closed position:
+            - close position
+            - closed position
+        - footwork:
+            - footwork
+            - fun w feet
+            - fun with feet
+        - movement:
+            - movement
+        - movement-:
+            - far east movement
+        - rides:
+            - music for rides
+        - spins & turns:
+            - spins
+            - spins & turns
+            - spins and turns
+            - spinntensive
+        - teamwork:
+            - teamwork
+        - technique:
+            - technique
+            - teknikträning
+
+    - dancing fast n slow
+    - action / reaction
+    - barre
+    - basic:
+        - basic
+        - ベーシッ # japanese: basic
+    - basics:
+        - basics
+        - alkeet # finnish: basics/beginnings/foundations
     - groove
     - groove your swing
     - half time:
@@ -2351,15 +2444,14 @@ keywords:
         - without vocals
     - micromusciality:
         - micro musciality
+        - micro musicality
         - micromusciality
+        - micromusicality
         - musicality - micro
-    - movement:
-        - movement
-    - movement-:
-        - far east movement
     - musicality:
         - changement musical # changement musical (tempo, instrument...)
         - couleur musique # french: music color
+        - dynamisk musikkutvikling # norwegian: dynamic music development
         - layering
         - layers
         - muscality
@@ -2379,34 +2471,6 @@ keywords:
         - musikalitet # danish: musicality
         - musiklitet
         - музыкальность # russian: musicality
-    - complex phrasing:
-        - not 8 beat aligned
-        - phrase change not on the 8 count
-    - phrasing:
-        - qualities*:
-            - energy changes # review
-            - feeling/intensity changes
-            - intensity changes
-            - mood change # review
-            - zmiana nastroju # polish: mood change
-            - level change # review
-            - style change
-        - fraasit # estonian: phrase
-        - perfect phasing
-        - phase change
-        - phase changes
-        - phasechange
-        - phasechanges
-        - phasing
-        - phrase
-        - phrase change
-        - phrase changes
-        - phrasechange
-        - phrasechanges
-        - phrased
-        - phrases
-        - phrasing
-        - songs that build
     - pulse
     - push the floor
     - rhythm related:
@@ -2415,11 +2479,6 @@ keywords:
         - rhythmn
         - rhythms
         - リズムトレーニング # japanese: rhythm training
-    - spins & turns:
-        - spins
-        - spins & turns
-        - spins and turns
-        - spinntensive
     - structure # imprecise - discard?
     - styling:
         - follower style
@@ -2440,13 +2499,6 @@ keywords:
         - technique
         - technik # german: technique
         - technika # polish/lituanian/?: technique
-    - tempo changes:
-        - speed changes
-        - tempo change
-        - tempo changes
-        - tempo changing
-        - songs that change tempo
-        - changeing tempo
     - transitions
     - timing # further investigation needed
     - moves # further investication needed
@@ -2504,6 +2556,7 @@ keywords:
         - bday
         - birthday
         - geburtstag
+        - рожден ден # bulgarian: birthday
         - "'s 60th"
     - christmas:
         - "🌲"
@@ -2962,6 +3015,7 @@ keywords:
         - shazam-titel
         - shazamed
   country:
+    - ireland
     - malaysia
   city:
     - avalon # there a cities in multiple countries named avalon
@@ -2976,6 +3030,7 @@ keywords:
         - bratislavamärz18
     - bristol # uk
     - brno # czechia
+    - budapest # hungarx
     - calpe # spain (calp)
     - den hague: # netherlands
         - den haag
@@ -2988,6 +3043,7 @@ keywords:
         - farnham
         - farmham
     - garda # italy
+    - haifa # israel
     - kraków: # poland
         - krakau
         - krakow
@@ -2996,6 +3052,9 @@ keywords:
     - london # uk
     - madrid # spain
     - mainz # germany
+    - montreal: # canada
+        - montreal
+        - montrealwcs
     - munich: # germany
         - munich
         - münchen
@@ -3005,6 +3064,7 @@ keywords:
         - new york city
         - nyc
     - nantes # france
+    - osaka # japan
     - paris # france
     - poronin # poland
     - ratingen # germany
@@ -3014,7 +3074,9 @@ keywords:
     - seattle # usa
     - solec # poland
     - stavanger # norway
+    - straßburg # france
     - syracuse # usa
+    - tel aviv # israel
     - timisoara # romania
     - ulm # germany
     - umeå: # sweden
@@ -3163,6 +3225,9 @@ keywords:
         - boston swing labs
         - bsl
     - budafest+events:type:event/dance:wcs/country:hungary: # EVENT: Budafest in Budapest, Hungary
+        - budafest
+        - buda lvl
+        - budaadvallstarslow # review
     - canadian swing championships+events:type:event/dance:wcs/country:canada: # EVENT: Canadian Swing Championships
         - canadian swing championships
         - csc
