@@ -74,6 +74,7 @@ import streamlit as st
 
 from utils.common.entities import PolarsLazyFrame
 from utils.common.filters import create_date_filter, create_text_filter, or_filter
+from utils.common.polars import is_in_range
 from utils.common.stats import count_n_unique
 from utils.keyword_data import CategoryName, HexColor, KeywordData, ShortTagName, TagName, load_keyword_data, split_tag
 from utils.playlist_classifiers import extract_date_strings_from_name, extract_date_types_from_name
@@ -1577,10 +1578,8 @@ class SearchEngine:
         limit: int = 1
     ) -> pl.LazyFrame:
         track_ids = self.data.tracks\
-            .filter(pl.col(Stats.playlist_count).le(playlist_count_range[1]),
-                    pl.col(Stats.playlist_count).ge(playlist_count_range[0]),
-                    pl.col(Stats.dj_count).le(dj_count_range[1]),
-                    pl.col(Stats.dj_count).ge(dj_count_range[0]))\
+            .filter(is_in_range(Stats.playlist_count, playlist_count_range),
+                    is_in_range(Stats.dj_count, dj_count_range))\
             .select(pl.col(Track.id).sample(limit))
 
         matching_tracks = TrackSet(self.data.tracks.join(track_ids, how='semi', on=Track.id),

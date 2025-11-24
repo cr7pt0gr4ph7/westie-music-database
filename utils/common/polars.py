@@ -18,6 +18,21 @@ def optional_alias(expr: pl.Expr, new_name: str | None) -> pl.Expr:
     return expr.alias(new_name) if new_name else expr
 
 
+def is_in_range(expr: IntoExpr, range: tuple[int | None, int | None] | None) -> pl.Expr:
+    expr = into_expr(expr)
+
+    if range is None:
+        return pl.lit(True)
+    elif range[0] is not None and range[1] is not None:
+        return expr.is_between(range[0], range[1], "both")
+    elif range[0] is not None:
+        return expr.ge(range[0])
+    elif range[1] is not None:
+        return expr.le(range[1])
+    else:
+        return pl.lit(True)
+
+
 def sort_list_workaround(expr: pl.Expr, sort_by_expr: pl.Expr) -> pl.Expr:
     # Workaround for "sort_by of empty list fails" bug in Polars.
     # Bug is tracked here: https://github.com/pola-rs/polars/issues/25433
