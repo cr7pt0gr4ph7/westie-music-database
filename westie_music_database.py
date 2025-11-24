@@ -189,6 +189,14 @@ enable_show_related_tags = feature_flag(
     help="Show possibly related tags in the \"Explore Songs by Tags\" section.")
 
 if "experimental" in st.query_params:
+    # Shortcut to enable ALL feature flags at once
+    if st.query_params["experimental"] == "all":
+        for flag in feature_flags:
+            st.query_params[flag] = "1"
+
+        st.query_params["experimental"] = ""
+        st.rerun()
+
     st.markdown(
         """
         ####
