@@ -16,6 +16,7 @@ import time
 from utils.common.columns import pull_columns_to_front
 from utils.common.logging import log_query
 from utils.keyword_data import split_tag
+from utils.playlist_classifiers import contains_bpm_in_name
 from utils.pull_data import automatically_pull_data_if_needed
 from utils.search import SearchEngine, TagManager
 from utils.tables import Playlist, PlaylistOwner, PlaylistStats, PlaylistTags, PlaylistTrack, Stats, Tag, TagsData, Track, TrackAdjacent, TrackLyrics, TrackTag, TrackTags
@@ -843,11 +844,25 @@ def section_find_playlist():
             help=("Only display playlists that have a date "
                   "(like `YYYY-MM-DD`, `dd.mm.`YYYY`, etc.) in their name"))
 
+        not_has_date_input = st.checkbox(
+            "Exclude dated playlists",
+            help="Exclude playlists whose name contains a calendar date.")
+
         not_just_a_date_input = st.checkbox(
             "Not just a date",
             help="Exclude playlists whose name only consists of a date, and nothing else.")
+
+        has_bpm_input = st.checkbox(
+            "Only playlists with BPM",
+            help=("Only display playlists that have a recognized BPM specification in their name."))
+
+        not_has_bpm_input = st.checkbox(
+            "Exclude playlists with BPM",
+            help=("Exclude playlists that have a recognized BPM specification in their name."))
     with col2:
         min_song_count_input = st.number_input("Contains at least __ tracks", 0, None, 0)
+        wcs_song_percent_input = st.slider("Contains __ % WCS songs", 0, 100, (0, 100),
+                                           step=1, format="%u %%")
 
     col1, col2 = st.columns(2)
     with col1:
@@ -880,7 +895,7 @@ def section_find_playlist():
             playlist_include=playlist_input,
             playlist_exclude=not_playlist_input,
             playlist_is_social_set=is_social_input or None,
-            playlist_has_date_in_title=has_date_input or None,
+            playlist_has_date_in_title=False if not_has_date_input else True if has_date_input else None,
             min_song_count=min_song_count_input,
             playlist_stats_in_result=True,
             tag_include=tag_input,
@@ -892,12 +907,31 @@ def section_find_playlist():
             limit=None,
         )
 
+        if wcs_song_percent_input != (0, 100):
+            playlist_search_df = playlist_search_df.filter(
+                PlaylistStats.wcs_song_percent().is_between(
+                    wcs_song_percent_input[0] / 100.0,
+                    wcs_song_percent_input[1] / 100.0,
+                    "both" if wcs_song_percent_input[1] == 100 else "left"))
+
+        if not_just_a_date_input:
+            playlist_search_df = playlist_search_df\
+                .filter(~Playlist.name().is_in(Playlist.extracted_dates()))
+
+        if has_bpm_input:
+            playlist_search_df = playlist_search_df\
+                .filter(contains_bpm_in_name(Playlist.name()))
+
+        if not_has_bpm_input:
+            playlist_search_df = playlist_search_df\
+                .filter(~contains_bpm_in_name(Playlist.name()))
+
         df = (playlist_search_df
               # .filter(~Playlist.is_social_set())
-              .filter(pl.lit(True) if not not_just_a_date_input else ~Playlist.name().is_in(Playlist.extracted_dates()))
               .with_columns(Playlist.name, PlaylistTags.tags, Playlist.url, PlaylistOwner.name,
                             Playlist.matching_song_count, Stats.artist_count, Track.name)
-              .sort(PlaylistStats.wcs_song_count, nulls_last=True, descending=True))
+              .sort(PlaylistStats.wcs_song_count, nulls_last=True, descending=True)
+              .with_row_index(offset=1))
 
         if show_common_keywords:
             st.dataframe(df
@@ -918,6 +952,7 @@ def section_find_playlist():
         st.dataframe(df
                      .collect(engine='streaming'),
                      column_order=[
+                         "index",
                          Playlist.name,
                          PlaylistTags.tags,
                          Playlist.url,
