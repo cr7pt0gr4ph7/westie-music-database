@@ -15,6 +15,7 @@ import time
 
 from utils.common.columns import pull_columns_to_front
 from utils.common.logging import log_query
+from utils.keyword_data import split_tag
 from utils.pull_data import automatically_pull_data_if_needed
 from utils.search import SearchEngine, TagManager
 from utils.tables import Playlist, PlaylistOwner, PlaylistStats, PlaylistTags, PlaylistTrack, Stats, Tag, TagsData, Track, TrackAdjacent, TrackLyrics, TrackTag, TrackTags
@@ -168,6 +169,7 @@ def feature_flag(name: str, default: bool = False, help: str = "") -> bool:
     feature_flags[flag_name] = (result, help)
     return result
 
+
 enable_random_song = feature_flag(
     'random_song',
     help="Enable the \"Random Song\" section.")
@@ -246,17 +248,59 @@ if "experimental" in st.query_params:
 
 
 if enable_random_song:
-    st.markdown(f"#### ")
-    st.markdown(f"#### Random Song")
+    @immediate
+    @st.fragment
+    def section_random_song():
+        st.markdown(f"#### ")
 
-    random_song = search_engine\
-        .find_random_songs(playlist_count_range=(20, 800),
-                           dj_count_range=(20, 300),
-                           limit=1)\
-        .collect(engine="streaming")
+        with st.container(horizontal=True):
+            st.markdown(f"#### Random Song")
+            st.button(":material/refresh:")
 
-    st.dataframe(random_song.select(Track.name, Track.artists, Track.url),
-                 column_config=link_columns)
+        random_song = search_engine\
+            .find_random_songs(playlist_count_range=(50, None),
+                               dj_count_range=(20, None),
+                               limit=1)\
+            .with_columns(TrackTags.extract_tags(),
+                          TagsData(TrackTags.tags_data()).compute_confidence_scores().tags_data())\
+            .collect(engine="streaming")
+
+        st.dataframe(random_song.select(Track.name, Track.artists, Track.url),
+                     column_config=link_columns)
+
+        with st.container(border=True):
+            track_title = random_song[Track.name].item()
+            track_artists = random_song[Track.artist_names].item()
+            track_url = random_song[Track.url].item()
+            track_tags = random_song[TrackTags.tags_data].item()
+
+            st.markdown(":red-badge[:material/info: About]")
+
+            st.metric(label=f"Track \u2e3a [Open in Spotify]({track_url}) [:material/open_in_new:]({track_url})",
+                      value=track_title + " \u2014 " + track_artists)
+
+            with st.container(horizontal=True):
+                st.metric(label="Playlists",
+                          value=random_song[Stats.playlist_count].item())
+
+                st.metric(label="DJs",
+                          value=random_song[Stats.dj_count].item())
+
+            if track_tags.to_list():
+                st.divider(width=200)
+
+                st.markdown(":red-badge[:material/sell: Top Tags]")
+
+                with st.container(horizontal=True):
+                    for tag in track_tags:
+                        category = split_tag(tag[TrackTag.tag])[0]
+                        if tag[TrackTag.confidence] < 0.4 and category != "topic":
+                            continue
+
+                        st.metric(label=tag_manager.format_category(category) + " :material/sell:",
+                                  value=split_tag(tag[TrackTag.tag])[-1],
+                                  delta=tag[TrackTag.confidence])
+
 
 # @st.cache_data
 # def sample_of_raw_data():
