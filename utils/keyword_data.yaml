@@ -871,6 +871,7 @@ keywords:
         - wcswung
         - wcscontemporary
         - wcsyeah
+        - westienights
 
         # TODO: Maybe exclude these
         - swango
@@ -903,46 +904,58 @@ keywords:
 
         - ballroom / latin:
             # Ballroom & Latin
-            - bg
-            - boogie
-            - ccc
-            - cha cha
-            - cha-cha
-            - cha cha cha
-            - cha-cha-cha
-            - df
-            - discofox
-            - ft
-            - foxtrot
-            - foxtrott
-            - lawa
-            - lw
-            - langsamer walzer
-            - slow waltz
-            - qs
-            - quik step
-            - quikstep
-            - quick step
-            - quickstep
-            - rb
-            - ru
-            - rumba
-            - sl
-            - salsa
-            - sf
-            - slowfox
-            - swango
-            - tango
-            - argentino
-            - milonga
-            - milongas
-            - ww
-            - walc wiedeński # swedish: viennese waltz
-            - waltz
-            - walzer
-            - wiedeński # swedish: viennese
-            - wiener walzer
-            - valčki # slowenian: waltzes
+            - boogie:
+                - bg
+                - boogie
+            - cha cha cha:
+                - ccc
+                - cha cha
+                - cha-cha
+                - cha cha cha
+                - cha-cha-cha
+            - discofox:
+                - df
+                - discofox
+            - foxtrot:
+                - ft
+                - foxtrot
+                - foxtrott
+            - slow waltz:
+                - lawa # LaWa
+                - lw
+                - langsamer walzer
+                - slow waltz
+                - valčki # imprecise # slowenian: waltzes
+            - quickstep:
+                - qs
+                - quik step
+                - quikstep
+                - quick step
+                - quickstep
+            - rumba:
+                - rb
+                - ru
+                - rumba
+            - salsa:
+                - sl
+                - salsa
+            - slowfox:
+                - sf
+                - slowfox
+            - tango: # Both European Tango and Tango Argentino
+                - tango
+                - swango
+                - argentino
+                - milonga
+                - milongas
+            - viennese waltz:
+                - ww
+                - walc wiedeński # swedish: viennese waltz
+                - waltz
+                - walzer
+                - wiedeński # swedish: viennese
+                - wiener walzer
+                - valčki # imprecise # slowenian: waltzes
 
             # More ballroom-related keywords
             - abiball
@@ -961,26 +974,26 @@ keywords:
             - tanzparty
             - tanzrunde
 
-            # Wedding-related keywords
-            - wedding*:
-                - bröllopsfest # swedish: wedding party
-                - esküvő # hungarian: wedding
-                - esküvő buli # hungarian: wedding party
-                - guest arrival music
-                - hochzeit # german: wedding
-                - hochzeitsplaylist # german
-                - hochzeits # german
-                - hochzeits-songs # german
-                - hochzeitsgäste # german
-                - hochzeitstanz # german
-                - pierwszy taniec # polish: first dance
-                - poročni # slowenian: wedding dance
-                - reception
-                - reception music
-                - silberhochzeit # german
-                - weddind # misspelling
-                - wedding
-                - wesele # polish
+        # Wedding-related keywords
+        - wedding*:
+            - bröllopsfest # swedish: wedding party
+            - esküvő # hungarian: wedding
+            - esküvő buli # hungarian: wedding party
+            - guest arrival music
+            - hochzeit # german: wedding
+            - hochzeitsplaylist # german
+            - hochzeits # german
+            - hochzeits-songs # german
+            - hochzeitsgäste # german
+            - hochzeitstanz # german
+            - pierwszy taniec # polish: first dance
+            - poročni # slowenian: wedding dance
+            - reception
+            - reception music
+            - silberhochzeit # german
+            - weddind # misspelling
+            - wedding
+            - wesele # polish
 
         # Unrelated solo dancing
         - ballet*:
@@ -988,6 +1001,8 @@ keywords:
             - ballett
         - bollywood
         - fitness*:
+            # We should review the two playlist owners (Raquel Cordero Perry and DJ Derbear)
+            # that account for nearly all of the fitness playlists in our dataset
             - cyclebar
             - cyclebeatz
             - cyclebeatzz
@@ -1000,13 +1015,18 @@ keywords:
             - ladystyle & heels
             - heels pole
             - strong(her)
+            - strong(her).
+            - stronger.as.
+            - stronger.together.
             - zumba
         - flamenco
         - medieval dance
-        - irish dance
-        - irish dancing
-        - tap dance
-        - tap dancing
+        - irish dance:
+            - irish dance
+            - irish dancing
+        - tap dance:
+            - tap dance
+            - tap dancing
         - hardstyle
         - jumpstyle
         - kids*:
@@ -1374,6 +1394,8 @@ keywords:
         - slow blues/fast contemp
         # The following playlist contains a mix of different genres
         - id:4oTTVwCdBlDFdxy1rC8hxv # Blues Class
+        - id:4H4RWaR3MUchSs0K90xz7f # Blues intensive 23.11.24
+        # - WW Blues acoustic room
         # The following playlists are about blues as a dance style,
         # not blues as a music genre, and contain effectively no tracks
         # that we would consider as "Blues" in the WCS sense of the word.
@@ -1395,45 +1417,49 @@ keywords:
         - blues melanie2
         - blues/expressive dance
         - blues dance
-        - slow blues
+        # - slow blues # imprecise, can mean both "slow blues" (the dance) and slow "blues music" (the genre)
         - wolny blues # polish: slow blues
         - slow blues. boogie, wcs
         - blues @ cybertron
         - blues-ideen für eure hochzeit
+        - "💃🕺 blues dance -contemporary"
+        - marldon blues freestyle 16 june
+        - id:7F8Vzq2GMAWtntSgwVnG7z # BLUES dance - Contemporary
         - id:000FUDCZMshGPFDSJqY0HN # Blues and cafe chill
         - id:0btrdItu1LO2OZ8rdBhlHg # Blues WCS
         - id:0EkQrDzpKPhkWkO6E00vN7 # Blues BK
-        - id:67QmI8DOUGMAcoNBAQhcVY # Blues
+        - id:0sQoKpGCbIC8n25rQxcuRM # Westcoast/blues
+        - id:19pOqWEO5eOmPPhWuhanVo # Blues - Sock Hop 2018
         - id:1EJCH5YHumD2WQR894LzYa # bluesy
         - id:1EUrd7HxlrqCH59xokIcna # Juke and Drag Blues
-        - id:67hBaZVcpX0KYsDpKgR1cO # Wolny Blues # polish: slow blues
-        - id:70ghOoYTTY8W2StzAZRqZ6 # blues pull list
-        - id:3mpQ5724AzvNZp2FBXeeQF # Blues / swing
-        - id:6CHyaRzucQ5jkxx6KRpc28 # Jan 31 2020 Blues Theme
-        - id:7LVR83GD9rREv8RatAmOJO # West Coast Swing Blues (now just named WCS)
-        - id:1w81waAy3X0BfZNLeP1swP # 20231228 Blues
-        - id:6hn4XvBbIxiiUOGWDKk02n # Blues (now just named WEST COAST SWING LOKOBAILE)
-        - id:1l1Q8zCUse2vAzriruZk42 # [...not found...]
-        - id:7nC7nVr8RUtZLXjED1epx0 # Tingalow Episode VI: Return of the Blues
         - id:1FRt7tFWaHegE0BAAYsaAW # blues
-        - id:3yhZzxFMDCtMmbC0iRBKs2 # swingin the blues (now named Outdoor Social 29.08)
-        - id:5KUFcPT9qGX8VyHHjMFvTv # Beautiful Blues
-        - id:4Oyhp2uWZxbHCiKxHeH6M2 # blues moves
-        - id:2J3RlhUM3lDTYQoEBzJRqN # Social Blues NOV23
-        - id:4JDticVjR0XdXrz7dcyRoL # Blues to turk
-        - id:78REKJzPvwdgfOOvGHaC1L # Blues - Swung (now named UTS Friday 01:30-03:30)
-        - id:0sQoKpGCbIC8n25rQxcuRM # Westcoast/blues
-        - id:319Dm7i6qTFQvlyqiIxF3g # Blues
-        - id:19pOqWEO5eOmPPhWuhanVo # Blues - Sock Hop 2018
-        - id:3pgOsdrIl1kcCZcNyCfTqC # Tuesday with blues
-        - id:6MQft5Cyvn3W5vXVJucyD4 # Blues for the Soul # review
-        - id:3bgvcWS3FQbtugEV2Ux6SS # Blues
-        - id:4VzW9RmPMS7RVvp1gmpCG5 # Blues Lesson
-        - id:7nfgDiUUivByTAxuqErb2L # Dec 10/12 informal blues
+        - id:1l1Q8zCUse2vAzriruZk42 # [...not found...]
+        - id:1w81waAy3X0BfZNLeP1swP # 20231228 Blues
         - id:2HMM2SPVMCWYssjO4XxlKq # Light blues 1-3-14
+        - id:2J3RlhUM3lDTYQoEBzJRqN # Social Blues NOV23
+        - id:319Dm7i6qTFQvlyqiIxF3g # Blues
+        - id:3bgvcWS3FQbtugEV2Ux6SS # Blues
+        - id:3mpQ5724AzvNZp2FBXeeQF # Blues / swing
+        - id:3pgOsdrIl1kcCZcNyCfTqC # Tuesday with blues
         - id:3sJCBnbb3g038Wr7ALjYXz # #Alt.Blues PartyUp!
-        - id:5WwByr5g446z5pBGzVqPhB # Tine's WCS Blues Collection (now named Sina 2)
+        - id:3yhZzxFMDCtMmbC0iRBKs2 # swingin the blues (now named Outdoor Social 29.08)
+        - id:4JDticVjR0XdXrz7dcyRoL # Blues to turk
+        - id:4Oyhp2uWZxbHCiKxHeH6M2 # blues moves
+        - id:4VzW9RmPMS7RVvp1gmpCG5 # Blues Lesson
+        - id:52DrqicuFF7Ef1E4V1e1wX # Blues/Expressive Dance
         - id:5e1fqCDHDSkonZv0FQTksL # Blues
+        - id:5KUFcPT9qGX8VyHHjMFvTv # Beautiful Blues
+        - id:5WwByr5g446z5pBGzVqPhB # Tine's WCS Blues Collection (now named Sina 2)
+        - id:67hBaZVcpX0KYsDpKgR1cO # Wolny Blues # polish: slow blues
+        - id:67QmI8DOUGMAcoNBAQhcVY # Blues
+        - id:6CHyaRzucQ5jkxx6KRpc28 # Jan 31 2020 Blues Theme
+        - id:6hn4XvBbIxiiUOGWDKk02n # Blues (now just named WEST COAST SWING LOKOBAILE)
+        - id:6MQft5Cyvn3W5vXVJucyD4 # Blues for the Soul # review
+        - id:70ghOoYTTY8W2StzAZRqZ6 # blues pull list
+        - id:78REKJzPvwdgfOOvGHaC1L # Blues - Swung (now named UTS Friday 01:30-03:30)
+        - id:7LVR83GD9rREv8RatAmOJO # West Coast Swing Blues (now just named WCS)
+        - id:7nC7nVr8RUtZLXjED1epx0 # Tingalow Episode VI: Return of the Blues
+        - id:7nfgDiUUivByTAxuqErb2L # Dec 10/12 informal blues
     - bluesy
     - club:
         # The word "Club" by itself does not yield any consistent result,
@@ -2865,6 +2891,7 @@ keywords:
     - syracuse # usa
     - timisoara # romania
     - ulm # germany
+    - umeå # sweden
     - tokyo # japan
     - vancouver # canada
     - wichita # usa
@@ -3479,6 +3506,8 @@ keywords:
         - swingin festival
         - swing in festival
         - swingin # potential problem: matches too much?
+        - swingin festival-:
+            - swingin the
     - swingle bell rock+events:type:event/dance:wcs/country:usa: # EVENT: Swingle Bell Rock in New York City
         - swinglebell
         - swingle bell
