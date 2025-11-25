@@ -1352,6 +1352,7 @@ keywords:
             - ambient
             - background
             - bakgrundsmusik # swedish: background music
+            - bakgrunn # norwegian: background
             - hintergrund
             - hintergrundmusik
             - lounge
@@ -1663,6 +1664,12 @@ keywords:
     - trance
 
     # Review these
+    - afro:
+        - afro
+        - afro beats
+        - wcs*:
+            - +dance:wcs
+            - wcsxafro
     - bossa nova
     - disney:
         - disney
@@ -1677,7 +1684,14 @@ keywords:
         - electro
         - electronic
         - electronical
+    - electropop # review
+    - electroswing
     - indie
+    - latin:
+        - wcs*:
+            - +dance:wcs
+            - latin wcs
+            - wcs latin
     - latino
     - lo-fi:
         - lo-fi
@@ -1760,6 +1774,8 @@ keywords:
         - late nights
         - late nite
         - latenight
+        - latenighter
+        - latenighters
         - latenigt
         - latenigts
         - latenite
@@ -1771,6 +1787,10 @@ keywords:
             - laaate west coast
             - laaaate west coast
             - laaaaate west coast
+            - wcs late
+            - wcs late hour
+            - wcs latenightclub
+            - wcs lates
         - graveyard shift
         - midnight # TODO: Review if these playlists mostly contain late night songs or not
         # The terms below are for matching all the late night
@@ -2008,6 +2028,7 @@ keywords:
         - mellowmellowmellow
     - rage
     - relaxed:
+        - gemütlich
         - relax
         - relaxed
         - relaxing
@@ -2189,6 +2210,7 @@ keywords:
         - easily countable
         - easy to count
         - obvious beat
+        - strong beat # review
     - clear beat-:
         - no clear beat
     - no clear beat
@@ -2339,6 +2361,11 @@ keywords:
             - phrases
             - phrasing
             - songs that build
+        - repetitions:
+            - repeated
+            - repetition
+            - repetitive beats
+            - repititions
     - tempo changes:
         - speed changes
         - tempo change
@@ -2386,6 +2413,7 @@ keywords:
         - closed position:
             - close position
             - closed position
+        - connection
         - footwork:
             - footwork
             - fun w feet
@@ -3193,6 +3221,9 @@ keywords:
         - awa
     - avignon city swing+events:type:event/dance:wcs/country:france: # EVENT: Avignon City Swing
     - baltic swing+events:type:event/dance:wcs/country:poland: # EVENT: Baltic Swing [year]
+        - baltic
+        - baltic swing
+        - balticswing
     - bavarian open+events:type:event/dance:wcs/country:germany: bavarian open
     - berlin swing revolution+events:type:event/dance:wcs/country:germany: # EVENT: Berlin Swing Revolution [year]
         - berlin swing revolution
@@ -3964,6 +3995,7 @@ keywords:
         # - wild westie # review
     - wild wild westie+events:type:event/dance:wcs/country:usa: # EVENT: Wild Wild Westie in Dallas, Texas, USA
         - wild wild westie
+        - wildwildwestie
         - meech n' friends
         - meech'n'friends
     - wny dance+events:type:organization/dance:wcs/country:usa: # ORG: WnY Dance in Marin, California
