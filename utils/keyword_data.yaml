@@ -2339,6 +2339,7 @@ keywords:
         - complex phrasing:
             - not 8 beat aligned
             - phrase change not on the 8 count
+            - complex structure
         - phrasing:
             - qualities*:
                 - energy changes # review
@@ -2473,7 +2474,7 @@ keywords:
     - vocals-:
         - no vocals
         - without vocals
-    - micromusciality:
+    - micromusicality:
         - micro musciality
         - micro musicality
         - micromusciality
@@ -2695,6 +2696,7 @@ keywords:
     - ordered-:
         - not ordered
         - not sorted
+        - ärzte_ordered # refers to german rock group "Die Ärzte"
     - ordered:
         - decreasing
         - increasing
@@ -3099,6 +3101,7 @@ keywords:
     - osaka # japan
     - paris # france
     - poronin # poland
+    - prague # czechia
     - ratingen # germany
     - san antonio # usa
     - san francisco # usa
@@ -3126,6 +3129,7 @@ keywords:
   events:
     - andrzejki # 26 playlists # polish: st. andrew's day
     - buma # 25 playlists
+    - calgary dance stampede
     - calonocna+social/various dances/country:poland: # PARTY / polish: all-nighter # Seems to represent one or more party series
         - całonocna
         - calonocna
@@ -3151,6 +3155,9 @@ keywords:
     - omj # 43 playlists # PARTY: OMJ
     - ordenshuset+events:type:location/dance:wcs/country:sweden: # LOCATION: Ordenshuset (Monastery) in ?
     - papillon # 11 playlists # LOCATION?: Papillon
+    - summer summit+events:type:event:
+        - summer summit
+        - summersummit
     - swing in capital
     - swing studio # 19 playlists # PARTY?/ORG?/LOCATION?: Swing Studio
     - tatarska # 8 playlists # PARTY: polish: tartar sauce, tartarian, republic of tatarstan
@@ -3628,6 +3635,7 @@ keywords:
         - snow_03_11_2022_part1
         - snow_03_11_2022_part2
         - snow_06_11_2022
+        - snowcs
         - snow friday
         - snow saturday
         - snow sunday
@@ -3885,8 +3893,10 @@ keywords:
         - udf # EVENT: UDF [year]
         - utah dance fest
     - uptown swing+events:type:event/dance:wcs/country:sweden: # EVENT: UpTown Swing in Stockholm, Sweden
-        - uptown
         - up town swing
+        - uptown
+        - uptown swing
+        - uptownswing
     - uk championships+events:type:event/dance:wcs/country:uk: # EVENT: UK West Coast Swing Chamionships
         - uk champs
         - uk championships
@@ -3968,6 +3978,7 @@ keywords:
         - westiewaves10
         - westiewaves11
         - westiewaves12
+        - westiewaves20240525
     - westieweekend+events:type:event/dance:wcs/country:unclear: # ?: WestieWeekend
     - westieval+events:type:event/dance:wcs/country:unclear: # EVENT, multiple events have this in their name
     - westmas+events:type:party/dance:wcs/country:poland: # PARTY: WESTmas by Ania & Damian in Wrocław, Poland
