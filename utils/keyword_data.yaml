@@ -1397,6 +1397,7 @@ keywords:
         - débutants # french: beginners
         - iniciante # portugese (brazilian): beginner
         - kezdő # hungarian: beginner
+        - nybegynner # swedish: beginner
         - nybegynnervenlig # swedish: beginner-friendly
         - nybörjare # swedish: beginner
     - champions:
@@ -1740,6 +1741,7 @@ keywords:
     - covers:
         - cover
         - covers
+        - c💋vers
     - duets:
         - duet
         - duets
@@ -1922,6 +1924,7 @@ keywords:
         - lugnt # swedish: calm
         - lugnare # swedish: calmer
         - lugnast # swedish: calmest
+        - neutral mood
     - chill:
         - ambient
         - chill
@@ -2618,6 +2621,7 @@ keywords:
         - switchmas
         - wcxmas
         - weihnachten # german: christmas
+        - weihnachtsfeier # german: christmas party
         - weihnachtslieder # german: christmas songs
         - westiemas
         - westmas
@@ -3449,6 +3453,8 @@ keywords:
     - liberty swing+events:type:event/dance:wcs/country:usa: # EVENT: Liberty [year]
         - liberty
         - liberty swing
+        - liberty/www
+    - lisbon westie fest+events:type:event/dance:wcs/country:portual: # EVENT: Lisbon Westie Fest in Lisbon, Portugal
     - longhorn westies+events:type:organization/dance:wcs/country:usa: # ORG: Longhorn Westies is a WCS Dance Club at the University of Texas at Austin
     - lollapalooza+events:type:event/various dances/country:germany/country:usa+playlist:unrelated: # EVENT: LOLLA - GERMANY/USA
         - lolla
@@ -3994,6 +4000,7 @@ keywords:
         - wild westies roc
         # - wild westie # review
     - wild wild westie+events:type:event/dance:wcs/country:usa: # EVENT: Wild Wild Westie in Dallas, Texas, USA
+        - liberty/www
         - wild wild westie
         - wildwildwestie
         - meech n' friends
