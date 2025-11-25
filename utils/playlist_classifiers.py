@@ -267,7 +267,7 @@ class BpmPattern(NamedTuple):
 
 
 pattern_bpm_range = BpmPattern(
-    'range', '70 – 79bpm', r'(\d{2,3})\s*([-–]|[aá]|bis|to)\s*(\d{2,3})\s*(?-i:bpms?|beats per minute)?')
+    'range', '70 – 79bpm', r'(\d{2,3})\s*([-–]|[aáà〜]|bis|to)\s*(\d{2,3})\s*(?-i:bpms?|beats per minute)?')
 pattern_bpm_appx_1 = BpmPattern('approximate', '~100bpm', r'[~≈]\s*(\d{2,3})\s*(?-i:bpms?|beats per minute)?')
 pattern_bpm_appx_2 = BpmPattern('approximate', '~100bpm', r'(\d{2,3})-?ish\s*(?-i:bpms?|beats per minute)?')
 pattern_bpm_relational = BpmPattern('relational', '>120 BPM', r'[<>]=?\s*(\d{2,3})\s*(?-i:bpms?|beats per minute)?')
