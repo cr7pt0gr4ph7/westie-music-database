@@ -997,6 +997,7 @@ def section_tag_explorer():
         "genre",
         "mood",
         "timing",
+        "structure",
         "topic",
         "language",
         "epoch",
