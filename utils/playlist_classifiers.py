@@ -13,13 +13,14 @@ from utils.keyword_data import load_keyword_data
 
 
 treat_like_whitespace: Final = r'[ \-_.]+'
+treat_like_whitespace_escaped: Final = r'(?:\\?[ \-_.])+'
 
 
 def _create_regex_for_term(term: str) -> str:
     escaped_term = pl.escape_regex(term)
 
     # Apply normalization to keywords so the dictionary lookup works afterwards
-    escaped_term = regex.sub(treat_like_whitespace, ' ', escaped_term)
+    escaped_term = regex.sub(treat_like_whitespace_escaped, ' ', escaped_term)
 
     # Ignore additional whitespaces (e.g. "a b" should also match "a  b")
     # Not necessary, as we normalize the input string before matching.
@@ -37,6 +38,12 @@ def _extract_tags(expr: pl.Expr, tags_to_extract: dict[str, list[str]]) -> pl.Ex
     optional_year_suffix = r'(?:[0-9]{4})?'
     typographic_dash = '[\u2012\u2013\u2014\u2e3a]'  # used by spotify in auto-generated playlist names
     all_keywords_regex = f'(?i)(?:{typographic_dash}|\\b(?:{all_keywords_alts}){optional_year_suffix}\\b)'
+
+    # Apply normalization to keywords so the dictionary lookup works afterwards
+    tags_to_extract = {
+        regex.sub(treat_like_whitespace, ' ', term): tags_to_extract[term]
+        for term in tags_to_extract
+    }
 
     # Use regexes to extract the keywords, then match the
     # extracted strings against our dictionary to check
