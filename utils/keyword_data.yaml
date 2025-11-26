@@ -148,7 +148,6 @@ relations:
           - "mood:tropical"
       - group:
           - "genre:blues"
-          - "genre:bluesy"
           - "genre:funk"
           - "genre:soul"
           - "genre:motown"
@@ -879,6 +878,7 @@ keywords:
         - mywcsfavs
         - santa swing
         - slowwcs
+        - swing west
         - swingmas
         - switchmas
         - wcsfavs
@@ -972,6 +972,8 @@ keywords:
                 - wiedeński # swedish: viennese
                 - wiener walzer
                 - valčki # imprecise # slowenian: waltzes
+            - viennese waltz-:
+                - ww late night
 
             # More ballroom-related keywords
             - abiball
@@ -1432,10 +1434,6 @@ keywords:
     - simple
   genre:
     # The following genres seem to lead to precise matches
-    - not blues:
-        - no blues
-        - non-blues
-        - not blues
     - blues:
         - blues
         - blues2
@@ -1531,7 +1529,6 @@ keywords:
         - id:7LVR83GD9rREv8RatAmOJO # West Coast Swing Blues (now just named WCS)
         - id:7nC7nVr8RUtZLXjED1epx0 # Tingalow Episode VI: Return of the Blues
         - id:7nfgDiUUivByTAxuqErb2L # Dec 10/12 informal blues
-    - bluesy
     - club:
         # The word "Club" by itself does not yield any consistent result,
         # and seems to be as generic as "Pop". The original author of this
@@ -1546,7 +1543,6 @@ keywords:
         - fat beat
         - guilty. # review
         - feelin' dirty jams
-        - gangsta
         - get low
         - nasty
         - naughty naughty
@@ -1604,6 +1600,8 @@ keywords:
         - hiphop
         - hip-hop
         - hip/hop
+        - hip hop / gangsta:
+            - gangsta
     - hip hop-:
         - no hip hop
         - non-hip-nop
@@ -1648,7 +1646,11 @@ keywords:
         - sebastian bach
         - tannhäuser
         - wagner
-    - dancehall
+    - dancehall:
+        - dance hall
+        - dancehall
+    - dancehall-:
+        - dance hall days
     - italo
     - kpop:
         - kpop
@@ -1667,7 +1669,11 @@ keywords:
     # Review these
     - afro:
         - afro
+        - afro beat
         - afro beats
+        - afrobeat
+        - afrobeats
+        - afroswing
         - wcs*:
             - +dance:wcs
             - wcsxafro
@@ -1756,14 +1762,21 @@ keywords:
         - without lyrics
         - without vocals
         - without vocals
-    - beatless:
-        - beatless
-        - no beat
-        - no beats
-        - not beat
+    - beatless and/or experimental:
         - not beats # review
-    - no percussion:
-        - no drums
+        - beatless:
+            - beatless
+            - no beat
+            - no beats
+            - not beat
+            - where's the beat
+            - no drums
+            - no percussion
+    - percussive:
+        - percussive
+        - percussion
+        - percussions # review
+    - percussive-:
         - no percussion
     - late night:
         - ambient
@@ -1793,6 +1806,7 @@ keywords:
             - wcs late hour
             - wcs latenightclub
             - wcs lates
+        - ww late night
         - graveyard shift
         - midnight # TODO: Review if these playlists mostly contain late night songs or not
         # The terms below are for matching all the late night
@@ -2023,6 +2037,10 @@ keywords:
     - low energy:
         - low energy
         - medium - low energy
+        - wcs late night*:
+            - +dance:wcs
+            - +genre:late night
+            - wcs/late night low
     - mysterious:
         - mysterious
         - mystery
@@ -2084,7 +2102,9 @@ keywords:
 
     # Also need more investigation
     - lovely
-    - beautiful
+    - beautiful:
+        - beautiful
+        - beatuy
     - chillout
     - emotional:
         - emotions
