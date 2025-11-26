@@ -1951,7 +1951,9 @@ keywords:
     - chill-:
         - suspense
     - epic
-    - dramatic
+    - dramatic:
+        - drama
+        - dramatic
     - happy:
         - happy
         - glad energi # danish: happy energy
