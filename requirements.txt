@@ -1,8 +1,10 @@
 huggingface_hub
 networkx
-streamlit
 polars==1.35.2
 psutil
 regex
+spotipy
+streamlit
+streamlit-oauth
 supabase
 wordcloud
