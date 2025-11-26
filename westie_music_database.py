@@ -210,10 +210,6 @@ def load_tag_manager():
     return TagManager(load_tags_data(), search_engine.data.keywords)
 
 
-# Initialize session state
-if "processing" not in st.session_state:
-    st.session_state["processing"] = False
-
 search_engine = load_search_engine()
 df_notes = load_notes()
 countries = load_countries()
@@ -586,14 +582,13 @@ def section_find_song():
 
 
     with st.container(horizontal=True, horizontal_alignment='left'):
-        perform_search = st.button("Search songs",  type="primary", disabled=st.session_state["processing"])
+        perform_search = st.button("Search songs",  type="primary")
         create_playlist = (enable_spotify_integration
                            and spotify_client is not None
                            and st.button(":material/playlist_add: Create Spotify Playlist!",
                                          help="Create a Spotify playlist based on the search results."))
 
     if perform_search or create_playlist:
-        # st.session_state["processing"] = True
         log_query("Search songs", {'song_input': song_input,
                                    'artist_name': artist_name,
                                    'dj_input': dj_input,
@@ -794,8 +789,7 @@ def section_find_song():
         #         st.pyplot(fig)
 
         # creates a playlist based on the results
-        # if st.button("Generate a playlist?", type="primary", disabled=st.session_state["processing"]):
-        # st.session_state["processing"] = True
+        # if st.button("Generate a playlist?", type="primary"):
         #         bpm_high = st.slider("BPM-high:", 85, 130, 101)
         #         bpm_med = st.slider("BPM-med:", 80, 100, 95)
         #         bpm_low = st.slider("BPM-low:", 85, 130, 88)
@@ -899,7 +893,6 @@ def section_find_song():
         #               ),
         # column_config=link_columns,
         # )
-        st.session_state["processing"] = False
 
     st.markdown(f"#### ")
 
@@ -970,14 +963,13 @@ def section_find_playlist():
 
     col1, col2 = st.columns(2)
     with col1:
-        perform_search = st.button("Search playlists", type="primary", disabled=st.session_state["processing"])
+        perform_search = st.button("Search playlists", type="primary")
     with col2:
         show_common_keywords = enable_show_playlist_keywords and st.toggle(
             "Show common keywords", help="Show common keywords in the names of the matched WCS playlists.")
 
     # if any(val for val in [playlist_input, song_input, dj_input]):
     if perform_search:
-        st.session_state["processing"] = True
         log_query("Search playlists", {'song_input': song_input,
                                        'artist_input': artist_input,
                                        'dj_input': dj_input,
@@ -1081,8 +1073,6 @@ def section_find_playlist():
                          PlaylistTags.tags: tag_manager.get_column_config(PlaylistTags.tags),
                      })
 
-        st.session_state["processing"] = False
-
     st.markdown(f"#### ")
 
 
@@ -1129,8 +1119,7 @@ def section_tag_explorer():
                          selection_mode="multi"))
 
     with st.container(horizontal=True, horizontal_alignment='left'):
-        perform_search = st.button("Search songs", key="search_songs_by_tags",
-                                   type="primary", disabled=st.session_state["processing"])
+        perform_search = st.button("Search songs", key="search_songs_by_tags", type="primary")
 
         create_playlist = (enable_spotify_integration
                            and spotify_client is not None
@@ -1495,8 +1484,7 @@ def section_dj_insights():
         st.dataframe(djs_data_df, column_config=dj_columns)
 
     # else:
-    if st.button("Search djs", type="primary", disabled=st.session_state["processing"]):
-        st.session_state["processing"] = True
+    if st.button("Search djs", type="primary"):
         log_query("Search djs", {'dj_input': dj_input,
                                  'dj_playlist_input': dj_playlist_input,
                                  })
@@ -1539,7 +1527,6 @@ def section_dj_insights():
             #         .head(200)
             #         .collect(engine='streaming'),
             #         column_config=link_columns)
-        st.session_state["processing"] = False
 
     st.markdown(f"#### Compare DJs:")
     # dj_list = sorted(df
@@ -1569,8 +1556,7 @@ def section_dj_insights():
     with compare_2:
         dj_compare_2 = st.text_input("DJ/user 2 to compare:")
 
-    if st.button("Compare DJs/users", type="primary", disabled=st.session_state["processing"]):
-        st.session_state["processing"] = True
+    if st.button("Compare DJs/users", type="primary"):
         log_query("Search djs", {'dj_compare_1': dj_compare_1,
                                  'dj_compare_2': dj_compare_2,
                                  })
@@ -1595,7 +1581,6 @@ def section_dj_insights():
                      .sort(Stats.dj_count, descending=True)
                      .head(500),
                      column_config=track_columns)
-        st.session_state["processing"] = False
 
     st.markdown(f"#### ")
 
@@ -1654,8 +1639,7 @@ def section_geographic_insights():
         max_selections=2,
     )
 
-    if st.button("Compare countries", type="primary", disabled=st.session_state["processing"]):
-        st.session_state["processing"] = True
+    if st.button("Compare countries", type="primary"):
         log_query("Comparing Countries' music", {
                   'countries_selectbox': countries_selectbox})
 
@@ -1682,7 +1666,6 @@ def section_geographic_insights():
                       .head(300))
         print(compare_df.explain(engine='streaming', format='plain'))
         st.dataframe(compare_df.collect(engine='streaming'), column_config=track_columns)
-        st.session_state["processing"] = False
         st.markdown(f"#### ")
 
 
@@ -1714,9 +1697,7 @@ def section_songs_most_played_together():
         top_related_songs_df = top_related_songs()
         st.dataframe(top_related_songs_df, column_config=track_columns)
 
-    if st.button("Search songs played together", type="primary", disabled=st.session_state["processing"]):
-        st.session_state["processing"] = True
-
+    if st.button("Search songs played together", type="primary"):
         st.markdown("#### Songs"
                     + (f" matching _{song_input}_" if song_input else "")
                     + (f" by _{artist_name_input}_" if artist_name_input else "")
@@ -1744,7 +1725,6 @@ def section_songs_most_played_together():
                                    Track.url, Track.beats_per_minute, Track.release_date],
                      column_config=track_columns)
 
-        st.session_state["processing"] = False
     st.link_button("Andreas' connected-songs visualization!",
                    'https://loewclan.de/song-galaxy/')
     st.markdown(f"#### ")
@@ -2117,7 +2097,7 @@ def section_song_popularity():
         min_plays_input = st.number_input("Only compare against tracks with at least __ plays in a given interval:",
                                           value=0, min_value=0, max_value=100, step=1)
 
-    search_button = st.button("Show song popularity over time", type="primary", disabled=st.session_state["processing"])
+    search_button = st.button("Show song popularity over time", type="primary")
 
     popularity_df: pl.DataFrame | None = None
     is_search_result: bool = False
@@ -2127,7 +2107,6 @@ def section_song_popularity():
         interval_input = 'year'
 
     if search_button:
-        st.session_state["processing"] = True
         is_search_result = True
 
         # We're not sure why, but our dataset contains quite a few
@@ -2142,8 +2121,6 @@ def section_song_popularity():
             min_plays=min_plays_input,
             year_range=(2000, current_year))\
             .collect(engine='streaming')
-
-        st.session_state["processing"] = False
 
     if popularity_df is not None:
         popularity_max = popularity_df.lazy()\
@@ -2195,9 +2172,7 @@ def section_find_lyrics():
         artist_input = st.text_input("Artist:")
         anti_lyrics_input = st.text_input("Not in lyrics:")
 
-    if st.button("Search lyrics", type="primary", disabled=st.session_state["processing"]):
-        st.session_state["processing"] = True
-
+    if st.button("Search lyrics", type="primary"):
         st.dataframe(
             search_engine.find_songs(
                 song_name=song_input,
@@ -2224,8 +2199,6 @@ def section_find_lyrics():
                  pl.col(Stats.dj_count).sum())
             .sort(pl.col(TrackLyrics.matched_lyrics).list.len(), descending=True, nulls_last=True),
             column_config=track_columns)
-
-        st.session_state["processing"] = False
 
 
 st.markdown("# ")
