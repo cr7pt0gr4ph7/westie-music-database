@@ -10,14 +10,14 @@ from streamlit_oauth import OAuth2Component
 from utils.tables import Track
 
 # Set OAuth parameters
-REDIRECT_URI: Final = "http://127.0.0.1:8501"
 SPOTIFY_TOKEN: Final = "sptf_token"
 
 
 def is_spotify_integration_configured() -> bool:
     return bool(st.secrets.get('spotify')
                 and st.secrets['spotify'].get('client_id')
-                and st.secrets['spotify'].get('client_secret'))
+                and st.secrets['spotify'].get('client_secret')
+                and st.secrets['spotify'].get('redirect_uri'))
 
 
 def spotify_login_button():
@@ -38,7 +38,7 @@ def spotify_login_button():
     # Check if token exists in session state
     if SPOTIFY_TOKEN not in st.session_state:
         # If not, show authorize button
-        result = oauth2.authorize_button("Log in with Spotify", REDIRECT_URI, " ".join(oauth_scopes))
+        result = oauth2.authorize_button("Log in with Spotify", st.secrets['spotify']['redirect_uri'], " ".join(oauth_scopes))
         if result and 'token' in result:
             # If authorization successful, save token in session state
             st.session_state[SPOTIFY_TOKEN] = result.get('token')
