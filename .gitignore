@@ -6,3 +6,4 @@ processed_data/*.untagged.parquet
 processed_data_huggingface/
 unprocessed_data_huggingface/
 temp_data/
+secrets.toml
