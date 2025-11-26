@@ -20,6 +20,7 @@ from utils.keyword_data import split_tag
 from utils.playlist_classifiers import contains_bpm_in_name
 from utils.pull_data import automatically_pull_data_if_needed
 from utils.search import SearchEngine, TagManager
+from utils.spotify import create_spotify_client, create_spotify_playlist, is_spotify_integration_configured, spotify_login_button
 from utils.tables import Playlist, PlaylistOwner, PlaylistStats, PlaylistTags, PlaylistTrack, Stats, Tag, TagsData, Track, TrackAdjacent, TrackLyrics, TrackTag, TrackTags
 
 # As mentioned in the streamlit docs pyplot doesn't work well with threads,
@@ -218,6 +219,7 @@ df_notes = load_notes()
 countries = load_countries()
 songs_count, artists_count, playlists_count, djs_count, lyrics_count = load_stats()
 tag_manager = load_tag_manager()
+spotify_client = create_spotify_client()  # may be None if not logged in
 
 
 # st.write(f"Memory Usage: {psutil.virtual_memory().percent}%")
@@ -225,16 +227,10 @@ st.markdown("## Westie Music Database:")
 # byebye memory problems courtesy of Lukas W
 st.text("An aggregated collection of West Coast Swing (WCS) music and playlists from DJs, Spotify users, etc. ")
 
-# st.markdown('''468,348 **Songs** (160,661 wcs specific)
-# 124,957 **Artists** (53,789 wcs specific)
-# 54,005 **Playlists** (17,274 wcs specific)
-# 1,298 **Westies/DJs**''')
-
 st.write(f"{songs_count:,}   Songs")
 st.write(f"{artists_count:,}   Artists")
 st.write(f"{playlists_count:,}   Playlists")
 st.write(f"{djs_count:,}   Westies/DJs\n\n")
-
 
 st.link_button("Help fill in country info!",
                url='https://docs.google.com/spreadsheets/d/1YQaWwtIy9bqSNTXR9GrEy86Ix51cvon9zzHVh7sBi0A/edit?usp=sharing')
@@ -269,6 +265,22 @@ enable_show_playlist_keywords = feature_flag(
 enable_show_related_tags = feature_flag(
     'show_related_tags',
     help="Show possibly related tags in the \"Explore Songs by Tags\" section.")
+
+enable_spotify_integration = feature_flag(
+    'spotify_login',
+    help="Enable Spotify integration features.",
+)
+
+if enable_spotify_integration and is_spotify_integration_configured():
+    st.space("small")
+
+    with st.container():
+        st.markdown("You can optionally log in with your Spotify account to generate playlists based on your search results:")
+        spotify_login_button()
+
+    st.space("small")
+else:
+    st.markdown("#### ")
 
 if "experimental" in st.query_params:
     # Shortcut to enable ALL feature flags at once
@@ -331,8 +343,6 @@ if enable_random_song:
     @immediate
     @st.fragment
     def section_random_song():
-        st.markdown(f"#### ")
-
         with st.container(horizontal=True):
             st.markdown(f"#### Random Song")
             st.button(":material/refresh:")
@@ -380,6 +390,7 @@ if enable_random_song:
                         st.metric(label=tag_manager.format_category(category) + " :material/sell:",
                                   value=split_tag(tag[TrackTag.tag])[-1],
                                   delta=tag[TrackTag.confidence])
+        st.markdown(f"#### ")
 
 
 # @st.cache_data
@@ -405,7 +416,6 @@ if enable_random_song:
 #     st.markdown(f"#### ")
 
 
-st.markdown("#### ")
 st.markdown("#### Choose your own adventure!")
 
 # TODO: For general usage, it would be best to pre-compute the "Top Song"
@@ -574,8 +584,16 @@ def section_find_song():
             bpm_high = st.number_input(
                 "High BPM: ", value=100, min_value=0, step=2)
 
-    if st.button("Search songs", type="primary", disabled=st.session_state["processing"]):
-        st.session_state["processing"] = True
+
+    with st.container(horizontal=True, horizontal_alignment='left'):
+        perform_search = st.button("Search songs",  type="primary", disabled=st.session_state["processing"])
+        create_playlist = (enable_spotify_integration
+                           and spotify_client is not None
+                           and st.button(":material/playlist_add: Create Spotify Playlist!",
+                                         help="Create a Spotify playlist based on the search results."))
+
+    if perform_search or create_playlist:
+        # st.session_state["processing"] = True
         log_query("Search songs", {'song_input': song_input,
                                    'artist_name': artist_name,
                                    'dj_input': dj_input,
@@ -610,6 +628,41 @@ def section_find_song():
             descending=True,
             limit=100,
         ).collect(engine="streaming")
+
+        if create_playlist:
+            playlist_query_text = "Tracks"
+            if song_input:
+                playlist_query_text += f" named \"{song_input}\""
+            if artist_name or queer_toggle or poc_toggle:
+                playlist_query_text += " by"
+                if queer_toggle or poc_toggle:
+                    if queer_toggle and poc_toggle:
+                        playlist_query_text += " Queer & POC artists"
+                    elif queer_toggle:
+                        playlist_query_text += " Queer artists"
+                    elif poc_toggle:
+                        playlist_query_text += " POC artists"
+                    if artist_name:
+                        playlist_query_text += " named "
+                if artist_name:
+                    playlist_query_text += f" \"{artist_name}\""
+            if playlist_input:
+                playlist_query_text += f" occuring in \"{playlist_input}\" playlists"
+            if playlist_input and anti_playlist_input:
+                playlist_query_text += f" but"
+            if anti_playlist_input:
+                playlist_query_text += f" not occuring in \"{playlist_input}\" playlists"
+            if added_2_playlist_date:
+                playlist_query_text += f" added {added_2_playlist_date}"
+
+            playlist_url = create_spotify_playlist(
+                spotify_client,
+                name = f"🔍 {playlist_query_text} (from Westie Music Database)",
+                description = "This playlist was generated using https://wcs-music-database.streamlit.app 🪄",
+                tracks=song_search_df,
+            )
+
+            st.markdown(f"Find your new playlist here: {playlist_url}")
 
         results_df = song_search_df.lazy()\
             .with_columns(
@@ -1075,13 +1128,21 @@ def section_tag_explorer():
                          format_func=partial(tag_manager.format_tag, as_short_name=True),
                          selection_mode="multi"))
 
-    perform_search = st.button("Search songs", key="search_songs_by_tags",
-                               type="primary", disabled=st.session_state["processing"])
+    with st.container(horizontal=True, horizontal_alignment='left'):
+        perform_search = st.button("Search songs", key="search_songs_by_tags",
+                                   type="primary", disabled=st.session_state["processing"])
 
-    if perform_search and not selected_tags:
+        create_playlist = (enable_spotify_integration
+                           and spotify_client is not None
+                           and st.button(":material/playlist_add: Create Spotify Playlist!",
+                                         help="Create a Spotify playlist based on the search results."))
+
+    if (perform_search or create_playlist) and not selected_tags:
         st.markdown(f":small[**No Search Results** \u2012 Select one or more tags before performing the search.]")
-    elif perform_search:
+    elif (perform_search or create_playlist):
         tag_str = " ".join([f":gray-badge[{t}]" for t in selected_tags])
+
+        playlist_creation_note = st.empty()
         st.markdown(f":small[**Songs tagged with**] {tag_str}")
 
         tagged_songs_df = search_engine\
@@ -1095,6 +1156,18 @@ def section_tag_explorer():
                 .tags_with_frequencies()
                 .alias('all_tags'))\
             .collect(engine='streaming')
+
+        if create_playlist and spotify_client is not None:
+            human_readable_tag_names = " & ".join(map(tag_manager.format_tag, selected_tags))
+            playlist_url = create_spotify_playlist(
+                spotify_client,
+                name = f"🪄 {human_readable_tag_names} tracks (from Westie Music Database)",
+                description = "This playlist was generated using https://wcs-music-database.streamlit.app 🪄",
+                tracks= tagged_songs_df[Track.url].to_list(),
+            )
+
+            with playlist_creation_note:
+                st.markdown(f"Find your new playlist here: {playlist_url}")
 
         st.dataframe(tagged_songs_df,
                      column_order=[
