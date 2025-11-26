@@ -42,7 +42,7 @@ def spotify_login_button():
         if result and 'token' in result:
             # If authorization successful, save token in session state
             st.session_state[SPOTIFY_TOKEN] = result.get('token')
-            st.rerun()
+            st.rerun(scope='app')
     else:
         # If token exists in session state, show the token
         token = st.session_state[SPOTIFY_TOKEN]
@@ -52,7 +52,7 @@ def spotify_login_button():
                 # If refresh token button is clicked, refresh the token
                 token = oauth2.refresh_token(token)
                 st.session_state[SPOTIFY_TOKEN] = token
-                st.rerun()
+                st.rerun(scope='app')
 
 
 def create_spotify_client() -> spotipy.Spotify | None:
