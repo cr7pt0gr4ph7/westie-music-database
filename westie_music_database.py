@@ -1377,7 +1377,7 @@ def section_tag_insights():
                          PlaylistStats.total_song_count,
                          PlaylistStats.wcs_song_percent,
                      ],
-                     column_config=playlist_columns < {
+                     column_config=playlist_columns | {
                          # "mean_confidence": st.column_config.ProgressColumn(min_value=0.0, max_value=1.0),
                      })
 
