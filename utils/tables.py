@@ -78,7 +78,7 @@ class PlaylistOwner(Entity):
     id: Final = field("owner.id", pl.String)
     """The Spotify User ID of the playlist's owner."""
 
-    url: Final = field("owner.url", pl.String)
+    url: Final = field("owner.url", pl.String, help="Link to the playlist owner on Spotify.")
     """The Spotify User URL of the playlist's owner."""
 
     name: Final = field("owner.name", pl.String)
@@ -117,7 +117,7 @@ class Playlist(Entity):
     id: Final = field("playlist.id", pl.String)
     """The Spotify ID of the playlist."""
 
-    url: Final = field("playlist.url", pl.String)
+    url: Final = field("playlist.url", pl.String, help="Link to the playlist on Spotify.")
     """The Spotify URL of the playlist."""
 
     name: Final = field("playlist.name", pl.String)
@@ -191,16 +191,16 @@ class Track(Entity):
     id: Final = field("track.id", pl.String)
     """The Spotify ID of the song (`pl.String`)."""
 
-    url: Final = field("track.url", pl.String)
+    url: Final = field("track.url", pl.String, help="Link to the song on Spotify.")
     """The Spotify URL of the song."""
 
     name: Final = field("track.name", pl.String)
     """The name of the song."""
 
-    artists: Final = field("track.artists", pl.List(pl.String))
+    artists: Final = field("track.artists", pl.List(pl.String), help="The song's artists.")
     """The song's artists, represented as a list of artist names."""
 
-    artist_names: Final = field("track.artists.name", pl.String)
+    artist_names: Final = field("track.artists.name", pl.String, help="The song's artists.")
     """The song's artist, represented as a single string."""
 
     has_queer_artist: Final = field("track.artists.is_queer_artist", pl.Boolean)
@@ -240,7 +240,7 @@ class PlaylistTrack(Entity):
 
 
 class TrackAdjacent(Entity):
-    times_played_together: Final = "times_played_together"
+    times_played_together: Final = field("times_played_together", pl.UInt32)
 
     class FirstTrack(SubEntity[Track]):
         id: Final = Track.id.alias("pair1.track.id")
@@ -281,6 +281,9 @@ class Tag(Entity):
 
     playlist_count: Final = Stats.playlist_count.alias("tag.playlist_count")
     """How many playlists have this tag."""
+
+    song_count: Final = Stats.song_count.alias("tag.song_count")
+    """How many songs have this tag."""
 
     max_playlist_count: Final = Stats.playlist_count.alias("max_playlist_count")
     """The maximum number of times a song has been tagged with this tag."""

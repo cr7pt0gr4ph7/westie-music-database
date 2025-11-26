@@ -2,7 +2,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from functools import partial
 from threading import RLock
-from typing import Final
+from typing import Final, LiteralString
 
 import altair as alt
 import streamlit as st
@@ -13,7 +13,7 @@ import polars.selectors as cs
 import psutil
 import time
 
-from utils.common.columns import pull_columns_to_front
+from utils.common.entities import Field
 from utils.common.logging import log_query
 from utils.common.polars import is_in_range
 from utils.keyword_data import split_tag
@@ -70,17 +70,95 @@ def sample_with_bpm_range(df, prev_bpm):
     ).sample(n=1, seed=42)
 
 
-link_columns = {
-    Playlist.url: st.column_config.LinkColumn(
-        help="Link to the playlist on Spotify",
-        display_text=r"https://(open\.spotify\.com/.*)"),
-    PlaylistOwner.url: st.column_config.LinkColumn(
-        help="Link to the playlist owner on Spotify",
-        display_text=r"https://(open\.spotify\.com/.*)"),
-    Track.url: st.column_config.LinkColumn(
-        help="Link to the song on Spotify",
-        display_text=r"https://(open\.spotify\.com/.*)"),
-}
+def determine_column_config(field: Field[LiteralString, pl.DataType]):
+    name = field.field_name
+    docs = field.field_docs
+    dtype = field.field_type
+
+    is_url = name.endswith("_url") or name.endswith(".url") or name == "url"
+    is_percent = name.endswith("_percent") or name.endswith(".percent") or field.field_name == "percent"
+    is_text = dtype is not None and dtype.is_(pl.String)
+
+    if name and docs:
+        # Escape special markdown characters
+        escaped_name = name.replace("_", "\\_")
+        docs = f"**{escaped_name}**:  \n{docs}"
+
+    if is_url:
+        return st.column_config.LinkColumn(
+            help=docs,
+            display_text=r"https://(open\.spotify\.com/.*)")
+    elif is_percent:
+        return st.column_config.ProgressColumn(
+            help=docs,
+            format="percent",
+            min_value=0.0,
+            max_value=1.0)
+    elif is_text:
+        return st.column_config.TextColumn(
+            help=docs)
+    else:
+        return st.column_config.Column(
+            help=docs)
+
+
+def determine_column_configs(fields: list[Field[LiteralString, pl.DataType]]):
+    return {field: determine_column_config(field) for field in fields}
+
+
+link_columns = determine_column_configs([
+    Playlist.url,
+    PlaylistOwner.url,
+    Track.url,
+])
+
+track_columns = link_columns | determine_column_configs([
+    Track.id,
+    Track.name,
+    Track.artists,
+    Track.artist_names,
+    Track.has_queer_artist,
+    Track.has_poc_artist,
+    Track.beats_per_minute,
+    Track.release_date,
+    Stats.playlist_count.with_help(help="# of playlists which contain the song"),
+    Stats.dj_count.with_help(help="# of DJs that have this song in their playlists"),
+    Track.country,
+    Track.region,
+    TrackAdjacent.times_played_together,
+    TrackLyrics.lyrics,
+    TrackLyrics.matched_lyrics,
+    TrackLyrics.matched_lyrics_count,
+])
+
+playlist_columns = link_columns | determine_column_configs([
+    Playlist.matching_song_count,
+    Playlist.matching_song_percent,
+    Playlist.matched_terms,
+    PlaylistStats.wcs_song_count,
+    PlaylistStats.wcs_song_percent,
+    PlaylistStats.total_song_count,
+    Playlist.name,
+    Playlist.extracted_dates,
+    Playlist.is_social_set,
+    Playlist.country,
+    Playlist.region,
+])
+
+tag_columns = determine_column_configs([
+    Tag.playlist_count,
+    Tag.song_count,
+    Tag.max_playlist_count,
+    Playlist.name,
+])
+
+dj_columns = link_columns | determine_column_configs([
+    PlaylistOwner.id,
+    PlaylistOwner.is_wcs_dj,
+    PlaylistOwner.name,
+    PlaylistOwner.country,
+    PlaylistOwner.region,
+])
 
 
 def load_search_engine():
@@ -268,7 +346,7 @@ if enable_random_song:
             .collect(engine="streaming")
 
         st.dataframe(random_song.select(Track.name, Track.artists, Track.url),
-                     column_config=link_columns)
+                     column_config=track_columns)
 
         with st.container(border=True):
             track_title = random_song[Track.name].item()
@@ -343,27 +421,13 @@ def top_songs():
             descending=True,
             limit=101
         )\
-        .rename({Track.country: 'country'})\
-        .drop(Track.region)\
+        .rename({Track.country: 'country', Track.region: 'region'})\
         .select((cs.all()
                 - Playlist.matching_columns()
                 - PlaylistTrack.matching_columns()
                 - PlaylistOwner.matching_columns())
                 | cs.by_name(Playlist.name)
                 | cs.by_name(PlaylistOwner.name))\
-        .select(pull_columns_to_front(
-            Track.name,
-            Track.url,
-            Stats.playlist_count,
-            Stats.dj_count,
-            Track.beats_per_minute,
-            Track.has_queer_artist,
-            Track.has_poc_artist,
-            Playlist.name,
-            Track.artists,
-            PlaylistOwner.name,
-            'country',
-        ))\
         .with_row_index(offset=1)\
         .collect(engine='streaming')
 
@@ -378,27 +442,13 @@ def top_queer_songs():
             descending=True,
             limit=100,
         )\
-        .rename({Track.country: 'country'})\
-        .drop(Track.region)\
+        .rename({Track.country: 'country', Track.region: 'region'})\
         .select((cs.all()
                 - Playlist.matching_columns()
                 - PlaylistTrack.matching_columns()
                 - PlaylistOwner.matching_columns())
                 | cs.by_name(Playlist.name)
                 | cs.by_name(PlaylistOwner.name))\
-        .select(pull_columns_to_front(
-            Track.name,
-            Track.url,
-            Stats.playlist_count,
-            Stats.dj_count,
-            Track.beats_per_minute,
-            Track.has_queer_artist,
-            Track.has_poc_artist,
-            Playlist.name,
-            Track.artists,
-            PlaylistOwner.name,
-            'country',
-        ))\
         .with_row_index(offset=1)\
         .collect(engine='streaming')
 
@@ -413,27 +463,13 @@ def top_poc_songs():
             descending=True,
             limit=100,
         )\
-        .rename({Track.country: 'country'})\
-        .drop(Track.region)\
+        .rename({Track.country: 'country', Track.region: 'region'})\
         .select((cs.all()
                 - Playlist.matching_columns()
                 - PlaylistTrack.matching_columns()
                 - PlaylistOwner.matching_columns())
                 | cs.by_name(Playlist.name)
                 | cs.by_name(PlaylistOwner.name))\
-        .select(pull_columns_to_front(
-            Track.name,
-            Track.url,
-            Stats.playlist_count,
-            Stats.dj_count,
-            Track.beats_per_minute,
-            Track.has_queer_artist,
-            Track.has_poc_artist,
-            Playlist.name,
-            Track.artists,
-            PlaylistOwner.name,
-            'country',
-        ))\
         .with_row_index(offset=1)\
         .collect(engine='streaming')
 
@@ -445,13 +481,27 @@ def section_top_songs():
     if not top_songs_toggle:
         return
 
+    top_song_columns = [
+        Track.name,
+        Track.url,
+        Stats.playlist_count,
+        Stats.dj_count,
+        Track.beats_per_minute,
+        Track.has_queer_artist,
+        Track.has_poc_artist,
+        Playlist.name,
+        Track.artists,
+        PlaylistOwner.name,
+        'country',
+    ]
+
     top_songs_df = top_songs()
     st.markdown(f"Top 100 WCS songs!")
     st.link_button('Playlist of the top 100',
                    url='https://open.spotify.com/playlist/7f5hPmFnIPy7lcj8EXX90V')
 
     st.dataframe(top_songs_df.drop(Stats.playlist_count),
-                 column_config=link_columns)
+                 column_order=top_song_columns, column_config=track_columns)
 
     st.markdown("Top 100 🏳️‍🌈 songs!")
     top_queer_songs_df = top_queer_songs()
@@ -460,7 +510,7 @@ def section_top_songs():
     #        url='https://open.spotify.com/playlist/7f5hPmFnIPy7lcj8EXX90V')
 
     st.dataframe(top_queer_songs_df.drop(Stats.playlist_count),
-                 column_config=link_columns)
+                 column_order=top_song_columns, column_config=track_columns)
 
     st.markdown("Top 100 POC songs!")
     top_poc_songs_df = top_poc_songs()
@@ -469,7 +519,7 @@ def section_top_songs():
     #        url='https://open.spotify.com/playlist/7f5hPmFnIPy7lcj8EXX90V')
 
     st.dataframe(top_poc_songs_df.drop(Stats.playlist_count),
-                 column_config=link_columns)
+                 column_order=top_song_columns, column_config=track_columns)
 
 
 @immediate
@@ -613,8 +663,7 @@ def section_find_song():
                 PlaylistOwner.name,
                 'country',
             ],
-            column_config={
-                **link_columns,
+            column_config=track_columns | {
                 'index': st.column_config.TextColumn(pinned=True),
                 Track.name: st.column_config.TextColumn(pinned=True),
                 TrackTags.tags: tag_manager.get_column_config(Tag.name),
@@ -665,7 +714,7 @@ def section_find_song():
                       how='inner', on=Playlist.id)\
                 .select(Playlist.name, PlaylistTrack.number, 'tracks', Playlist.url)
 
-            st.dataframe(surrounding_tracks)
+            st.dataframe(surrounding_tracks, column_config=playlist_columns)
 
         # playlists_text = ' '.join(song_search_df
         #                         .select(pl.col(Playlist.name).cast(pl.List(pl.String)))
@@ -975,10 +1024,8 @@ def section_find_playlist():
                          Stats.artist_count,
                          Track.name,
                      ],
-                     column_config={
-                         **link_columns,
+                     column_config=playlist_columns | {
                          PlaylistTags.tags: tag_manager.get_column_config(PlaylistTags.tags),
-                         PlaylistStats.wcs_song_percent: st.column_config.ProgressColumn()
                      })
 
         st.session_state["processing"] = False
@@ -1062,7 +1109,20 @@ def section_tag_explorer():
                          'matching_tags_mean_score',
                          'matching_tags_sum',
                      ],
-                     column_config=link_columns)
+                     column_config=track_columns | {
+                         'all_tags': st.column_config.Column(
+                             help="**all\\_tags**:  \nAll of a song's tags."),
+                         'matching_tags': st.column_config.Column(
+                             help="**matching\\_tags**:  \nAll of a song's tags which match the query."),
+                         'matching_tags_count': st.column_config.Column(
+                             help="**matching\\_tags\\_count**:  \nThe number of matching tags."),
+                         'matching_tags_min_score': st.column_config.Column(
+                             help="**matching\\_tags\\_min\\_score**:  \nLowest confidence score within `matching_tags`."),
+                         'matching_tags_mean_score': st.column_config.Column(
+                             help="**matching\\_tags\\_mean\\_score**:  \nAverage confidence score within `matching_tags`."),
+                         'matching_tags_sum': st.column_config.Column(
+                             help="**matching\\_tags\\_min\\_score**:  \nSum of the playlist counts of all `matching_tags`."),
+                     })
 
         # Show tags that are possibly related, and which we could possibly
         # recommend to the user. Determining the algorithm for choosing
@@ -1102,7 +1162,7 @@ def section_tag_explorer():
                 .sort('combined_confidence_max', descending=True).with_row_index('combined_confidence_max_index', offset=1)\
                 .sort('confidence_average', 'confidence_sum')
 
-            st.dataframe(interesting_tags)
+            st.dataframe(interesting_tags, column_config=tag_columns)
 
     st.markdown(
         f"""
@@ -1174,10 +1234,16 @@ def section_tag_insights():
             ax.axis('off')
             st.pyplot(fig)
 
-    st.dataframe(filtered_tags_df, column_config={
-                 Tag.category: tag_manager.get_column_config(Tag.category),
-                 Tag.short_name: tag_manager.get_column_config(Tag.short_name),
-                 Tag.name: tag_manager.get_column_config(Tag.name)})
+    st.dataframe(filtered_tags_df,
+                 column_order=[
+                     Tag.category, Tag.short_name, Tag.name,
+                     Tag.playlist_count, Tag.max_playlist_count, Stats.song_count,
+                     Playlist.name,
+                 ], column_config=tag_columns | {
+                     Tag.category: tag_manager.get_column_config(Tag.category),
+                     Tag.short_name: tag_manager.get_column_config(Tag.short_name),
+                     Tag.name: tag_manager.get_column_config(Tag.name),
+                 })
 
     st.markdown(f"#### ")
     st.markdown(f"#### Tagged songs & playlists")
@@ -1245,8 +1311,7 @@ def section_tag_insights():
                          PlaylistStats.total_song_count,
                          PlaylistStats.wcs_song_percent,
                      ],
-                     column_config={
-                         **link_columns,
+                     column_config=playlist_columns < {
                          # "mean_confidence": st.column_config.ProgressColumn(min_value=0.0, max_value=1.0),
                      })
 
@@ -1328,8 +1393,7 @@ def section_tag_insights():
                          PlaylistStats.total_song_count,
                          PlaylistStats.wcs_song_percent,
                      ],
-                     column_config={
-                         **link_columns,
+                     column_config=playlist_columns | {
                          # "mean_confidence": st.column_config.ProgressColumn(min_value=0.0, max_value=1.0),
                      })
 
@@ -1355,8 +1419,7 @@ def section_dj_insights():
 
     if not dj_input and not dj_playlist_input:
         djs_data_df = djs_data()
-        st.dataframe(djs_data_df,
-                     column_config=link_columns)
+        st.dataframe(djs_data_df, column_config=dj_columns)
 
     # else:
     if st.button("Search djs", type="primary", disabled=st.session_state["processing"]):
@@ -1372,8 +1435,7 @@ def section_dj_insights():
             playlist_limit=30,
         ).collect(engine='streaming')
 
-        st.dataframe(dj_search_df,
-                     column_config=link_columns)
+        st.dataframe(dj_search_df, column_config=dj_columns)
 
         total_djs_from_search = dj_search_df\
             .select(pl.n_unique(PlaylistOwner.name))[PlaylistOwner.name][0]
@@ -1391,7 +1453,7 @@ def section_dj_insights():
                          .sort(Stats.playlist_count, descending=True)
                          .drop(Track.id)
                          .head(100),
-                         column_config=link_columns)
+                         column_config=track_columns)
 
             # st.markdown(f"Popular music _{', '.join(dj_input)}_ doesn't play")
             # st.dataframe(others_music.join(djs_music, how='anti',
@@ -1459,7 +1521,7 @@ def section_dj_insights():
                      .unique()
                      .sort(Stats.dj_count, descending=True)
                      .head(500),
-                     column_config=link_columns)
+                     column_config=track_columns)
         st.session_state["processing"] = False
 
     st.markdown(f"#### ")
@@ -1510,8 +1572,7 @@ def section_geographic_insights():
                      .rename({'song_url': Track.url, 'owner.display_name': PlaylistOwner.name})
                      .sort(Stats.playlist_count, Stats.dj_count, descending=True))
 
-        st.dataframe(region_df.head(1000).collect(engine='streaming'),
-                     column_config=link_columns)
+        st.dataframe(region_df.head(1000).collect(engine='streaming'), column_config=track_columns)
 
     st.markdown(f"#### Comparing Countries' music:")
     countries_selectbox = st.multiselect(
@@ -1547,8 +1608,7 @@ def section_geographic_insights():
                       .sort(Stats.dj_count, descending=True)
                       .head(300))
         print(compare_df.explain(engine='streaming', format='plain'))
-        st.dataframe(compare_df.collect(engine='streaming'),
-                     column_config=link_columns)
+        st.dataframe(compare_df.collect(engine='streaming'), column_config=track_columns)
         st.session_state["processing"] = False
         st.markdown(f"#### ")
 
@@ -1579,8 +1639,7 @@ def section_songs_most_played_together():
     if not song_input and not artist_name_input:
         st.markdown("#### Most common songs to play next to each other")
         top_related_songs_df = top_related_songs()
-        st.dataframe(top_related_songs_df,
-                     column_config=link_columns)
+        st.dataframe(top_related_songs_df, column_config=track_columns)
 
     if st.button("Search songs played together", type="primary", disabled=st.session_state["processing"]):
         st.session_state["processing"] = True
@@ -1589,28 +1648,28 @@ def section_songs_most_played_together():
                     + (f" matching _{song_input}_" if song_input else "")
                     + (f" by _{artist_name_input}_" if artist_name_input else "")
                     + ":")
-        st.dataframe(search_engine.find_songs(song_name=song_input, artist_name=artist_name_input, limit=100)
-                     .select(Track.name, Track.artists, Track.url,
-                             Track.beats_per_minute, Track.release_date),
-                     column_config=link_columns)
+        st.dataframe(search_engine.find_songs(song_name=song_input, artist_name=artist_name_input, limit=100),
+                     column_order=[Track.name, Track.artists, Track.url,
+                                   Track.beats_per_minute, Track.release_date],
+                     column_config=track_columns)
 
         st.markdown(f"#### Most common songs to play after _{song_input}_:")
-        st.dataframe(search_engine.find_related_songs('next', song_name=song_input, artist_name=artist_name_input)[1]
-                     .select(Track.name, Track.artists, TrackAdjacent.times_played_together,
-                             Track.url, Track.beats_per_minute, Track.release_date),
-                     column_config=link_columns)
+        st.dataframe(search_engine.find_related_songs('next', song_name=song_input, artist_name=artist_name_input)[1],
+                     column_order=[Track.name, Track.artists, TrackAdjacent.times_played_together,
+                                   Track.url, Track.beats_per_minute, Track.release_date],
+                     column_config=track_columns)
 
         st.markdown(f"#### Most common songs to play before _{song_input}_:")
-        st.dataframe(search_engine.find_related_songs('prev', song_name=song_input, artist_name=artist_name_input)[1]
-                     .select(Track.name, Track.artists, TrackAdjacent.times_played_together,
-                             Track.url, Track.beats_per_minute, Track.release_date),
-                     column_config=link_columns)
+        st.dataframe(search_engine.find_related_songs('prev', song_name=song_input, artist_name=artist_name_input)[1],
+                     column_order=[Track.name, Track.artists, TrackAdjacent.times_played_together,
+                                   Track.url, Track.beats_per_minute, Track.release_date],
+                     column_config=track_columns)
 
         st.markdown(f"#### Most common songs to play before _or_ after _{song_input}_:")
-        st.dataframe(search_engine.find_related_songs('any', song_name=song_input, artist_name=artist_name_input)[1]
-                     .select(Track.name, Track.artists, TrackAdjacent.times_played_together,
-                             Track.url, Track.beats_per_minute, Track.release_date),
-                     column_config=link_columns)
+        st.dataframe(search_engine.find_related_songs('any', song_name=song_input, artist_name=artist_name_input)[1],
+                     column_order=[Track.name, Track.artists, TrackAdjacent.times_played_together,
+                                   Track.url, Track.beats_per_minute, Track.release_date],
+                     column_config=track_columns)
 
         st.session_state["processing"] = False
     st.link_button("Andreas' connected-songs visualization!",
@@ -1779,7 +1838,7 @@ if song_distance_toggle:
                   Stats.playlist_count,
                   Stats.dj_count)
 
-    st.dataframe(song_1_and_2_df, column_config=link_columns)
+    st.dataframe(song_1_and_2_df, column_config=track_columns)
 
     if song1.found and song2.found:
         song_comparison = SongComparison(song1, song2)
@@ -1843,8 +1902,8 @@ if song_distance_toggle:
 
         st.dataframe(song_comparison.find_shared_playlists(playlist_in_result=True,
                                                            indices_in_result=True,
-                                                           min_distance_in_result=True)
-                     .select(Playlist.name, 'min_distance', 'song1.indices', 'song2.indices'))
+                                                           min_distance_in_result=True),
+                     column_order=[Playlist.name, 'min_distance', 'song1.indices', 'song2.indices'])
 
         chart_data = song_comparison\
             .find_shared_playlists(playlist_in_result=True,
@@ -2091,7 +2150,7 @@ def section_find_lyrics():
                  #       during the pre-processing of the data.
                  pl.col(Stats.dj_count).sum())
             .sort(pl.col(TrackLyrics.matched_lyrics).list.len(), descending=True, nulls_last=True),
-            column_config=link_columns)
+            column_config=track_columns)
 
         st.session_state["processing"] = False
 
