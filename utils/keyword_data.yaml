@@ -88,7 +88,7 @@ metadata:
     color: "#29b09d" # Blue-Green [blueGreen80]
   structure:
     selector_title: Musical Structure
-    icon: material/label
+    icon: material/align_justify_space_even
     color: "#ffabab" # Light Red [red40]
   tempo:
     icon: material/speed
