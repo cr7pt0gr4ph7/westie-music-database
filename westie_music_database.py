@@ -262,6 +262,10 @@ enable_show_related_tags = feature_flag(
     'show_related_tags',
     help="Show possibly related tags in the \"Explore Songs by Tags\" section.")
 
+enable_extended_filters = feature_flag(
+    'extended_filters',
+    help="Make additional filtering options available.")
+
 enable_spotify_integration = feature_flag(
     'spotify_login',
     help="Enable Spotify integration features.",
@@ -935,31 +939,31 @@ def section_find_playlist():
             "Only social/party setlists",
             help="Only display playlists that have likely been played as-is at a party/social/other occasion.")
 
-        has_date_input = st.checkbox(
+        has_date_input = enable_extended_filters and st.checkbox(
             "Only dated playlists",
             help=("Only display playlists that have a date "
                   "(like `YYYY-MM-DD`, `dd.mm.`YYYY`, etc.) in their name"))
 
-        not_has_date_input = st.checkbox(
+        not_has_date_input = enable_extended_filters and st.checkbox(
             "Exclude dated playlists",
             help="Exclude playlists whose name contains a calendar date.")
 
-        not_just_a_date_input = st.checkbox(
+        not_just_a_date_input = enable_extended_filters and st.checkbox(
             "Not just a date",
             help="Exclude playlists whose name only consists of a date, and nothing else.")
 
-        has_bpm_input = st.checkbox(
+        has_bpm_input = enable_extended_filters and st.checkbox(
             "Only playlists with BPM",
             help=("Only display playlists that have a recognized BPM specification in their name."))
 
-        not_has_bpm_input = st.checkbox(
+        not_has_bpm_input = enable_extended_filters and st.checkbox(
             "Exclude playlists with BPM",
             help=("Exclude playlists that have a recognized BPM specification in their name."))
     with col2:
         min_song_count_input = st.number_input("Contains at least __ tracks", 0, None, 0)
         wcs_song_percent_input = st.slider("Contains __ % WCS songs", 0, 100, (0, 100),
                                            step=1, format="%u %%")
-        tag_count_input = st.slider("Has __ tags", 0, 100, (0, 100))
+        tag_count_input = st.slider("Has __ tags", 0, 100, (0, 100)) if enable_extended_filters else (None, None)
 
     col1, col2 = st.columns(2)
     with col1:
