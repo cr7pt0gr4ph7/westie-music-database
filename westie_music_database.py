@@ -1336,7 +1336,9 @@ def section_tag_insights():
 
         tagged_playlists_df = search_engine\
             .find_playlists(tag_include=[tag_input],
-                            tag_exclude=anti_tag_input)\
+                            tag_exclude=anti_tag_input,
+                            tracks_in_result=True,
+                            tracks_limit=30)\
             .with_row_index(offset=1)
 
         if tag_input != TagManager.UNTAGGED:
@@ -1376,9 +1378,10 @@ def section_tag_insights():
                          PlaylistStats.wcs_song_count,
                          PlaylistStats.total_song_count,
                          PlaylistStats.wcs_song_percent,
+                         'mean_confidence',
                      ],
                      column_config=playlist_columns | {
-                         # "mean_confidence": st.column_config.ProgressColumn(min_value=0.0, max_value=1.0),
+                         "mean_confidence": st.column_config.ProgressColumn(min_value=0.0, max_value=1.0),
                      })
 
         st.markdown(f"Songs tagged with _{tag_input}_:")
@@ -1439,6 +1442,25 @@ def section_tag_insights():
                 descending=True)\
             .with_row_index(offset=1)
 
+        # Currently causes an OOM due to missing optimizations for group_by in Polars
+        if False and tag_input != TagManager.UNTAGGED:
+            similar_playlists_df = similar_playlists_df.collect(engine="streaming").lazy()
+            mean_confidences = search_engine.data.playlist_tracks\
+                .join(similar_playlists_df, how="semi", on=Playlist.id)\
+                .join(search_engine.data.tracks.select(Track.id, TrackTags.tags_data),
+                      how="left", on=Track.id)\
+                .group_by(Playlist.id)\
+                .agg(TagsData(TrackTags.tags_data())
+                     .filter(tag=[tag_input])
+                     .compute_confidence_scores()
+                     .tags_data()
+                     .list.agg(TrackTag.confidence.struct_field().first())
+                     .mean()
+                     .alias('mean_confidence'))
+
+            similar_playlists_df = similar_playlists_df\
+                .join(mean_confidences, how='left', on=Playlist.id)
+
         st.dataframe(similar_playlists_df,
                      column_order=[
                          'index',
@@ -1458,9 +1480,10 @@ def section_tag_insights():
                          PlaylistStats.wcs_song_count,
                          PlaylistStats.total_song_count,
                          PlaylistStats.wcs_song_percent,
+                         'mean_confidence',
                      ],
                      column_config=playlist_columns | {
-                         # "mean_confidence": st.column_config.ProgressColumn(min_value=0.0, max_value=1.0),
+                         'mean_confidence': st.column_config.ProgressColumn(min_value=0.0, max_value=1.0),
                      })
 
 
