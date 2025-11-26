@@ -1930,6 +1930,10 @@ keywords:
         - old times
   mood:
     # These aren't musical genres but moods
+    - attitude:
+        - asennebiisejä # finnish: attitude songs
+        - attitude
+        - attityd # swedish: attitude
     - calm:
         - calm
         - calme # french: calm
@@ -2556,6 +2560,22 @@ keywords:
     - moves # further investication needed
     # - musique # unrelated
     - performance # imprecise
+    # More possible tags:
+    # - artistic expression:
+    #     - artistic expression
+    #     - artistisk musikalitet
+    # - catch and release
+    # - extending pattern
+    # - followers voice
+    # - lead & follow
+    # - match the movement
+    # - movement inspiration
+    # - practicing grooving
+    # - push/pull
+    # - rollin rollout
+    # - tuck variations
+    # - switch
+    # - switch & steals, the game of steals
     # misc
     - double
     - double time
