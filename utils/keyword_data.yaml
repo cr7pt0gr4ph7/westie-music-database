@@ -2349,7 +2349,7 @@ keywords:
             - stops
             - strong break
             - strong breaks
-        - call and response:
+        - call & response:
             - call
             - response
             - call & response
@@ -2466,7 +2466,9 @@ keywords:
             - teknikträning
 
     - dancing fast n slow
-    - action / reaction
+    - action & reaction:
+        - action & reaction
+        - action / reaction
     - barre
     - basic:
         - basic
@@ -2536,6 +2538,10 @@ keywords:
         - rhythn
         - rhythmn
         - rhythms
+        - rythm
+        - rythmn
+        - rythmns
+        - rythms
         - リズムトレーニング # japanese: rhythm training
     - structure # imprecise - discard?
     - styling:
