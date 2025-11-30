@@ -76,6 +76,7 @@ from utils.common.entities import PolarsLazyFrame
 from utils.common.filters import create_date_filter, create_text_filter, or_filter
 from utils.common.polars import is_in_range
 from utils.common.stats import count_n_unique
+from utils.common.strings import title_case
 from utils.keyword_data import CategoryName, HexColor, KeywordData, ShortTagName, TagName, load_keyword_data, split_tag
 from utils.playlist_classifiers import extract_date_strings_from_name, extract_date_types_from_name
 from utils.tables import Playlist, PlaylistOwner, PlaylistStats, PlaylistTags, PlaylistTrack, Stats, Tag, TagsData, Track, TrackAdjacent, TrackLyrics, TrackTag, TrackTags
@@ -1181,7 +1182,7 @@ class TagManager:
         if category == TagManager.ALL_CATEGORIES:
             return "(All categories)"
 
-        return category.title()
+        return title_case(category)
 
     def get_tag_options(self, *, or_empty: bool = False, or_untagged: bool = False, all_tags: bool = True, category: str = '', for_selector: bool = False) -> list[TagName]:
         tags = self.tags_df.lazy()\
@@ -1220,9 +1221,9 @@ class TagManager:
             icon_prefix = ""
 
         if as_short_name:
-            return icon_prefix + tag.split(':', 1)[-1].title()
+            return icon_prefix + title_case(tag.split(':', 1)[-1])
         else:
-            return icon_prefix + ': '.join(tag.split(':', 1)).title()
+            return icon_prefix + title_case(': '.join(tag.split(':', 1)))
 
     def get_default_colors(self):
         dark_colors = [
