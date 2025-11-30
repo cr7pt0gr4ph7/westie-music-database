@@ -654,10 +654,12 @@ def section_find_song():
             if added_2_playlist_date:
                 playlist_query_text += f" added {added_2_playlist_date}"
 
+            generation_date = time.strftime("%Y-%m-%d", time.localtime())
+
             playlist_url = create_spotify_playlist(
                 spotify_client,
                 name = f"🔍 {playlist_query_text} (from Westie Music Database)",
-                description = "This playlist was generated using https://wcs-music-database.streamlit.app 🪄",
+                description = f"This playlist was generated using https://wcs-music-database.streamlit.app 🪄 Generated on {generation_date} 📅",
                 tracks=song_search_df,
             )
 
@@ -1152,10 +1154,11 @@ def section_tag_explorer():
 
         if create_playlist and spotify_client is not None:
             human_readable_tag_names = " & ".join(map(tag_manager.format_tag, selected_tags))
+            generation_date = time.strftime("%Y-%m-%d", time.localtime())
             playlist_url = create_spotify_playlist(
                 spotify_client,
                 name = f"🪄 {human_readable_tag_names} tracks (from Westie Music Database)",
-                description = "This playlist was generated using https://wcs-music-database.streamlit.app 🪄",
+                description = f"This playlist was generated using https://wcs-music-database.streamlit.app 🪄 Generated on {generation_date} 📅",
                 tracks= tagged_songs_df[Track.url].to_list(),
             )
 
