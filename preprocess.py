@@ -806,6 +806,19 @@ def process_playlist_and_song_tags():
         .group_by(Track.id, Tag.name)\
         .agg(pl.col(Playlist.id).n_unique().alias(TrackTag.matching_playlist_count))
 
+    # Tracks that have "Instrumental" in their name should be tagged as genre:instrumental
+    instrumental_track_tags = tracks\
+        .select(Track.id, Track.name().str.contains(r"(?i)\bInstrumental\b").alias('is_instrumental'))\
+        .filter('is_instrumental')\
+        .select(Track.id,
+                pl.lit('genre:instrumental').alias(Tag.name),
+                pl.lit(100, pl.UInt32).alias(TrackTag.matching_playlist_count))
+
+    track_tags = pl.concat([
+        instrumental_track_tags,
+        track_tags,
+    ])
+
     with TempFileTracker() as temp_files:
         temp_file = temp_files.register_for_deletion(TEMP_DATA_DIR + 'temp_track_tags.parquet')
         write_to_parquet_file(track_tags, temp_file)
