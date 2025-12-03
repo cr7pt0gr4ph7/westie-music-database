@@ -186,9 +186,9 @@ def process_in_batches(
         merge_type = 'sorted' if sort_by else 'unsorted'
 
     if batch_by or batch_values is not None:
-        row_count = batch_values.select(pl.len()).collect().item()
+        row_count = batch_values.select(pl.len().cast(pl.UInt32)).collect().item()
     else:
-        row_count = data.select(pl.len()).collect().item()
+        row_count = data.select(pl.len().cast(pl.UInt32)).collect().item()
 
     batch_count = int(math.ceil(row_count / batch_size))
     batch_outputs: list[str | pl.DataFrame] = []
@@ -435,8 +435,8 @@ def process_playlist_and_song_data(*, prepare_deduplication: bool = False):
             pl.col(Track.release_date).drop_nulls().first(),
             pl.col(Track.region).drop_nulls().unique().sort(),
             pl.col(Track.country).drop_nulls().unique().sort(),
-            pl.col(Playlist.id).n_unique().alias(Stats.playlist_count),
-            pl.col(PlaylistOwner.name).n_unique().alias(Stats.dj_count),
+            pl.col(Playlist.id).n_unique().cast(pl.UInt32).alias(Stats.playlist_count),
+            pl.col(PlaylistOwner.name).n_unique().cast(pl.UInt32).alias(Stats.dj_count),
         ).with_columns(
             pl.col(Track.region).list.filter(pl.element().ne('')).cast(pl.List(get_region_enum())),
             pl.col(Track.country).list.filter(pl.element().ne('')).cast(pl.List(get_country_enum())),
@@ -787,7 +787,7 @@ def process_playlist_and_song_tags():
 
     tags = exploded_playlists_by_tag\
         .group_by(TAG)\
-        .agg(pl.col(TAG).count().alias(Tag.playlist_count),
+        .agg(pl.col(TAG).count().cast(pl.UInt32).alias(Tag.playlist_count),
              pl.col(Playlist.name).head(playlists_per_tag_limit).alias(Tag.playlist_names))\
         .select(pl.col(TAG).str.split(':').list.get(0).alias(Tag.category),
                 pl.col(TAG).str.split(':').list.get(1, null_on_oob=True).alias(Tag.short_name),
@@ -804,7 +804,7 @@ def process_playlist_and_song_tags():
               how='inner', on=Playlist.id)\
         .filter(~keywords.strip_from_tracks.matches(Tag.name()))\
         .group_by(Track.id, Tag.name)\
-        .agg(pl.col(Playlist.id).n_unique().alias(TrackTag.matching_playlist_count))
+        .agg(pl.col(Playlist.id).n_unique().cast(pl.UInt32).alias(TrackTag.matching_playlist_count))
 
     # Tracks that have "Instrumental" in their name should be tagged as genre:instrumental
     instrumental_track_tags = tracks\
@@ -968,7 +968,7 @@ def process_tag_stats():
         return track_tags_batch\
             .group_by(TrackTag.tag)\
             .agg(TrackTag.matching_playlist_count().max().alias(Tag.max_playlist_count),
-                 TrackTag.Track.id().count().alias(Stats.song_count))
+                 TrackTag.Track.id().count().cast(pl.UInt32).alias(Stats.song_count))
 
     process_in_batches(
         track_tags,
@@ -1058,7 +1058,7 @@ def process_adjacent_song_tags(temp_files: TempFileTracker):
             .explode(TrackTags.tags)\
             .rename({TrackTags.tags: TrackTag.tag})\
             .group_by(Track.id, TrackTag.tag)\
-            .agg(Playlist.id().n_unique().alias(TrackTag.matching_playlist_count))\
+            .agg(Playlist.id().n_unique().cast(pl.UInt32).alias(TrackTag.matching_playlist_count))\
             .with_columns(pl.struct(TrackTag.tag, TrackTag.matching_playlist_count).alias(TAG_DATA))\
             .group_by(Track.id)\
             .agg(pl.col(TAG_DATA).sort_by(TrackTag.matching_playlist_count, descending=True)

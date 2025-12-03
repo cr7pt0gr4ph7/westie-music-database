@@ -405,7 +405,7 @@ class PlaylistFilter:
                     .list.sort()
                     .alias(Playlist.matched_terms))\
                 .with_columns(
-                    pl.col(Playlist.matched_terms).list.len()
+                    pl.col(Playlist.matched_terms).list.len().cast(pl.UInt32)
                     .alias(Playlist.matched_terms_count))
         elif include_matched_terms:
             matching_playlists = matching_playlists\
@@ -476,7 +476,7 @@ class PlaylistTrackSet(BaseSet):
                     .unique().sort().slice(0, playlist_limit))
 
                 additional_aggregate_columns.append(
-                    pl.col(Playlist.id).n_unique().alias(Playlist.matching_playlist_count))
+                    pl.col(Playlist.id).n_unique().cast(pl.UInt32).alias(Playlist.matching_playlist_count))
 
                 additional_aggregate_columns.append(
                     cs.matches("^" + Playlist.matched_terms + "$")
@@ -484,7 +484,7 @@ class PlaylistTrackSet(BaseSet):
 
                 additional_columns.append(
                     cs.matches("^" + Playlist.matched_terms + "$")
-                    .as_expr().list.len().alias(Playlist.matched_terms_count))
+                    .as_expr().list.len().cast(pl.UInt32).alias(Playlist.matched_terms_count))
 
             if include_playlist_track_info:
                 columns_to_select |= PlaylistTrack.matching_columns()
@@ -611,7 +611,7 @@ class TrackSet(BaseSet):
                     .join(playlists.included_playlists, how='semi', on=Playlist.id)\
                     .group_by(Playlist.id)\
                     .agg(pl.col(Track.name).unique().slice(0, tracks_limit),
-                         pl.col(Track.id).n_unique().alias(Playlist.matching_song_count))
+                         pl.col(Track.id).n_unique().cast(pl.UInt32).alias(Playlist.matching_song_count))
             else:
                 aggregated_tracks_per_playlist = playlist_tracks.included_playlist_tracks\
                     .select(PlaylistTrack.Track.id, PlaylistTrack.Playlist.id)\
@@ -619,7 +619,7 @@ class TrackSet(BaseSet):
                     .join(self.included_tracks.select(Track.id, Track.name), how='inner', on=Track.id)\
                     .group_by(Playlist.id)\
                     .agg(pl.col(Track.name).unique().slice(0, tracks_limit),
-                         pl.col(Track.id).n_unique().alias(Playlist.matching_song_count))
+                         pl.col(Track.id).n_unique().cast(pl.UInt32).alias(Playlist.matching_song_count))
 
             matching_playlists = playlists.included_playlists\
                 .join(aggregated_tracks_per_playlist, how='inner', on=Playlist.id)\
@@ -827,7 +827,7 @@ class TrackLyricsFilter:
                     .list.unique()
                     .alias(TrackLyrics.matched_lyrics))\
                 .with_columns(
-                    pl.col(TrackLyrics.matched_lyrics).list.len().alias(TrackLyrics.matched_lyrics_count))
+                    pl.col(TrackLyrics.matched_lyrics).list.len().cast(pl.UInt32).alias(TrackLyrics.matched_lyrics_count))
 
         if not include_full_lyrics:
             matching_track_lyrics = matching_track_lyrics.drop(TrackLyrics.lyrics)
@@ -1345,12 +1345,12 @@ class SearchEngine:
                 self.data.all_playlist_tracks(Playlist.id),
                 include_playlist_info=True)\
             .included_playlist_tracks.group_by(group_by)\
-            .agg(song_count=pl.n_unique(Track.id))
+            .agg(song_count=pl.n_unique(Track.id).cast(pl.UInt32))
 
         playlist_counts_by_group =\
             self.data.playlists.group_by(group_by)\
-            .agg(playlist_count=pl.n_unique(Playlist.id),
-                 dj_count=pl.n_unique(PlaylistOwner.id),
+            .agg(playlist_count=pl.n_unique(Playlist.id).cast(pl.UInt32),
+                 dj_count=pl.n_unique(PlaylistOwner.id).cast(pl.UInt32),
                  djs=pl.col(PlaylistOwner.name))\
             .with_columns(pl.col('djs').list.unique().list.head(30))
 
@@ -1881,7 +1881,7 @@ class SearchEngine:
             .explode(Stats.date_formats)\
             .group_by(PlaylistOwner.id, Stats.date_formats().alias(Stats.date_formats))\
             .agg(PlaylistOwner.name().first(),
-                 Stats.date_formats().count().alias(Stats.date_format_counts))\
+                 Stats.date_formats().count().cast(pl.UInt32).alias(Stats.date_format_counts))\
             .group_by(PlaylistOwner.id)\
             .agg(PlaylistOwner.name().first(),
                  Stats.date_formats().sort_by(Stats.date_format_counts, descending=True),
@@ -1933,9 +1933,9 @@ class SearchEngine:
                     include_playlist_info=True),
                 include_track_info=True)\
             .included_playlist_tracks.group_by(PlaylistOwner.name, PlaylistOwner.id)\
-            .agg(pl.n_unique(Track.id).alias(Stats.song_count),
-                 pl.n_unique(Track.artist_names).alias(Stats.artist_count),
-                 pl.n_unique(Playlist.name).alias(Stats.playlist_count),
+            .agg(pl.n_unique(Track.id).cast(pl.UInt32).alias(Stats.song_count),
+                 pl.n_unique(Track.artist_names).cast(pl.UInt32).alias(Stats.artist_count),
+                 pl.n_unique(Playlist.name).cast(pl.UInt32).alias(Stats.playlist_count),
                  pl.col(Playlist.name).drop_nulls().unique()
                  .sort().slice(0, playlist_limit or None))\
             .with_columns(
@@ -2159,15 +2159,15 @@ class SearchEngine:
         if min_plays is not None and min_plays != 0:
             return playlist_tracks.included_playlist_tracks\
                 .group_by(interval, Track.id)\
-                .agg(pl.col(Playlist.id).n_unique().alias(PLAYLIST_TRACK_COUNT))\
+                .agg(pl.col(Playlist.id).n_unique().cast(pl.UInt32).alias(PLAYLIST_TRACK_COUNT))\
                 .filter(pl.col(PLAYLIST_TRACK_COUNT).ge(min_plays))\
                 .group_by(interval)\
                 .agg(pl.col(PLAYLIST_TRACK_COUNT).sum(),
-                     pl.col(Track.id).n_unique().alias(Stats.song_count))\
+                     pl.col(Track.id).n_unique().cast(pl.UInt32).alias(Stats.song_count))\
                 .sort(interval)
         else:
             return playlist_tracks.included_playlist_tracks\
                 .group_by(interval)\
-                .agg(pl.concat_list(Track.id, Playlist.id).n_unique().alias(PLAYLIST_TRACK_COUNT),
-                     pl.col(Track.id).n_unique().alias(Stats.song_count))\
+                .agg(pl.concat_list(Track.id, Playlist.id).n_unique().cast(pl.UInt32).alias(PLAYLIST_TRACK_COUNT),
+                     pl.col(Track.id).n_unique().cast(pl.UInt32).alias(Stats.song_count))\
                 .sort(interval)
