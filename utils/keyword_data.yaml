@@ -2341,6 +2341,8 @@ keywords:
             - accent
             - accenting # review
             - accents
+        - accents-:
+            - canadian accent
         - breaks:
             - breaks
             - hit the break
@@ -2391,6 +2393,7 @@ keywords:
             - phrases
             - phrasing
             - songs that build
+            - interesting musical phrasing
         - repetitions:
             - repeated
             - repetition
@@ -2503,12 +2506,14 @@ keywords:
         - no vocals
         - without vocals
     - micromusicality:
+        - +musicality
         - micro musciality
         - micro musicality
         - micromusciality
         - micromusicality
         - musicality - micro
     - musicality:
+        - adamritamusicality
         - changement musical # changement musical (tempo, instrument...)
         - couleur musique # french: music color
         - dynamisk musikkutvikling # norwegian: dynamic music development
@@ -2520,17 +2525,26 @@ keywords:
         - musical mastery
         - musical moments
         - landing moments
+        - musical routines
         - musical textures
+        - musicalidad # spanish: musicality
         - musicalidade # portugese: musicality
         - musicalità # italian: musicality
-        - musicalité
+        - musicalite # french: musicality
+        - musicalité # french: musicality
+        - musicalität # german: musicality
         - musicality
+        - musicaality
+        - musicaaality
+        - musicaaaality
+        - musicaaaaality
         - musicallity
         - musiikintulkinta # finnish: music interpretation
         - musikalität # german: musicality
         - musikalitet # danish: musicality
         - musiklitet
         - музыкальность # russian: musicality
+        - musically workshop
     - pulse
     - push the floor
     - rhythm related:
@@ -2894,6 +2908,8 @@ keywords:
     # higher probability of being a partially unsorted pile
     # of songs, and as such the tags they assign to songs
     # should likely get a lower weight.
+    - probably rough tagging-:
+        - interesting musical phrasing
     - probably rough tagging:
         - "& stuff" # "Acoustics & Stuff"
         - and stuff
