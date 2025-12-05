@@ -773,7 +773,7 @@ def process_playlist_and_song_tags():
         # can be either dance:wcs+genre:blues or dance:wcs+dance:blues.
         pl.concat_str(
             pl.lit("id:"),
-            pl.col(Playlist.name),
+            pl.col(Playlist.id),
             pl.lit(" "),
             pl.col(Playlist.name),
         ).pipe(extract_tags_from_name).alias(PlaylistTags.tags),
