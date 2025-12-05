@@ -1831,8 +1831,7 @@ class SearchEngine:
 
         return matching_playlists.with_extra_columns()\
             .sort_by(sort_by, descending=descending)\
-            .included_playlists.slice(0, limit or None)\
-            .join(self.data.playlist_stats, how='left', on=Playlist.id)
+            .included_playlists.slice(0, limit or None)
 
     def find_date_formats_by_dj(
         self,

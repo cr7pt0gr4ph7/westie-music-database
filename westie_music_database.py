@@ -1007,7 +1007,7 @@ def section_find_playlist():
             tag_exclude=not_tag_input,
             tracks_in_result=True,
             tracks_limit=30,
-            sort_by=None,
+            sort_by='default',
             descending=True,
             limit=None,
         )
@@ -1037,10 +1037,6 @@ def section_find_playlist():
                                     tag_count_input))
 
         df = (playlist_search_df
-              # .filter(~Playlist.is_social_set())
-              .with_columns(Playlist.name, PlaylistTags.tags, Playlist.url, PlaylistOwner.name,
-                            Playlist.matching_song_count, Stats.artist_count, Track.name)
-              .sort(PlaylistStats.wcs_song_count, nulls_last=True, descending=True)
               .with_row_index(offset=1))
 
         if show_common_keywords:
