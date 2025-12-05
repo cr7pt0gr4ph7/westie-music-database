@@ -197,10 +197,10 @@ relations:
       - "genre:beatless"
   - opposites:
       - "tempo:fast"
-      - "mood:slow but high energy"
+      - "mood:high energy / slow"
   - opposites:
       - "tempo:slow"
-      - "mood:fast and high energy"
+      - "mood:high energy / fast"
   - opposites:
       - "tempo:fast"
       - "tempo:medium"
@@ -2041,14 +2041,14 @@ keywords:
         - high energy:
             - very energetic
             - high energy
-            - fast and high energy:
+            - high energy / fast:
                 - "+tempo:fast"
                 - fast high energy
                 - fast - high energy
                 - high energy, fast
         - high energy-:
             - medium - high energy
-        - slow but high energy:
+        - high energy / slow:
             - slow high energy
             - high energy/low bpm
             - high energy / slow
