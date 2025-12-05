@@ -1322,6 +1322,7 @@ keywords:
         - träning
         - treino
         - trening
+        - treningy # slowakian: training
         - treningsmusikk
         - träningsgruppen # swedish: training group
         - torsdagstrening # translation: thursday training
@@ -1402,6 +1403,8 @@ keywords:
         - nybegynner # swedish: beginner
         - nybegynnervenlig # swedish: beginner-friendly
         - nybörjare # swedish: beginner
+    - beginners-:
+        - friendly mistakes
     - champions:
         - champs
         - champions
@@ -1550,8 +1553,8 @@ keywords:
         - swag/hip hop
         - the dirty part of west coast
         - the heavy one
-        - tłuste bity # polnish: fat bits
-        - tłusty bit # polnish: fat bit
+        - tłuste bity # polish: fat bits
+        - tłusty bit # polish: fat bit
         - twerk
         - wcs sex & dirty talk
         - wcs songs to wiggle to
@@ -1619,6 +1622,7 @@ keywords:
         - r&b
         - rhythm & blues
         - r'n'b
+        - r and b
     - rock:
         - rock
         - soft rock
@@ -2265,12 +2269,38 @@ keywords:
       - legato/staccato
       - stac/leg
       - staccato/legato
+      - stacc / legat
       - staccato:
+          - stacato # polish: staccato
+          - stakato # slowakian: staccato
           - staccato
-          - stakkato
+          - stakkato # german: staccato
           - sharp beat # review
+          - slow staccato:
+              - +tempo:slow
+              - slow staccato
+              - wolne stacato # polish: slow staccato
+              - pomale stakato # slowakian: slow staccato
+          - fast staccato:
+              - +tempo:fast
+              - fast staccato
+              - szybkie staccato # polish: fast staccato
       - legato:
           - legato
+          - soft & slow*:
+              - +mood:soft
+              - +mood:slow
+              - soft & slow
+              - soft and slow
+          - slow legato:
+              - +tempo:slow
+              - slow legato
+              - wolne legato # polish: slow legato
+              - pomale legato # slowakian: slow legato
+          - fast legato:
+              - +tempo:fast
+              - fast legato
+              - szybkie legato # polish: fast legato
     - upbeat and downbeat:
         - clear down up beat
         - up beat down beat
