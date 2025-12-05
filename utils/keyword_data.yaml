@@ -607,6 +607,9 @@ keywords:
         - the o.c. vol. 2
         - the olympians
         - the polish ambassador
+        - the rolling stones*:
+            - rolling stones
+            - the rolling stones
         - the script
         - the shitheadz
         - the weeknd
@@ -1625,8 +1628,11 @@ keywords:
         - r and b
     - rock:
         - rock
+        - rockish
         - soft rock
         - alternative rock
+        - rock/alternatif
+        - rock/alt
         - pop rock
     - soul:
         - soul
@@ -1712,6 +1718,14 @@ keywords:
         - not lowfi but same vibes
     - lo-fi-:
         - not lowfi
+    - rockabilly
+    - rock'n'roll:
+        - rock & roll
+        - rock and roll
+        - rock n roll
+        - rock'n'roll
+        - rock’n’roll
+        - rock&roll
     - remixes:
         - mashups
         - remixes
@@ -2429,25 +2443,46 @@ keywords:
             - repetition
             - repetitive beats
             - repititions
-    - tempo changes:
-        - speed changes
-        - tempo change
-        - tempo changes
-        - tempo changing
-        - songs that change tempo
-        - changeing tempo
+        - tempo changes:
+            - speed changes
+            - tempo change
+            - tempo changes
+            - tempo changing
+            - songs that change tempo
+            - changeing tempo
 
+    - timing*:
+        - rolling count:
+            - rollingcount
+            - rolling count
+            - rolling time
+
+    - drills-:
+        - fire drill
     - drills:
         - drill
         - drills
-        - footwork drills:
+        - drills / footwork:
             - footwork drill
             - footwork drills
-        - lyrical drills:
-        - spin drills:
+        - drills / lyrical:
+            - lyrical drill
+            - lyrical drills
+        - drills / musicality:
+            - +topic:musicality
+            - musicality drill
+            - musicality drills
+        - drills / rhythm:
+            - +topic:rhythm related
+            - rhythm drill
+            - rhythm drills
+        - drills / spins:
             - spin drill
             - spin drills
-        - walking drills:
+        - drills / timing:
+            - timing drill
+            - timing drills
+        - drills / walking:
             - walking drill
             - walking drills
 
@@ -2497,6 +2532,22 @@ keywords:
         - technique:
             - technique
             - teknikträning
+
+    # - patterns*:
+    #     - catch and release
+    #     - rollin / rollout:
+    #         - rollin
+    #         - rollout
+    #         - rollin rollout
+    #     - tuck variations:
+    #         - tuck variations
+    #     - scrolls & telemark: # only 1 matching playlist
+    #         - scrolls
+    #         - telemark
+    #         - telemarks
+    #     - whip:
+    #         - whip # imprecise
+    #         - whips # imprecise
 
     - dancing fast n slow
     - action & reaction:
@@ -3312,6 +3363,8 @@ keywords:
     - atlanta swing classic+events:type:event/dance:wcs/country:usa: # EVENT: Atlanta Swing Classic
         - atlanta swing classic
         - asc
+    - attucks swing dance nite+events:type:party/dance:various/country:usa: # PARTY: Attucks Swing Dance Nite by Swing Dance Virginia in Virginia, USA (discontinued)
+        - attucks
     - augsburg westie station+events:type:event/dance:wcs/country:germany: # EVENT: Augsburg Westie Station
         - augsburg westie station
         - westie station
@@ -3708,6 +3761,10 @@ keywords:
         - rocketwesties
     - rogue valley westies+events:type:organization/dance:wcs/country:usa: # ORG: Rogue Valley Westies in Oregon, USA
     - rolling swing+events:type:event/dance:wcs/country:france: # EVENT: Rolling Swing in France
+        - rolling swing
+        - dimanche rolling 23*:
+            - +weekday:sunday
+            - dimanche rolling 23
     - rose city swing+events:type:event/dance:wcs/country:usa: # EVENT: Rose City Swing
         - rose city
         - rose city swing
